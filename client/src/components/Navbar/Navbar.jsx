@@ -3,7 +3,6 @@ import {
   LightModeOutlined,
   DarkModeOutlined,
   Menu as MenuIcon,
-  Search,
   SettingsOutlined,
   ArrowDropDownOutlined,
 } from "@mui/icons-material";
@@ -16,21 +15,23 @@ import {
   Box,
   Typography,
   IconButton,
-  InputBase,
   Toolbar,
   Menu,
   MenuItem,
   useTheme,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const isOpen = Boolean(anchorEl);
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
+  const handleLogout = () => navigate("/");
 
   return (
     <AppBar
@@ -38,6 +39,9 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
         position: "static",
         background: "none",
         boxShadow: "none",
+        "& .MuiToolbar-root": {
+          backgroundColor: theme.palette.mode === 'dark' ? theme.palette.primary[800] : theme.palette.primary[500],
+        },
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
@@ -105,7 +109,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
               onClose={handleClose}
               anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
             >
-              <MenuItem onClick={handleClose}>Log Out</MenuItem>
+              <MenuItem onClick={handleLogout}>Log Out</MenuItem>
             </Menu>
           </FlexBetween>
         </FlexBetween>

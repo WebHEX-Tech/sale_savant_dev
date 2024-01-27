@@ -2,7 +2,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { themeSettings } from "theme";
 import * as scenes from "./scenes/index";
 import * as pages from "./pages/index";
@@ -18,14 +18,12 @@ function App() {
           <CssBaseline />
           <Routes>
             <Route path="/" element={<pages.Login />} />
-            <Route
-              path="/home"
-              element={
-                <scenes.Layout>
-                  <Route index element={<scenes.Dashboard />} />
-                </scenes.Layout>
-              }
-            />
+            <Route element={<scenes.Layout />}>
+              <Route path="/home" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard" element={<scenes.Dashboard />} />
+              <Route path="/menu management" element={<scenes.MenuManagement />} />
+              <Route path="/reports/rep-sales" element={<scenes.RepSales />} />
+            </Route>
           </Routes>
         </ThemeProvider>
       </BrowserRouter>

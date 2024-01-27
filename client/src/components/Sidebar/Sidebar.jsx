@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Box,
-  Divider,
   Drawer,
   IconButton,
   List,
@@ -13,24 +12,20 @@ import {
   useTheme,
 } from "@mui/material";
 import {
-  SettingsOutlined,
   ChevronLeft,
-  ChevronRightOutlined,
   HomeOutlined,
-  ShoppingCartOutlined,
-  Groups2Outlined,
   ReceiptLongOutlined,
-  PublicOutlined,
-  PointOfSaleOutlined,
-  TodayOutlined,
-  CalendarMonthOutlined,
-  AdminPanelSettingsOutlined,
-  TrendingUpOutlined,
-  PieChartOutlined,
+  MenuBookOutlined,
+  ManageHistoryOutlined,
+  RequestQuoteOutlined,
+  ManageAccountsOutlined,
+  ExpandMoreOutlined,
+  Menu,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FlexBetween } from "../index";
+import * as image from "assets/index";
 
 const navItems = [
   {
@@ -44,6 +39,12 @@ const navItems = [
   {
     text: "Reports",
     icon: <ReceiptLongOutlined />,
+    children: [
+      { text: "Sales", path: "rep-sales" },
+      { text: "Customer Purchase History", path: "cp-history" },
+      { text: "Discount and Promos", path: "discount" },
+      { text: "Supplier Deliveries", path: "rep-deliveries" },
+    ],
   },
   {
     text: "Management",
@@ -51,19 +52,23 @@ const navItems = [
   },
   {
     text: "Menu Management",
-    icon: <TodayOutlined />,
+    icon: <MenuBookOutlined />,
   },
   {
-    text: "Sale Management",
-    icon: <PointOfSaleOutlined />,
+    text: "Sales and Purchase Management",
+    icon: <ManageHistoryOutlined />,
+    children: [
+      { text: "Supply Deliveries Recording", path: "supply-records" },
+      { text: "Supplier Management", path: "supplier-mngmt" },
+    ],
   },
   {
-    text: "Supply and Purchase Management",
-    icon: <PieChartOutlined />,
+    text: "Sales Management",
+    icon: <RequestQuoteOutlined />,
   },
   {
     text: "User Management",
-    icon: <AdminPanelSettingsOutlined />,
+    icon: <ManageAccountsOutlined />,
   },
 ];
 
@@ -77,13 +82,30 @@ const Sidebar = ({
   const [active, setActive] = useState("");
   const navigate = useNavigate();
   const theme = useTheme();
+  const [openDropdowns, setOpenDropdowns] = useState([]);
 
   useEffect(() => {
+    // Update active state when the pathname changes
     setActive(pathname.substring(1));
   }, [pathname]);
 
+  const handleNavigation = (path) => {
+    navigate(path);
+    setActive(path.substring(1));
+  };
+
+  const handleDropdownToggle = (index) => {
+    setOpenDropdowns((prev) => {
+      const isOpen = prev.includes(index);
+      return isOpen ? prev.filter((item) => item !== index) : [...prev, index];
+    });
+  };
+
   return (
-    <Box component="nav">
+    <Box
+      component="nav"
+      sx={{ boxShadow: "0px 0px 12px 0px rgba(0, 0, 0, 0.27)", zIndex: "99" }}
+    >
       {isSidebarOpen && (
         <Drawer
           open={isSidebarOpen}
@@ -94,74 +116,189 @@ const Sidebar = ({
             width: drawerWidth,
             "& .MuiDrawer-paper": {
               color: theme.palette.secondary[500],
-              backgroundColor: theme.palette.primary[700],
-              boxSixing: "border-box",
+              backgroundColor: theme.palette.primary[500],
+              boxSizing: "border-box",
               borderWidth: isNonMobile ? 0 : "2px",
               width: drawerWidth,
+              overflowY: "auto",
+              "&::-webkit-scrollbar": {
+                width: "2px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: theme.palette.secondary[500],
+                borderRadius: "4px",
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: theme.palette.primary[700],
+              },
             },
           }}
         >
           <Box width="100%">
-            <Box m="1.5rem 2rem 2rem 3rem">
-              <FlexBetween color={theme.palette.secondary.main}>
-                <Box display="flex" alignItems="center" gap="0.5rem">
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              m="2rem 0 1rem 0"
+            >
+              <FlexBetween color={theme.palette.secondary[500]}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  gap="0.5rem"
+                >
+                  <img
+                    src={image.SaleSavantLogo}
+                    alt="logo"
+                    style={{ width: "110px", height: "auto" }}
+                  />
                   <Typography variant="h4" fontWeight="bold">
                     Sale Savant
                   </Typography>
                 </Box>
                 {!isNonMobile && (
-                  <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-                    <ChevronLeft />
+                  <IconButton
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    sx={{
+                      position: "absolute",
+                      top: "2%",
+                      right: "4%",
+                      backgroundColor: theme.palette.primary[700],
+                    }}
+                  >
+                    <Menu />
                   </IconButton>
                 )}
               </FlexBetween>
             </Box>
             <List>
-              {navItems.map(({ text, icon }) => {
+              {navItems.map(({ text, icon, children }, index) => {
+                const lcText = text.toLowerCase();
+                const isDropdownOpen = openDropdowns.includes(index);
+
                 if (!icon) {
                   return (
-                    <Typography key={text} sx={{ m: "2.25rem 0 1rem 3rem" }}>
+                    <Typography key={text} sx={{ m: "2.25rem 0 0.5rem 2rem" }}>
                       {text}
                     </Typography>
                   );
                 }
-                const lcText = text.toLowerCase();
 
                 return (
-                  <ListItem key={text} disablePadding>
-                    <ListItemButton
-                      onClick={() => {
-                        navigate(`/${lcText}`);
-                        setActive(lcText);
-                      }}
-                      sx={{
-                        backgroundColor:
-                          active === lcText
-                            ? theme.palette.secondary[300]
-                            : "transparent",
-                        color:
-                          active === lcText
-                            ? theme.palette.primary[600]
-                            : theme.palette.secondary[100],
-                      }}
-                    >
-                      <ListItemIcon
-                        sx={{
-                          ml: "2rem",
-                          color:
-                            active === lcText
-                              ? theme.palette.primary[600]
-                              : theme.palette.secondary[200],
-                        }}
-                      >
-                        {icon}
-                      </ListItemIcon>
-                      <ListItemText primary={text} />
-                      {active === lcText && (
-                        <ChevronRightOutlined sx={{ ml: "auto" }} />
+                  <React.Fragment key={text}>
+                    {/* Dropdown Links */}
+                    <ListItem disablePadding>
+                      {children ? (
+                        <ListItemButton
+                          onClick={(event) => {
+                            event.preventDefault();
+                            handleDropdownToggle(index);
+                          }}
+                          sx={{
+                            backgroundColor:
+                              active === lcText
+                                ? theme.palette.secondary[500]
+                                : "transparent",
+                            color:
+                              active === lcText
+                                ? theme.palette.primary[600]
+                                : theme.palette.grey[900],
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              ml: "2rem",
+                              color:
+                                active === lcText
+                                  ? theme.palette.primary[600]
+                                  : theme.palette.grey[900],
+                            }}
+                          >
+                            {icon}
+                          </ListItemIcon>
+                          <ListItemText primary={text} />
+                          {isDropdownOpen ? (
+                            <ExpandMoreOutlined sx={{ ml: "auto" }} />
+                          ) : (
+                            <ChevronLeft sx={{ ml: "auto" }} />
+                          )}
+                        </ListItemButton>
+                      ) : (
+                        <ListItemButton
+                          onClick={() => {
+                            handleNavigation(`/${lcText}`);
+                          }}
+                          sx={{
+                            backgroundColor:
+                              active === lcText
+                                ? theme.palette.secondary[500]
+                                : "transparent",
+                            color:
+                              active === lcText
+                                ? theme.palette.grey[200]
+                                : theme.palette.grey[900],
+                            "&:hover": {
+                              backgroundColor: theme.palette.secondary[500],
+                              color: theme.palette.grey[200],
+                            },
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              ml: "2rem",
+                              color:
+                                active === lcText
+                                  ? theme.palette.grey[200]
+                                  : theme.palette.grey[900],
+                            }}
+                          >
+                            {icon}
+                          </ListItemIcon>
+                          <ListItemText primary={text} />
+                        </ListItemButton>
                       )}
-                    </ListItemButton>
-                  </ListItem>
+
+                      {/* Dropdown Links */}
+                    </ListItem>
+                    {children && isDropdownOpen && (
+                      <List sx={{ pl: "5rem" }}>
+                        {children.map(({ text: childText, path }) => (
+                          <ListItem
+                            key={childText}
+                            disablePadding
+                            sx={{
+                              backgroundColor:
+                                active === lcText && pathname.includes(path)
+                                  ? theme.palette.secondary[300]
+                                  : "transparent",
+                              "&:hover": {
+                                backgroundColor: theme.palette.secondary[500],
+                                color: theme.palette.grey[200],
+                              },
+                              borderRadius: "10px 0 0 10px",
+                            }}
+                          >
+                            <ListItemButton
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                handleNavigation(`/${lcText}/${path}`);
+                              }}
+                              sx={{
+                                color:
+                                  active === lcText && pathname.includes(path)
+                                    ? theme.palette.primary[600]
+                                    : theme.palette.grey[900],
+                              }}
+                            >
+                              <ListItemText primary={childText} />
+                            </ListItemButton>
+                          </ListItem>
+                        ))}
+                      </List>
+                    )}
+                  </React.Fragment>
                 );
               })}
             </List>

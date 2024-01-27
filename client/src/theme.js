@@ -80,7 +80,7 @@ export const themeSettings = (mode) => {
               main: tokensDark.grey[500],
             },
             background: {
-              default: tokensDark.primary[600],
+              default: tokensDark.primary[800],
               alt: tokensDark.primary[500],
             },
           }
