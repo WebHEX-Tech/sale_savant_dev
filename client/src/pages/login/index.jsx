@@ -6,15 +6,46 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { Form, Formik } from "formik";
+import * as yup from "yup";
 import "./login.css";
 import * as image from "assets/index";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+const loginSchema = yup.object().shape({
+  userNumber: yup.string().required("required"),
+  password: yup.string().required("required"),
+});
 
 const Login = () => {
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    navigate("/home"); 
+  const initialValuesLogin = {
+    userNumber: "",
+    password: "",
+  };
+
+  const handleFormSubmit = async (values) => {
+    try {
+      const response = await fetch("http://localhost:3001/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (response.ok) {
+        const data = response.status === 204 ? {} : await response.json();
+        console.log("Login successful!", data.token);
+
+        navigate("/home");
+      } else {
+        console.error("Login failed:", response.statusText);
+      }
+    } catch (error) {
+      console.error("An error occurred during the fetch:", error);
+    }
   };
 
   return (
@@ -105,72 +136,92 @@ const Login = () => {
           >
             Login
           </Typography>
-          <Box
-            component="form"
-            sx={{
-              width: "75%",
-              padding: "0 0.5rem",
-              "@media (max-width:1024px)": {
-                padding: "0",
-              },
-            }}
-          >
-            <FormControl fullWidth>
-              <TextField
-                required
-                id="uniqNo"
-                label="Unique Number"
-                variant="standard"
-                helperText="Input your unique number"
-                margin="dense"
-                sx={{
-                  "& .MuiInputLabel-root.Mui-focused": {
-                    color: "#801414",
-                  },
-                  "& .MuiInput-underline:after": {
-                    borderBottomColor: "#801414",
-                  },
-                }}
-              />
-              <TextField
-                required
-                id="password"
-                label="Password"
-                variant="standard"
-                type="password"
-                helperText="Input your password"
-                margin="dense"
-                sx={{
-                  marginTop: "0.8em",
-                  "& .MuiInputLabel-root.Mui-focused": {
-                    color: "#801414",
-                  },
-                  "& .MuiInput-underline:after": {
-                    borderBottomColor: "#801414",
-                  },
-                }}
-              />
 
-              <Button
-                type="submit"
-                variant="contained"
+          <Formik
+            onSubmit={handleFormSubmit}
+            initialValues={initialValuesLogin}
+            validationSchema={loginSchema}
+          >
+            {({ values, errors, touched, handleBlur, handleChange }) => (
+              <Box
                 sx={{
-                  color: "#fff",
-                  fontSize: "1.1em",
-                  marginTop: "3em",
-                  borderRadius: "20px",
-                  background: "#B03021",
-                  "&:hover": {
-                    background: "#801414",
+                  width: "75%",
+                  padding: "0 0.5rem",
+                  "@media (max-width:1024px)": {
+                    padding: "0",
                   },
                 }}
-                onClick={handleLogin}
               >
-                
-                Login
-              </Button>
-            </FormControl>
-          </Box>
+                <Form>
+                  <FormControl fullWidth>
+                    <TextField
+                      required
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.userNumber}
+                      name="userNumber"
+                      label="Unique Number"
+                      variant="standard"
+                      error={
+                        Boolean(touched.userNumber) &&
+                        Boolean(errors.userNumber)
+                      }
+                      helperText="Input your unique number"
+                      margin="dense"
+                      sx={{
+                        "& .MuiInputLabel-root.Mui-focused": {
+                          color: "#801414",
+                        },
+                        "& .MuiInput-underline:after": {
+                          borderBottomColor: "#801414",
+                        },
+                      }}
+                    />
+                    <TextField
+                      required
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      name="password"
+                      label="Password"
+                      variant="standard"
+                      type="password"
+                      error={
+                        Boolean(touched.password) && Boolean(errors.password)
+                      }
+                      helperText="Input your password"
+                      margin="dense"
+                      sx={{
+                        marginTop: "0.8em",
+                        "& .MuiInputLabel-root.Mui-focused": {
+                          color: "#801414",
+                        },
+                        "& .MuiInput-underline:after": {
+                          borderBottomColor: "#801414",
+                        },
+                      }}
+                    />
+
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      sx={{
+                        color: "#fff",
+                        fontSize: "1.1em",
+                        marginTop: "3em",
+                        borderRadius: "20px",
+                        background: "#B03021",
+                        "&:hover": {
+                          background: "#801414",
+                        },
+                      }}
+                    >
+                      Login
+                    </Button>
+                  </FormControl>
+                </Form>
+              </Box>
+            )}
+          </Formik>
         </Container>
       </Box>
     </>

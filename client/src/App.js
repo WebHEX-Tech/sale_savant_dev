@@ -10,6 +10,7 @@ import * as pages from "./pages/index";
 function App() {
   const mode = useSelector((state) => state.global.mode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
+  const isAuth = Boolean(useSelector((state) => state.token));
 
   return (
     <div className="app">
@@ -18,10 +19,16 @@ function App() {
           <CssBaseline />
           <Routes>
             <Route path="/" element={<pages.Login />} />
+
+            {/* Admin Routes */}
             <Route element={<scenes.Layout />}>
               <Route path="/home" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<scenes.Dashboard />} />
+
+              {/* Menu Management Routes */}
               <Route path="/menu management" element={<scenes.MenuManagement />} />
+              <Route path="/add inventory" element={<scenes.AddInventory />} />
+
               <Route path="/reports/rep-sales" element={<scenes.RepSales />} />
             </Route>
           </Routes>
