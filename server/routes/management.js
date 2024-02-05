@@ -1,5 +1,5 @@
 import express from "express";
-import { AddInventory } from "../controllers/management.js";
+import { AddInventory, AddMenu } from "../controllers/management.js";
 
 const router = express.Router();
 

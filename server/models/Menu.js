@@ -1,17 +1,7 @@
 import mongoose from "mongoose";
-import { getNextSequenceValue } from "./Counter.js";
 
-const MenuInventorySchema = new mongoose.Schema(
+const MenuSchema = new mongoose.Schema(
   {
-    dateTime: {
-      type: Date,
-      required: true,
-    },
-    menuId: {
-      type: Number,
-      default: () => getNextSequenceValue("menuId"),
-      unique: true,
-    },
     menuItem: {
       type: String,
       required: true,
@@ -36,6 +26,9 @@ const MenuInventorySchema = new mongoose.Schema(
       min: 2,
       max: 50,
     },
+    picturePath: {
+        type: String,
+      },
     description: {
       type: String,
       min: 2,
@@ -45,5 +38,5 @@ const MenuInventorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const MenuInventory = mongoose.model("MenuInventory", MenuInventorySchema);
-export default MenuInventory;
+const Menu = mongoose.model("Menu", MenuSchema);
+export default Menu;

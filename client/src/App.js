@@ -27,7 +27,9 @@ function App() {
 
               {/* Menu Management Routes */}
               <Route path="/menu management" element={<scenes.MenuManagement />} />
+              <Route path="/menu inventory" element={<scenes.MenuInventory/>} />
               <Route path="/add inventory" element={<scenes.AddInventory />} />
+              <Route path="/add menu" element={<scenes.AddMenu />} />
 
               <Route path="/reports/rep-sales" element={<scenes.RepSales />} />
             </Route>

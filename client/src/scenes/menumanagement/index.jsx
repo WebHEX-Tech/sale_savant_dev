@@ -1,55 +1,17 @@
 import React from "react";
-import { FlexBetween, Header } from "components";
+import { Card, FlexBetween, Header } from "components";
 import {
   Box,
+  Button,
   Container,
-  IconButton,
-  InputBase,
   Toolbar,
   Typography,
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { Link } from "react-router-dom";
 import { useTheme } from "@emotion/react";
-import { Search } from "@mui/icons-material";
-import { DataGrid } from "@mui/x-data-grid";
+import { SaleSavantLogo } from 'assets';
 
-const columns = [
-  { field: 'id', headerName: 'ID', width: 90 },
-  {
-    field: 'firstName',
-    headerName: 'First name',
-    width: 150,
-    editable: true,
-  },
-  {
-    field: 'lastName',
-    headerName: 'Last name',
-    width: 150,
-    editable: true,
-  },
-  {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 110,
-    editable: true,
-  },
-  {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    width: 160,
-    valueGetter: (params) =>
-      `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-  },
-];
-
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 14 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
-];
 
 const MenuManagement = () => {
   const theme = useTheme();
@@ -61,79 +23,42 @@ const MenuManagement = () => {
       </Box>
 
       <Box>
-        <Toolbar sx={{justifyContent:'space-between', flexWrap:'wrap'}}>
+        <Toolbar sx={{ justifyContent: "space-between", flexWrap: "wrap" }}>
           <FlexBetween>
-            <Link style={{textDecoration:'none'}} to="/add inventory">
-              <Container sx={{display:'flex', gap:'0.5em', justifyContent:'center', alignItems:'center'}}>
-                <AddCircleIcon sx={{ color: "#35D03B", fontSize:'3em' }} />
-                <Typography sx={{fontSize:'1.5em'}}>Add Menu Inventory</Typography>
+            <Link style={{ textDecoration: "none", color:theme.palette.primary[100] }} to="/add menu">
+              <Container
+                sx={{
+                  display: "flex",
+                  gap: "0.5em",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <AddCircleIcon sx={{ color: "#35D03B", fontSize: "3em" }} />
+                <Typography sx={{ fontSize: "1.5em" }}>Add Menu</Typography>
               </Container>
             </Link>
           </FlexBetween>
 
-          <FlexBetween>
-            <Container>
-              <FlexBetween
-                backgroundColor={theme.palette.secondary[700]}
-                borderRadius="9px"
-                gap="3rem"
-                minWidth="300px"
-                width="100%"
-                p="0.1rem 1.5rem"
-              >
-                <InputBase placeholder="Search..." />
-                <IconButton>
-                  <Search />
-                </IconButton>
-              </FlexBetween>
-            </Container>
+          <FlexBetween sx={{ gap: "1em" }}>
+            <Link to="/menu inventory">
+              <Button variant="contained" sx={{background: theme.palette.primary[400]}} >Menu Inventory</Button>
+            </Link>
 
-            <Container></Container>
+            <Link to="/menu loss">
+              <Button variant="contained" sx={{background: theme.palette.primary[400]}} >Menu Loss</Button>
+            </Link>
           </FlexBetween>
         </Toolbar>
       </Box>
 
-      <Box
-        m="1.5rem 2.5rem"
-        height="70vh"
-        sx={{
-          "& .MuiDataGrid-root": {
-            border: "none",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: theme.palette.secondary[700],
-            color: theme.palette.secondary[100],
-            borderColor: theme.palette.secondary[100]
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: theme.palette.secondary[700],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            backgroundColor: theme.palette.secondary[700],
-            color: theme.palette.secondary[100],
-            borderColor: theme.palette.secondary[100]
-          },
-          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${theme.palette.secondary[200]} !important`,
-          },
-        }}
-      >
-        <DataGrid
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
-            },
-          },
-        }}
-        pageSizeOptions={[5]}
-        disableRowSelectionOnClick
-      />
+      <Box sx={{display:'flex', flexWrap:'wrap', gap:'1em', margin:'1.5em'}}>
+        <Card img={SaleSavantLogo} menuName={"Racks"} price={"10"} salesTarget={0}/>
+        <Card img={SaleSavantLogo} menuName={"Racks"} price={"10"} salesTarget={10}/>
+      </Box>
+
+      <Box>
+
       </Box>
     </>
   );

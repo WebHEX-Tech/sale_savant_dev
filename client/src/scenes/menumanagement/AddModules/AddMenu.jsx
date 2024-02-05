@@ -5,40 +5,43 @@ import {
   InputLabel,
   MenuItem,
   TextField,
+  Typography,
   useTheme,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
-import { Header } from "components";
+import { FlexBetween, Header } from "components";
 import { Link } from "react-router-dom";
+import Dropzone from "react-dropzone";
 
-const AddInventorySchema = Yup.object().shape({
-  dateTime: Yup.date().required("Required"),
+const AddMenuSchema = Yup.object().shape({
   menuItem: Yup.string().required("Required"),
   category: Yup.string().required("Required"),
   price: Yup.number().required("Required"),
   salesTarget: Yup.number().required("Required"),
+  picture: Yup.string().required("required"),
   description: Yup.string(),
 });
 
 const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert"];
 
-const AddInventory = () => {
+const AddMenu = () => {
   const theme = useTheme();
 
   const initialValues = {
-    dateTime: new Date().toISOString().substring(0, 16),
     menuItem: "",
     category: "",
     price: "",
-    salesTarget: "",
+    salesTarget: "0",
+    picture: "",
     description: "",
   };
 
   const handleSubmit = async (values) => {
     try {
       const response = await fetch(
-        "http://localhost:3001/menumanagement/addinventory",
+        "http://localhost:3001/menumanagement/addmenu",
         {
           method: "POST",
           headers: {
@@ -49,9 +52,9 @@ const AddInventory = () => {
       );
 
       if (response.ok) {
-        console.log("Inventory added successfully!");
+        console.log("Menu added successfully!");
       } else {
-        console.error("Failed to add inventory:", response.statusText);
+        console.error("Failed to add menu:", response.statusText);
       }
     } catch (error) {
       console.error("An error occurred during the fetch:", error);
@@ -62,12 +65,12 @@ const AddInventory = () => {
     <>
       <Box>
         <Box>
-          <Header title={"Add Menu Inventory"} />
+          <Header title={"Add Menu"} />
         </Box>
 
         <Formik
           initialValues={initialValues}
-          validationSchema={AddInventorySchema}
+          validationSchema={AddMenuSchema}
           onSubmit={handleSubmit}
         >
           {({
@@ -76,25 +79,11 @@ const AddInventory = () => {
             touched,
             handleBlur,
             handleChange,
+            setFieldValue,
           }) => (
             <Form>
-              <Box sx={{ margin: "2em", width:'60%' }}>
-                <InputLabel htmlFor="dateTime">Date and Time</InputLabel>
-                <Field
-                  name="dateTime"
-                  type="datetime-local"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.dateTime}
-                  as={TextField}
-                  sx={{
-                    background: theme.palette.primary[700],
-                    marginBottom: "1em",
-                  }}
-                  error={Boolean(touched.dateTime) && Boolean(errors.dateTime)}
-                  helperText={touched.dateTime && errors.dateTime}
-                />
-                <InputLabel htmlFor="menuItem">Menu Item</InputLabel>
+              <Box sx={{ margin: "0.5em 2em", width: "60%" }}>
+                <InputLabel htmlFor="menuItem">Menu Name</InputLabel>
                 <Field
                   name="menuItem"
                   onBlur={handleBlur}
@@ -131,39 +120,67 @@ const AddInventory = () => {
                     </MenuItem>
                   ))}
                 </Field>
-                <Box display="flex" gap="1.5em">
-                  <Field
-                    name="price"
-                    label="Price (in Peso)"
-                    type="number"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.price}
-                    as={TextField}
-                    fullWidth
-                    margin="normal"
-                    sx={{ background: theme.palette.primary[700] }}
-                    error={Boolean(touched.price) && Boolean(errors.price)}
-                    helperText={touched.price && errors.price}
-                  />
-                  <Field
-                    name="salesTarget"
-                    label="Sales Target"
-                    type="number"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.salesTarget}
-                    as={TextField}
-                    fullWidth
-                    margin="normal"
-                    sx={{ background: theme.palette.primary[700] }}
-                    error={
-                      Boolean(touched.salesTarget) &&
-                      Boolean(errors.salesTarget)
+
+                <InputLabel htmlFor="price">Menu Price (in Peso)</InputLabel>
+                <Field
+                  name="price"
+                  type="number"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.price}
+                  as={TextField}
+                  fullWidth
+                  sx={{
+                    background: theme.palette.primary[700],
+                    marginBottom: "1em",
+                  }}
+                  error={Boolean(touched.price) && Boolean(errors.price)}
+                  helperText={touched.price && errors.price}
+                />
+
+                <Box
+                  gridColumn="span 4"
+                  border={`1px solid ${theme.palette.grey[400]}`}
+                  borderRadius="5px"
+                  p="1rem"
+                >
+                  <Dropzone
+                    acceptedFiles=".jpg,.jpeg,.png"
+                    multiple={false}
+                    onDrop={(acceptedFiles) =>
+                      setFieldValue("picture", acceptedFiles[0])
                     }
-                    helperText={touched.salesTarget && errors.salesTarget}
-                  />
+                  >
+                    {({ getRootProps, getInputProps }) => (
+                      <Box
+                        {...getRootProps()}
+                        border={`2px dashed ${theme.palette.primary[400]}`}
+                        p="1rem"
+                        sx={{ "&:hover": { cursor: "pointer" } }}
+                      >
+                        <input {...getInputProps()} />
+                        {!values.picture ? (
+                          <p>Add Picture Here</p>
+                        ) : (
+                          <FlexBetween>
+                            <img
+                              src={URL.createObjectURL(values.picture)}
+                              alt="Preview"
+                              style={{
+                                maxWidth: "100%",
+                                maxHeight: "100px",
+                                marginBottom: "0.5rem",
+                              }}
+                            />
+                            <Typography>{values.picture.name}</Typography>
+                            <EditIcon />
+                          </FlexBetween>
+                        )}
+                      </Box>
+                    )}
+                  </Dropzone>
                 </Box>
+
                 <InputLabel htmlFor="description" sx={{ marginTop: "1em" }}>
                   Description
                 </InputLabel>
@@ -197,7 +214,7 @@ const AddInventory = () => {
                     >
                       Add
                     </Button>
-                    <Link to='/menu inventory'>
+                    <Link to="/menu management">
                       <Button
                         variant="outlined"
                         color="secondary"
@@ -220,4 +237,4 @@ const AddInventory = () => {
   );
 };
 
-export default AddInventory;
+export default AddMenu;

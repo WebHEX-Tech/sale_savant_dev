@@ -9,6 +9,7 @@ import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
 import * as routes from "./routes/index.js";
+import { AddMenu } from "./controllers/management.js";
 
 // Configs
 const __filename = fileURLToPath(import.meta.url);
@@ -32,10 +33,13 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb){
         cb(null, file.originalname);
     },
-})
+});
 const upload = multer({storage});
 
 app.use("/auth", routes.authRoutes);
+
+// Routes with File
+app.post("/menumanagement/addmenu", upload.single("picture"), AddMenu)
 
 // Admin Routes
 app.use("/home", routes.adminRoutes);
