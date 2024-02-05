@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import { FlexBetween, Header } from "components";
 import {
   Box,
+  Button,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   IconButton,
   InputBase,
@@ -20,41 +25,64 @@ import { DataGrid } from "@mui/x-data-grid";
 const MenuInventory = () => {
   const theme = useTheme();
   const [menuInventory, setMenuInventory] = useState([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null);
+
+  const fetchMenuInventory = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3001/menumanagement/menuInventory"
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const menuInventoryWithId = data.map((item, index) => ({
+          ...item,
+          id: index + 1,
+        }));
+        setMenuInventory(menuInventoryWithId);
+      } else {
+        console.error("Failed to fetch menu inventory:", response.statusText);
+      }
+    } catch (error) {
+      console.error("An error occurred during the fetch:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchMenuInventory = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:3001/menumanagement/menuInventory"
-        );
-        if (response.ok) {
-          const data = await response.json();
-          // Map the data to add an 'id' property to each row
-          const menuInventoryWithId = data.map((item, index) => ({
-            ...item,
-            id: index + 1, // Use a unique identifier here
-          }));
-          setMenuInventory(menuInventoryWithId);
-        } else {
-          console.error("Failed to fetch menu inventory:", response.statusText);
-        }
-      } catch (error) {
-        console.error("An error occurred during the fetch:", error);
-      }
-    };
-
     fetchMenuInventory();
   }, []);
 
-  const handleDelete = (id) => {
-    // Replace this alert with your actual delete logic
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this menu?"
-    );
-    if (confirmDelete) {
-      // Your delete logic here, e.g., make a fetch request to delete the menu with the given id
-      console.log(`Deleting menu with ID: ${id}`);
+  const handleConfirmDelete = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/menumanagement/menuInventory/${selectedItemId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        console.log(`Menu with ID ${selectedItemId} deleted successfully`);
+        fetchMenuInventory();
+      } else {
+        console.error("Failed to delete menu:", response.statusText);
+      }
+    } catch (error) {
+      console.error("An error occurred during the delete:", error);
+    } finally {
+      setDeleteDialogOpen(false);
+      setSelectedItemId(null);
     }
+  };
+
+  const handleDelete = (_id) => {
+    setDeleteDialogOpen(true);
+    setSelectedItemId(_id);
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setSelectedItemId(null);
   };
 
   const handleEdit = (id) => {};
@@ -113,7 +141,7 @@ const MenuInventory = () => {
             sx={{ color: theme.palette.primary[300], cursor: "pointer", fontSize: "2.5em" }}
           />
           <DeleteForeverIcon
-            onClick={() => handleDelete(params.row.id)}
+            onClick={() => handleDelete(params.row._id)}
             sx={{ color: theme.palette.secondary[400], cursor: "pointer", fontSize: "2.5em" }}
           />
         </div>
@@ -124,7 +152,8 @@ const MenuInventory = () => {
   return (
     <>
       <Box>
-        <Header title={"Menu Inventory"} />
+        
+        <Header title={"Menu Inventory"} link={"/menu management"}/>
       </Box>
 
       <Box>
@@ -134,6 +163,7 @@ const MenuInventory = () => {
               style={{
                 textDecoration: "none",
                 color: theme.palette.primary[100],
+                marginBottom:'1em',
               }}
               to="/add inventory"
             >
@@ -177,7 +207,8 @@ const MenuInventory = () => {
 
       <Box
         m="1.5rem 2.5rem"
-        height="70vh"
+        height="65vh"
+        width="75vw"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",
@@ -209,14 +240,29 @@ const MenuInventory = () => {
           initialState={{
             pagination: {
               paginationModel: {
-                pageSize: 5,
+                pageSize: 10,
               },
             },
           }}
-          pageSizeOptions={[5]}
+          pageSizeOptions={[10]}
           disableRowSelectionOnClick
         />
       </Box>
+
+      <Dialog open={deleteDialogOpen} onClose={handleCancelDelete}>
+        <DialogTitle>Delete Confirmation</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this inventory?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} sx={{color:"#000"}}>
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} sx={{color:"#26B02B"}}>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

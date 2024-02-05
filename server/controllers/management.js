@@ -52,6 +52,7 @@ export const AddInventory = async (req, res) => {
 
       // Update Menu salesTarget
       menuData.salesTarget = salesTarget;
+      menuData.price = price;
       await menuData.save();
 
       const newInventoryItem = new MenuInventory({
@@ -74,8 +75,6 @@ export const AddInventory = async (req, res) => {
   }
 }
 
-
-
 // Get Function
 export const getMenu = async (req, res) => {
   try {
@@ -91,5 +90,42 @@ export const getMenuInventory = async (req, res) => {
     res.status(200).json(menuInventory);
   } catch (err) {
     res.status(404).json({ message: err.message });
+  }
+};
+
+// Delete Function
+export const deleteMenuInventory = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingItem = await MenuInventory.findById(id);
+    if (!existingItem) {
+      return res.status(404).json({ error: "Inventory item not found" });
+    }
+
+    await MenuInventory.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Inventory item deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const deleteMenu = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingItem = await Menu.findById(id);
+    if (!existingItem) {
+      return res.status(404).json({ error: "Menu item not found" });
+    }
+
+    await Menu.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Menu item deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

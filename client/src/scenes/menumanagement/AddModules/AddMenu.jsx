@@ -70,7 +70,7 @@ const AddMenu = () => {
     <>
       <Box>
         <Box>
-          <Header title={"Add Menu"} />
+          <Header title={"Add Menu"} disp={"none"}/>
         </Box>
 
         <Formik

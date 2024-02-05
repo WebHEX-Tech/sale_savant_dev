@@ -155,7 +155,7 @@ const Sidebar = ({
                     style={{ width: "110px", height: "auto" }}
                   />
                   <Typography variant="h4" fontWeight="bold">
-                    Sale Savant
+                    SaleSavant
                   </Typography>
                 </Box>
                 {!isNonMobile && (

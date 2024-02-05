@@ -10,7 +10,6 @@ const MenuManagement = () => {
   const [menuData, setMenuData] = useState([]);
 
   useEffect(() => {
-    // Fetch menu data from localhost:3001/menumanagement/menu
     const fetchMenuData = async () => {
       try {
         const response = await fetch(
@@ -33,7 +32,7 @@ const MenuManagement = () => {
   return (
     <>
       <Box>
-        <Header title={"Menu Management"} />
+        <Header title={"Menu Management"} disp={"none"}/>
       </Box>
 
       <Box>
@@ -43,6 +42,7 @@ const MenuManagement = () => {
               style={{
                 textDecoration: "none",
                 color: theme.palette.primary[100],
+                marginBottom:'1em',
               }}
               to="/add menu"
             >
@@ -101,6 +101,7 @@ const MenuManagement = () => {
             menuName={menu.menuItem}
             price={menu.price}
             salesTarget={menu.salesTarget}
+            menuId={menu._id}
           />
         ))}
       </Box>

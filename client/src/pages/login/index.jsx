@@ -91,7 +91,7 @@ const Login = () => {
               },
             }}
           >
-            SALE SAVANT
+            SALESAVANT
           </Typography>
         </Container>
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -6,15 +6,65 @@ import {
   Typography,
   Button,
   useTheme,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import { FlexBetween } from "components";
 
-const CustomCardComponent = ({ img, menuName, price, salesTarget }) => {
+const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
   const theme = useTheme();
   const isAvailable = salesTarget !== 0 && salesTarget !== "0";
+  const [openDialog, setOpenDialog] = useState(false);
+  const [menuData, setMenuData] = useState([]);
+
+  const fetchMenuData = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/menumanagement/menu");
+      if (response.ok) {
+        const data = await response.json();
+        setMenuData(data);
+      } else {
+        console.error("Failed to fetch menu data:", response.statusText);
+      }
+    } catch (error) {
+      console.error("An error occurred during the fetch:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMenuData();
+  }, []);
+
+  const handleConfirmRemove = () => {
+    fetch(`http://localhost:3001/menumanagement/menu/${menuId}`, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        fetchMenuData();
+      })
+      .catch((error) => {
+        console.error("Error deleting menu:", error);
+      })
+      .finally(() => {
+        setOpenDialog(false);
+      });
+  };
+
+  const handleRemoveClick = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCancelRemove = () => {
+    setOpenDialog(false);
+  };
 
   return (
-    <Card variant="outlined" sx={{ width: 280, position:'relative' }}>
+    <Card variant="outlined" sx={{ width: 280, position: "relative" }}>
       {!isAvailable && (
         <div
           style={{
@@ -29,10 +79,20 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget }) => {
             justifyContent: "center",
             alignItems: "center",
             color: "white",
-            zIndex: '99'
+            zIndex: "1",
           }}
         >
-          <Typography variant="h3" sx={{background:'#FF1B00', padding:'0.2em 0.5em', marginTop:'2em', borderRadius:'5px'}}>Not Available</Typography>
+          <Typography
+            variant="h3"
+            sx={{
+              background: "#FF1B00",
+              padding: "0.2em 0.5em",
+              marginTop: "2em",
+              borderRadius: "5px",
+            }}
+          >
+            Not Available
+          </Typography>
         </div>
       )}
       <CardMedia
@@ -56,12 +116,36 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget }) => {
             >
               Edit
             </Button>
-            <Button variant="outlined" color="error">
-              Remove
-            </Button>
+            <div style={{ zIndex: "2", position: "relative" }}>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={handleRemoveClick}
+              >
+                Remove
+              </Button>
+            </div>
           </div>
         </FlexBetween>
       </CardContent>
+
+      <Dialog open={openDialog} onClose={handleCancelRemove}>
+        <DialogTitle>Confirm Removal</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to remove this menu?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelRemove} sx={{ color: "#000" }}>
+            Cancel
+          </Button>
+
+          <Button onClick={handleConfirmRemove} sx={{ color: "#26B02B" }}>
+            Remove
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 };

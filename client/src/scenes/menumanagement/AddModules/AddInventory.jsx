@@ -51,19 +51,15 @@ const AddInventory = () => {
   }, []);
 
   const handleMenuItemChange = async (value, setValues) => {
-    // Find the selected menu item
     const selectedMenu = menuItems.find((menu) => menu.menuItem === value);
 
-    // Update other fields based on the selected menu
     if (selectedMenu) {
       setValues({
         ...selectedMenu,
         dateTime: new Date().toISOString().substring(0, 16),
-        description: "", // Reset description to avoid conflicts
       });
     }
 
-    // Update the state with the selected menu item
     setSelectedMenuItem(value);
   };
 
@@ -92,7 +88,7 @@ const AddInventory = () => {
 
       if (response.ok) {
         console.log("Inventory added successfully!");
-        navigate('/menu inventory')
+        navigate("/menu inventory");
       } else {
         console.error("Failed to add inventory:", response.statusText);
       }
@@ -105,7 +101,7 @@ const AddInventory = () => {
     <>
       <Box>
         <Box>
-          <Header title={"Add Menu Inventory"} />
+          <Header title={"Add Menu Inventory"} disp={"none"}/>
         </Box>
 
         <Formik
@@ -165,6 +161,7 @@ const AddInventory = () => {
                 </Field>
                 <InputLabel htmlFor="category">Category</InputLabel>
                 <Field
+                  disabled
                   name="category"
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -236,6 +233,7 @@ const AddInventory = () => {
                   Description
                 </InputLabel>
                 <Field
+                  disabled
                   name="description"
                   onBlur={handleBlur}
                   onChange={handleChange}
