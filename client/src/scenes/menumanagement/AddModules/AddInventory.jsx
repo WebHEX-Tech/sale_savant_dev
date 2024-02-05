@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -10,7 +10,7 @@ import {
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Header } from "components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const AddInventorySchema = Yup.object().shape({
   dateTime: Yup.date().required("Required"),
@@ -18,13 +18,54 @@ const AddInventorySchema = Yup.object().shape({
   category: Yup.string().required("Required"),
   price: Yup.number().required("Required"),
   salesTarget: Yup.number().required("Required"),
+  noSold: Yup.number().required("required"),
   description: Yup.string(),
 });
 
 const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert"];
 
 const AddInventory = () => {
+  const navigate = useNavigate();
   const theme = useTheme();
+  const [menuItems, setMenuItems] = useState([]);
+  const [selectedMenuItem, setSelectedMenuItem] = useState("");
+
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3001/menumanagement/menu"
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setMenuItems(data);
+        } else {
+          console.error("Failed to fetch menu items:", response.statusText);
+        }
+      } catch (error) {
+        console.error("An error occurred during the fetch:", error);
+      }
+    };
+
+    fetchMenuItems();
+  }, []);
+
+  const handleMenuItemChange = async (value, setValues) => {
+    // Find the selected menu item
+    const selectedMenu = menuItems.find((menu) => menu.menuItem === value);
+
+    // Update other fields based on the selected menu
+    if (selectedMenu) {
+      setValues({
+        ...selectedMenu,
+        dateTime: new Date().toISOString().substring(0, 16),
+        description: "", // Reset description to avoid conflicts
+      });
+    }
+
+    // Update the state with the selected menu item
+    setSelectedMenuItem(value);
+  };
 
   const initialValues = {
     dateTime: new Date().toISOString().substring(0, 16),
@@ -32,6 +73,7 @@ const AddInventory = () => {
     category: "",
     price: "",
     salesTarget: "",
+    noSold: "",
     description: "",
   };
 
@@ -50,6 +92,7 @@ const AddInventory = () => {
 
       if (response.ok) {
         console.log("Inventory added successfully!");
+        navigate('/menu inventory')
       } else {
         console.error("Failed to add inventory:", response.statusText);
       }
@@ -76,9 +119,10 @@ const AddInventory = () => {
             touched,
             handleBlur,
             handleChange,
+            setValues,
           }) => (
             <Form>
-              <Box sx={{ margin: "2em", width:'60%' }}>
+              <Box sx={{ margin: "2em", width: "60%" }}>
                 <InputLabel htmlFor="dateTime">Date and Time</InputLabel>
                 <Field
                   name="dateTime"
@@ -98,17 +142,27 @@ const AddInventory = () => {
                 <Field
                   name="menuItem"
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    handleMenuItemChange(e.target.value, setValues);
+                  }}
                   value={values.menuItem}
                   as={TextField}
                   fullWidth
+                  select
                   sx={{
                     background: theme.palette.primary[700],
                     marginBottom: "1em",
                   }}
                   error={Boolean(touched.menuItem) && Boolean(errors.menuItem)}
                   helperText={touched.menuItem && errors.menuItem}
-                />
+                >
+                  {menuItems.map((menuItem) => (
+                    <MenuItem key={menuItem.menuItem} value={menuItem.menuItem}>
+                      {menuItem.menuItem}
+                    </MenuItem>
+                  ))}
+                </Field>
                 <InputLabel htmlFor="category">Category</InputLabel>
                 <Field
                   name="category"
@@ -145,6 +199,20 @@ const AddInventory = () => {
                     sx={{ background: theme.palette.primary[700] }}
                     error={Boolean(touched.price) && Boolean(errors.price)}
                     helperText={touched.price && errors.price}
+                  />
+                  <Field
+                    name="noSold"
+                    label="No. of Sold"
+                    type="number"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.noSold}
+                    as={TextField}
+                    fullWidth
+                    margin="normal"
+                    sx={{ background: theme.palette.primary[700] }}
+                    error={Boolean(touched.noSold) && Boolean(errors.noSold)}
+                    helperText={touched.noSold && errors.noSold}
                   />
                   <Field
                     name="salesTarget"
@@ -197,7 +265,7 @@ const AddInventory = () => {
                     >
                       Add
                     </Button>
-                    <Link to='/menu inventory'>
+                    <Link to="/menu inventory">
                       <Button
                         variant="outlined"
                         color="secondary"

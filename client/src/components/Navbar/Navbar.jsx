@@ -6,6 +6,7 @@ import {
   SettingsOutlined,
   ArrowDropDownOutlined,
 } from "@mui/icons-material";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { FlexBetween } from "../index.js";
 import { useDispatch } from "react-redux";
 import { setMode } from "state";
@@ -76,13 +77,8 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
                 gap: "1rem",
               }}
             >
-              <Box
-                component="img"
-                alt="profile"
-                height="32px"
-                width="32px"
-                borderRadius="50%"
-                sx={{ objectFit: "cover" }}
+              <AccountCircleIcon fontSize="large"
+                sx={{ color:theme.palette.secondary[300] }}
               />
               <Box textAlign="left">
                 <Typography
@@ -90,7 +86,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
                   fontSize="0.85rem"
                   sx={{ color: theme.palette.secondary[100] }}
                 >
-                  {"Steve"}
+                  {"Welcome!"}
                 </Typography>
                 <Typography
                   fontSize="0.75rem"

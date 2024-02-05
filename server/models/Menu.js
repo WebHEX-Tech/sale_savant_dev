@@ -15,16 +15,12 @@ const MenuSchema = new mongoose.Schema(
       max: 50,
     },
     price: {
-      type: String,
+      type: Number,
       required: true,
-      min: 2,
-      max: 50,
     },
     salesTarget: {
-      type: String,
+      type: Number,
       required: true,
-      min: 2,
-      max: 50,
     },
     picturePath: {
         type: String,

@@ -25,16 +25,16 @@ const MenuInventorySchema = new mongoose.Schema(
       max: 50,
     },
     price: {
-      type: String,
+      type: Number,
       required: true,
-      min: 2,
-      max: 50,
     },
     salesTarget: {
-      type: String,
+      type: Number,
       required: true,
-      min: 2,
-      max: 50,
+    },
+    noSold: {
+      type: Number,
+      required: true,
     },
     description: {
       type: String,

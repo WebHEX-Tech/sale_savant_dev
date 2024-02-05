@@ -12,7 +12,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { FlexBetween, Header } from "components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Dropzone from "react-dropzone";
 
 const AddMenuSchema = Yup.object().shape({
@@ -28,6 +28,7 @@ const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert"];
 
 const AddMenu = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const initialValues = {
     menuItem: "",
@@ -39,20 +40,24 @@ const AddMenu = () => {
   };
 
   const handleSubmit = async (values) => {
+    const formData = new FormData();
+    for (let value in values) {
+      formData.append(value, values[value]);
+    }
+    formData.append("picturePath", values.picture.name);
+
     try {
       const response = await fetch(
         "http://localhost:3001/menumanagement/addmenu",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
+          body: formData,
         }
       );
 
       if (response.ok) {
         console.log("Menu added successfully!");
+        navigate('/menu management');
       } else {
         console.error("Failed to add menu:", response.statusText);
       }

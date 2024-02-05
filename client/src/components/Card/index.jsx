@@ -39,7 +39,7 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget }) => {
         component="img"
         sx={{ height: 180 }}
         alt={menuName}
-        image={img}
+        image={`http://localhost:3001/assets/${img}`}
         loading="lazy"
       />
       <CardContent>
