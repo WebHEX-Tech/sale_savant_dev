@@ -17,13 +17,14 @@ import {
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { Search } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 
 const MenuInventory = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [menuInventory, setMenuInventory] = useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
@@ -85,7 +86,10 @@ const MenuInventory = () => {
     setSelectedItemId(null);
   };
 
-  const handleEdit = (id) => {};
+  const handleEdit = (_id) => {
+    setSelectedItemId(_id)
+    navigate(`/edit inventory/${_id}`)
+  };
 
   const columns = [
     { field: "menuId", headerName: "Menu ID", width: 80 },
@@ -93,12 +97,12 @@ const MenuInventory = () => {
     { field: "menuItem", headerName: "Menu Item", width: 150 },
     { field: "category", headerName: "Category", width: 150 },
     { field: "description", headerName: "Description", width: 250 },
-    { field: "price", headerName: "Prices", type: "number", width: 100 },
+    { field: "price", headerName: "Prices (Php)", type: "number", width: 100 },
     {
       field: "salesTarget",
-      headerName: "Sales Target",
+      headerName: "Sales Target (Stock)",
       type: "number",
-      width: 100,
+      width: 150,
     },
     {
       field: "divider",
@@ -137,7 +141,7 @@ const MenuInventory = () => {
       renderCell: (params) => (
         <div style={{ display: "flex", gap: "1em" }}>
           <EditIcon
-            onClick={() => handleEdit(params.row.id)}
+            onClick={() => handleEdit(params.row._id)}
             sx={{ color: theme.palette.primary[300], cursor: "pointer", fontSize: "2.5em" }}
           />
           <DeleteForeverIcon
@@ -207,8 +211,8 @@ const MenuInventory = () => {
 
       <Box
         m="1.5rem 2.5rem"
-        height="65vh"
-        width="75vw"
+        height="67vh"
+        width="78vw"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",

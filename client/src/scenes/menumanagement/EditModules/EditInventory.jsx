@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -10,9 +10,9 @@ import {
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Header } from "components";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
-const AddInventorySchema = Yup.object().shape({
+const EditInventorySchema = Yup.object().shape({
   dateTime: Yup.date().required("Required"),
   menuItem: Yup.string().required("Required"),
   category: Yup.string().required("Required"),
@@ -24,61 +24,62 @@ const AddInventorySchema = Yup.object().shape({
 
 const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert"];
 
-const AddInventory = () => {
-  const navigate = useNavigate();
+const EditInventory = () => {
   const theme = useTheme();
-  const [menuItems, setMenuItems] = useState([]);
-  const [selectedMenuItem, setSelectedMenuItem] = useState("");
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [menuItems, setMenuItems] = useState(null);
 
   useEffect(() => {
-    const fetchMenuItems = async () => {
+    const fetchInventoryData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3001/menumanagement/menu"
+          `http://localhost:3001/menumanagement/getInventory/${id}`
         );
         if (response.ok) {
           const data = await response.json();
           setMenuItems(data);
         } else {
-          console.error("Failed to fetch menu items:", response.statusText);
+          console.error("Failed to fetch menu data:", response.statusText);
         }
       } catch (error) {
         console.error("An error occurred during the fetch:", error);
       }
     };
 
-    fetchMenuItems();
-  }, []);
+    fetchInventoryData();
+  }, [id]);
 
-  const handleMenuItemChange = async (value, setValues) => {
-    const selectedMenu = menuItems.find((menu) => menu.menuItem === value);
+  const initialValues = menuItems
+    ? {
+        dateTime: new Date(menuItems.dateTime).toISOString().slice(0, -8),
+        menuItem: menuItems.menuItem,
+        category: menuItems.category,
+        price: menuItems.price,
+        salesTarget: menuItems.salesTarget,
+        noSold: menuItems.noSold,
+        description: menuItems.description,
+      }
+    : {
+        dateTime: "",
+        menuItem: "",
+        category: "",
+        price: "",
+        salesTarget: "",
+        noSold: "",
+        description: "",
+      };
 
-    if (selectedMenu) {
-      setValues({
-        ...selectedMenu,
-        dateTime: new Date().toISOString().substring(0, 16),
-      });
-    }
-
-    setSelectedMenuItem(value);
-  };
-
-  const initialValues = {
-    dateTime: new Date().toISOString().substring(0, 16),
-    menuItem: "",
-    category: "",
-    price: "",
-    salesTarget: "",
-    noSold: "",
-    description: "",
-  };
+  if (menuItems === null) {
+    return <div>Loading...</div>;
+  }
 
   const handleSubmit = async (values) => {
     try {
       const response = await fetch(
-        "http://localhost:3001/menumanagement/addinventory",
+        `http://localhost:3001/menumanagement/editInventory/${id}`,
         {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
@@ -87,10 +88,10 @@ const AddInventory = () => {
       );
 
       if (response.ok) {
-        console.log("Inventory added successfully!");
+        console.log("Inventory updated successfully!");
         navigate("/menu inventory");
       } else {
-        console.error("Failed to add inventory:", response.statusText);
+        console.error("Failed to update inventory:", response.statusText);
       }
     } catch (error) {
       console.error("An error occurred during the fetch:", error);
@@ -101,22 +102,15 @@ const AddInventory = () => {
     <>
       <Box>
         <Box>
-          <Header title={"Add Menu Inventory"} disp={"none"} />
+          <Header title={"Edit Menu Inventory"} disp={"none"} />
         </Box>
 
         <Formik
           initialValues={initialValues}
-          validationSchema={AddInventorySchema}
+          validationSchema={EditInventorySchema}
           onSubmit={handleSubmit}
         >
-          {({
-            values,
-            errors,
-            touched,
-            handleBlur,
-            handleChange,
-            setValues,
-          }) => (
+          {({ values, errors, touched, handleBlur, handleChange }) => (
             <Form>
               <Box sx={{ margin: "2em", width: "60%" }}>
                 <InputLabel htmlFor="dateTime">Date and Time</InputLabel>
@@ -136,29 +130,20 @@ const AddInventory = () => {
                 />
                 <InputLabel htmlFor="menuItem">Menu Item</InputLabel>
                 <Field
+                  disabled
                   name="menuItem"
                   onBlur={handleBlur}
-                  onChange={(e) => {
-                    handleChange(e);
-                    handleMenuItemChange(e.target.value, setValues);
-                  }}
+                  onChange={handleChange}
                   value={values.menuItem}
                   as={TextField}
                   fullWidth
-                  select
                   sx={{
                     background: theme.palette.primary[700],
                     marginBottom: "1em",
                   }}
                   error={Boolean(touched.menuItem) && Boolean(errors.menuItem)}
                   helperText={touched.menuItem && errors.menuItem}
-                >
-                   {menuItems.map((menuItem) => (
-                    <MenuItem key={menuItem.menuItem} value={menuItem.menuItem}>
-                      {menuItem.menuItem}
-                    </MenuItem>
-                  ))}
-                </Field>
+                />
                 <InputLabel htmlFor="category">Category</InputLabel>
                 <Field
                   disabled
@@ -286,4 +271,4 @@ const AddInventory = () => {
   );
 };
 
-export default AddInventory;
+export default EditInventory;

@@ -13,9 +13,11 @@ import {
   DialogActions,
 } from "@mui/material";
 import { FlexBetween } from "components";
+import { useNavigate } from "react-router-dom";
 
 const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const isAvailable = salesTarget !== 0 && salesTarget !== "0";
   const [openDialog, setOpenDialog] = useState(false);
   const [menuData, setMenuData] = useState([]);
@@ -46,6 +48,7 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
       .then((data) => {
         console.log(data);
         fetchMenuData();
+        window.location.reload();
       })
       .catch((error) => {
         console.error("Error deleting menu:", error);
@@ -53,6 +56,10 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
       .finally(() => {
         setOpenDialog(false);
       });
+  };
+
+  const handleEditClick = () =>{
+    navigate(`/edit menu/${menuId}`);
   };
 
   const handleRemoveClick = () => {
@@ -110,12 +117,13 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "1em" }}>
-            <Button
-              variant="contained"
-              sx={{ background: theme.palette.primary[500] }}
-            >
-              Edit
-            </Button>
+              <Button
+                variant="contained"
+                sx={{ background: theme.palette.primary[500] }}
+                onClick={handleEditClick}
+              >
+                Edit
+              </Button>
             <div style={{ zIndex: "2", position: "relative" }}>
               <Button
                 variant="contained"

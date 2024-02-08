@@ -30,6 +30,8 @@ function App() {
               <Route path="/menu inventory" element={<scenes.MenuInventory/>} />
               <Route path="/add inventory" element={<scenes.AddInventory />} />
               <Route path="/add menu" element={<scenes.AddMenu />} />
+              <Route path={`/edit menu/:id`} element={<scenes.EditMenu />} />
+              <Route path={`/edit inventory/:id`} element={<scenes.EditInventory />} />
 
               <Route path="/reports/rep-sales" element={<scenes.RepSales />} />
             </Route>
