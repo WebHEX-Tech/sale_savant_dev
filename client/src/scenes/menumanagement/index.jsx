@@ -79,7 +79,7 @@ const MenuManagement = () => {
               </Button>
             </Link>
 
-            <Link to="/menu loss">
+            <Link to="/menu promos">
               <Button
                 variant="contained"
                 sx={{ background: theme.palette.primary[400], fontSize:'1.2em' }}

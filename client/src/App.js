@@ -28,8 +28,13 @@ function App() {
               {/* Menu Management Routes */}
               <Route path="/menu management" element={<scenes.MenuManagement />} />
               <Route path="/menu inventory" element={<scenes.MenuInventory/>} />
+              <Route path="/menu loss" element={<scenes.MenuLoss/>} />
+              <Route path="/menu promos" element={<scenes.MenuPromos/>} />
+              {/* Modules */}
               <Route path="/add inventory" element={<scenes.AddInventory />} />
               <Route path="/add menu" element={<scenes.AddMenu />} />
+              <Route path="/add loss" element={<scenes.AddLoss/>} />
+              <Route path="/add promo" element={<scenes.AddPromo/>} />
               <Route path={`/edit menu/:id`} element={<scenes.EditMenu />} />
               <Route path={`/edit inventory/:id`} element={<scenes.EditInventory />} />
 

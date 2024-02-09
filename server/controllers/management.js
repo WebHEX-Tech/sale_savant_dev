@@ -1,5 +1,6 @@
 import MenuInventory from "../models/MenuInventory.js";
 import Menu from "../models/Menu.js";
+import MenuLoss from "../models/MenuLoss.js"
 import { getNextSequenceValue } from "../models/Counter.js";
 import fs from "fs";
 import path from "path";
@@ -73,6 +74,39 @@ export const AddInventory = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const AddMenuLoss = async (req, res) => {
+  try {
+    const {
+      dateTime,
+      menuItem,
+      category,
+      salesTarget,
+      noSold,
+      totalPrice,
+      lossQuantity,
+      lossPrice,
+    } = req.body;
+
+    const newLossItem = new MenuLoss({
+      dateTime,
+      menuItem,
+      category,
+      salesTarget,
+      noSold,
+      totalPrice,
+      lossQuantity,
+      lossPrice,
+    });
+
+    const savedLossItem = await newLossItem.save();
+
+    res.status(201).json(savedLossItem);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 
 // Get Function
 export const getMenu = async (req, res) => {

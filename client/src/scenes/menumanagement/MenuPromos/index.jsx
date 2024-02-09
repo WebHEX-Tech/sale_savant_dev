@@ -22,27 +22,27 @@ import { useTheme } from "@emotion/react";
 import { Search } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 
-const MenuInventory = () => {
+const MenuPromos = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const [menuInventory, setMenuInventory] = useState([]);
+  const [menuPromo, setMenuPromo] = useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
 
-  const fetchMenuInventory = async () => {
+  const fetchMenuPromos = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/menumanagement/menuInventory"
+        "http://localhost:3001/menumanagement/menuPromo"
       );
       if (response.ok) {
         const data = await response.json();
-        const menuInventoryWithId = data.map((item, index) => ({
+        const menuPromoWithId = data.map((item, index) => ({
           ...item,
           id: index + 1,
         }));
-        setMenuInventory(menuInventoryWithId);
+        setMenuPromo(menuPromoWithId);
       } else {
-        console.error("Failed to fetch menu inventory:", response.statusText);
+        console.error("Failed to fetch menu promo:", response.statusText);
       }
     } catch (error) {
       console.error("An error occurred during the fetch:", error);
@@ -50,23 +50,23 @@ const MenuInventory = () => {
   };
 
   useEffect(() => {
-    fetchMenuInventory();
+    fetchMenuPromos();
   }, []);
 
   const handleConfirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3001/menumanagement/menuInventory/${selectedItemId}`,
+        `http://localhost:3001/menumanagement/menuPromo/${selectedItemId}`,
         {
           method: "DELETE",
         }
       );
 
       if (response.ok) {
-        console.log(`Menu with ID ${selectedItemId} deleted successfully`);
-        fetchMenuInventory();
+        console.log(`Promo with ID ${selectedItemId} deleted successfully`);
+        fetchMenuPromos();
       } else {
-        console.error("Failed to delete menu:", response.statusText);
+        console.error("Failed to delete promo:", response.statusText);
       }
     } catch (error) {
       console.error("An error occurred during the delete:", error);
@@ -87,20 +87,26 @@ const MenuInventory = () => {
   };
 
   const handleEdit = (_id) => {
-    setSelectedItemId(_id)
-    navigate(`/edit inventory/${_id}`)
+    setSelectedItemId(_id);
+    navigate(`/edit promo/${_id}`);
   };
 
   const columns = [
     { field: "menuId", headerName: "Menu ID", width: 80 },
-    { field: "dateTime", headerName: "Date & Time", width: 160 },
+    { field: "promo", headerName: "Promo Name", width: 160 },
     { field: "menuItem", headerName: "Menu Item", width: 150 },
     { field: "category", headerName: "Category", width: 150 },
-    { field: "description", headerName: "Description", width: 250 },
+    { field: "promoDescription", headerName: "Promo Description", width: 250 },
     { field: "price", headerName: "Prices (Php)", type: "number", width: 100 },
     {
-      field: "salesTarget",
-      headerName: "Sales Target (Stock)",
+      field: "promoQuantity",
+      headerName: "Promo Quantity",
+      type: "number",
+      width: 150,
+    },
+    {
+      field: "validDate",
+      headerName: "Valid Until",
       type: "number",
       width: 150,
     },
@@ -130,7 +136,9 @@ const MenuInventory = () => {
             borderRadius: "5px",
           }}
         >
-          {params.row.noSold >= params.row.salesTarget ? "Sold Out" : "Available"}
+          {params.row.noSold >= params.row.salesTarget
+            ? "Sold Out"
+            : "Available"}
         </div>
       ),
     },
@@ -142,11 +150,19 @@ const MenuInventory = () => {
         <div style={{ display: "flex", gap: "1em" }}>
           <EditIcon
             onClick={() => handleEdit(params.row._id)}
-            sx={{ color: theme.palette.primary[300], cursor: "pointer", fontSize: "2.5em" }}
+            sx={{
+              color: theme.palette.primary[300],
+              cursor: "pointer",
+              fontSize: "2.5em",
+            }}
           />
           <DeleteForeverIcon
             onClick={() => handleDelete(params.row._id)}
-            sx={{ color: theme.palette.secondary[400], cursor: "pointer", fontSize: "2.5em" }}
+            sx={{
+              color: theme.palette.secondary[400],
+              cursor: "pointer",
+              fontSize: "2.5em",
+            }}
           />
         </div>
       ),
@@ -156,8 +172,7 @@ const MenuInventory = () => {
   return (
     <>
       <Box>
-        
-        <Header title={"Menu Inventory"} link={"/menu management"}/>
+        <Header title={"Menu Promos"} link={"/menu management"} />
       </Box>
 
       <Box>
@@ -167,9 +182,9 @@ const MenuInventory = () => {
               style={{
                 textDecoration: "none",
                 color: theme.palette.primary[100],
-                marginBottom:'1em',
+                marginBottom: "1em",
               }}
-              to="/add inventory"
+              to="/add promo"
             >
               <Container
                 sx={{
@@ -181,7 +196,7 @@ const MenuInventory = () => {
               >
                 <AddCircleIcon sx={{ color: "#35D03B", fontSize: "3em" }} />
                 <Typography sx={{ fontSize: "1.5em" }}>
-                  Add Menu Inventory
+                  Add Menu Promo
                 </Typography>
               </Container>
             </Link>
@@ -239,7 +254,7 @@ const MenuInventory = () => {
         }}
       >
         <DataGrid
-          rows={menuInventory}
+          rows={menuPromo}
           columns={columns}
           initialState={{
             pagination: {
@@ -256,13 +271,13 @@ const MenuInventory = () => {
       <Dialog open={deleteDialogOpen} onClose={handleCancelDelete}>
         <DialogTitle>Delete Confirmation</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete this inventory?
+          Are you sure you want to delete this promo?
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCancelDelete} sx={{color:"#000"}}>
+          <Button onClick={handleCancelDelete} sx={{ color: "#000" }}>
             Cancel
           </Button>
-          <Button onClick={handleConfirmDelete} sx={{color:"#26B02B"}}>
+          <Button onClick={handleConfirmDelete} sx={{ color: "#26B02B" }}>
             Confirm
           </Button>
         </DialogActions>
@@ -271,4 +286,4 @@ const MenuInventory = () => {
   );
 };
 
-export default MenuInventory;
+export default MenuPromos;
