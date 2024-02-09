@@ -37,6 +37,7 @@ function App() {
               <Route path="/add promo" element={<scenes.AddPromo/>} />
               <Route path={`/edit menu/:id`} element={<scenes.EditMenu />} />
               <Route path={`/edit inventory/:id`} element={<scenes.EditInventory />} />
+              <Route path={`/edit loss/:id`} element={<scenes.EditMenuLoss/>} />
 
               <Route path="/reports/rep-sales" element={<scenes.RepSales />} />
             </Route>

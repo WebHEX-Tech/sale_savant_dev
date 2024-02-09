@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -11,81 +11,79 @@ import {
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Header } from "components";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
-const AddLossSchema = Yup.object().shape({
-  dateTime: Yup.date().required("Required"),
-  menuItem: Yup.string().required("Required"),
-  category: Yup.string().required("Required"),
-  salesTarget: Yup.number().required("Required"),
-  noSold: Yup.number().required("Required"),
-  totalPrice: Yup.number().required("Required"),
-  lossQuantity: Yup.number().required("Required"),
-  lossPrice: Yup.number().required("Required"),
-});
+const EditLossSchema = Yup.object().shape({
+    dateTime: Yup.date().required("Required"),
+    menuItem: Yup.string().required("Required"),
+    category: Yup.string().required("Required"),
+    salesTarget: Yup.number().required("Required"),
+    noSold: Yup.number().required("Required"),
+    totalPrice: Yup.number().required("Required"),
+    lossQuantity: Yup.number().required("Required"),
+    lossPrice: Yup.number().required("Required"),
+  });
 
 const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert"];
 
-const AddLoss = () => {
-  const navigate = useNavigate();
+const EditMenuLoss = () => {
   const theme = useTheme();
-  const [menuItems, setMenuItems] = useState([]);
-  const [selectedMenuItem, setSelectedMenuItem] = useState("");
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [menuItems, setMenuItems] = useState(null);
 
   useEffect(() => {
-    const fetchMenuInventory = async () => {
+    const fetchLossData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3001/menumanagement/menuInventory"
+          `http://localhost:3001/menumanagement/getLoss/${id}`
         );
         if (response.ok) {
           const data = await response.json();
           setMenuItems(data);
         } else {
-          console.error("Failed to fetch menu inventory:", response.statusText);
+          console.error("Failed to fetch dish loss data:", response.statusText);
         }
       } catch (error) {
         console.error("An error occurred during the fetch:", error);
       }
     };
 
-    fetchMenuInventory();
-  }, []);
+    fetchLossData();
+  }, [id]);
 
-  const handleMenuItemChange = async (value, setValues) => {
-    const selectedMenu = menuItems.find((menu) => menu.menuItem === value);
-
-    if (selectedMenu) {
-      setValues({
-        ...selectedMenu,
-        totalPrice: selectedMenu.noSold * selectedMenu.price,
-        lossQuantity: selectedMenu.salesTarget - selectedMenu.noSold,
-        lossPrice:
-          (selectedMenu.salesTarget - selectedMenu.noSold) * selectedMenu.price,
+  const initialValues = menuItems
+    ? {
+        dateTime: new Date(menuItems.dateTime).toISOString().slice(0, -8),
+        menuItem: menuItems.menuItem,
+        category: menuItems.category,
+        salesTarget: menuItems.salesTarget,
+        noSold: menuItems.noSold,
+        totalPrice: menuItems.totalPrice,
+        lossQuantity: menuItems.lossQuantity,
+        lossPrice: menuItems.lossPrice,
+      }
+    : {
         dateTime: new Date().toISOString().substring(0, 16),
-      });
-    }
+        menuItem: "",
+        category: "",
+        salesTarget: "",
+        noSold: "",
+        totalPrice: "",
+        lossQuantity: "",
+        lossPrice: "",
+      };
 
-    setSelectedMenuItem(value);
-  };
-
-  const initialValues = {
-    dateTime: new Date().toISOString().substring(0, 16),
-    menuItem: "",
-    category: "",
-    salesTarget: "",
-    noSold: "",
-    totalPrice: "",
-    lossQuantity: "",
-    lossPrice: "",
-  };
+  if (menuItems === null) {
+    return <div>Loading...</div>;
+  }
 
   const handleSubmit = async (values) => {
     try {
       const response = await fetch(
-        "http://localhost:3001/menumanagement/addLoss",
+        `http://localhost:3001/menumanagement/editLoss/${id}`,
         {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
@@ -94,10 +92,10 @@ const AddLoss = () => {
       );
 
       if (response.ok) {
-        console.log("Dishes Loss added successfully!");
+        console.log("Dish Loss updated successfully!");
         navigate("/menu loss");
       } else {
-        console.error("Failed to add dishes loss:", response.statusText);
+        console.error("Failed to update dish loss:", response.statusText);
       }
     } catch (error) {
       console.error("An error occurred during the fetch:", error);
@@ -108,22 +106,15 @@ const AddLoss = () => {
     <>
       <Box>
         <Box>
-          <Header title={"Add Dishes Loss"} disp={"none"} />
+          <Header title={"Edit Dishes Loss"} disp={"none"} />
         </Box>
 
         <Formik
           initialValues={initialValues}
-          validationSchema={AddLossSchema}
+          validationSchema={EditLossSchema}
           onSubmit={handleSubmit}
         >
-          {({
-            values,
-            errors,
-            touched,
-            handleBlur,
-            handleChange,
-            setValues,
-          }) => (
+          {({ values, errors, touched, handleBlur, handleChange }) => (
             <Form>
               <Box sx={{ margin: "2em", width: "60%" }}>
                 <InputLabel htmlFor="dateTime">Date and Time</InputLabel>
@@ -143,29 +134,20 @@ const AddLoss = () => {
                 />
                 <InputLabel htmlFor="menuItem">Menu Item</InputLabel>
                 <Field
+                  disabled
                   name="menuItem"
                   onBlur={handleBlur}
-                  onChange={(e) => {
-                    handleChange(e);
-                    handleMenuItemChange(e.target.value, setValues);
-                  }}
+                  onChange={handleChange}
                   value={values.menuItem}
                   as={TextField}
                   fullWidth
-                  select
                   sx={{
                     background: theme.palette.primary[700],
                     marginBottom: "1em",
                   }}
                   error={Boolean(touched.menuItem) && Boolean(errors.menuItem)}
                   helperText={touched.menuItem && errors.menuItem}
-                >
-                  {menuItems.map((menuItem) => (
-                    <MenuItem key={menuItem.menuItem} value={menuItem.menuItem}>
-                      {menuItem.menuItem}
-                    </MenuItem>
-                  ))}
-                </Field>
+                />
                 <InputLabel htmlFor="category">Category</InputLabel>
                 <Field
                   disabled
@@ -189,8 +171,11 @@ const AddLoss = () => {
                     </MenuItem>
                   ))}
                 </Field>
-                <Box display="flex" justifyContent="flex-end" paddingRight="10px">
-                  <Typography>Price: Php {values.price}</Typography>
+                <Box
+                  display="flex"
+                  justifyContent="flex-end"
+                  paddingRight="10px"
+                >
                 </Box>
                 <Box display="flex" gap="1.5em">
                   <Field
@@ -291,7 +276,7 @@ const AddLoss = () => {
                         color: theme.palette.grey[900],
                       }}
                     >
-                      Add
+                      Edit
                     </Button>
                     <Link to="/menu loss">
                       <Button
@@ -316,4 +301,4 @@ const AddLoss = () => {
   );
 };
 
-export default AddLoss;
+export default EditMenuLoss;

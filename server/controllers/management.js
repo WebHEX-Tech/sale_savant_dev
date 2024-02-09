@@ -1,6 +1,7 @@
 import MenuInventory from "../models/MenuInventory.js";
 import Menu from "../models/Menu.js";
 import MenuLoss from "../models/MenuLoss.js"
+import MenuPromo from "../models/MenuPromo.js";
 import { getNextSequenceValue } from "../models/Counter.js";
 import fs from "fs";
 import path from "path";
@@ -106,6 +107,36 @@ export const AddMenuLoss = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const AddPromo = async (req, res) => {
+  try {
+    const {
+      promoName,
+      menuItem,
+      category,
+      promoDesc,
+      pricePromo,
+      validDate,
+      noSold,
+    } = req.body;
+
+    const newPromo = new MenuPromo({
+      promoName,
+      menuItem,
+      category,
+      promoDesc,
+      pricePromo,
+      validDate,
+      noSold,
+    });
+
+    const savedPromo = await newPromo.save();
+
+    res.status(201).json(savedPromo);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 
 // Get Function
@@ -145,6 +176,34 @@ export const getInventoryId = async (req, res) => {
       return res.status(404).json({ message: "Inventory not found" });
     }
     res.status(200).json(inventory);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+export const getMenuLoss = async (req, res) => {
+  try {
+    const menuLoss = await MenuLoss.find();
+    res.status(200).json(menuLoss);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+export const getLossId = async (req, res) => {
+  try {
+    const lossId = req.params.id;
+    const loss = await MenuLoss.findById(lossId);
+    if (!loss) {
+      return res.status(404).json({ message: "Dish Loss not found" });
+    }
+    res.status(200).json(loss);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+export const getMenuPromo = async (req, res) => {
+  try {
+    const menuPromo = await MenuPromo.find();
+    res.status(200).json(menuPromo);
   } catch (err) {
     res.status(404).json({ message: err.message });
   }
@@ -202,6 +261,43 @@ export const deleteMenu = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const deleteMenuLoss = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingItem = await MenuLoss.findById(id);
+
+    if (!existingItem) {
+      return res.status(404).json({ error: "Dish Loss not found" });
+    }
+
+    await MenuLoss.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Menu item deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const deletePromo = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingItem = await MenuPromo.findById(id);
+
+    if (!existingItem) {
+      return res.status(404).json({ error: "Promo not found" });
+    }
+
+    await MenuPromo.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Promo deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 
 // Edit
 export const updateMenu = async (req, res) => {
@@ -268,6 +364,44 @@ export const updateInventory = async (req, res) => {
     res.status(200).json(updatedInventory);
   } catch (error) {
     console.error("Error updating inventory:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const updateLoss = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      dateTime,
+      menuItem,
+      category,
+      salesTarget,
+      noSold,
+      totalPrice,
+      lossQuantity,
+      lossPrice,
+    } = req.body;
+
+    const existingItem = await MenuLoss.findById(id);
+
+    if (!existingItem) {
+      return res.status(404).json({ error: "Menu item not found" });
+    }
+
+    existingItem.dateTime = dateTime;
+    existingItem.menuItem = menuItem;
+    existingItem.category = category;
+    existingItem.salesTarget = salesTarget;
+    existingItem.noSold = noSold;
+    existingItem.totalPrice = totalPrice;
+    existingItem.lossQuantity = lossQuantity;
+    existingItem.lossPrice = lossPrice;
+
+    const updatedMenuLoss = await existingItem.save();
+
+    res.status(200).json(updatedMenuLoss);
+  } catch (error) {
+    console.error("Error updating dish loss:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

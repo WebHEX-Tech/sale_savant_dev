@@ -11,6 +11,7 @@ export {default as AddLoss} from './menumanagement/AddModules/AddLoss.jsx'
 export {default as AddPromo} from './menumanagement/AddModules/AddPromo.jsx'
 export {default as EditMenu} from './menumanagement/EditModules/EditMenu.jsx'
 export {default as EditInventory} from './menumanagement/EditModules/EditInventory.jsx'
+export {default as EditMenuLoss} from './menumanagement/EditModules/EditLoss.jsx'
 
 export {default as RepSales} from './repsales/index.jsx'
 export {default as Layout} from './layout/index.jsx'

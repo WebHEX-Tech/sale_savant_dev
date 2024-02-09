@@ -86,24 +86,13 @@ const MenuPromos = () => {
     setSelectedItemId(null);
   };
 
-  const handleEdit = (_id) => {
-    setSelectedItemId(_id);
-    navigate(`/edit promo/${_id}`);
-  };
-
   const columns = [
-    { field: "menuId", headerName: "Menu ID", width: 80 },
-    { field: "promo", headerName: "Promo Name", width: 160 },
-    { field: "menuItem", headerName: "Menu Item", width: 150 },
+    { field: "id", headerName: "Promo ID", width: 80 },
+    { field: "promoName", headerName: "Promo Name", width: 200 },
+    { field: "menuItem", headerName: "Menu Item", width: 200 },
     { field: "category", headerName: "Category", width: 150 },
-    { field: "promoDescription", headerName: "Promo Description", width: 250 },
-    { field: "price", headerName: "Prices (Php)", type: "number", width: 100 },
-    {
-      field: "promoQuantity",
-      headerName: "Promo Quantity",
-      type: "number",
-      width: 150,
-    },
+    { field: "promoDesc", headerName: "Promo Description", width: 280 },
+    { field: "pricePromo", headerName: "Prices (Php)", type: "number", width: 100 },
     {
       field: "validDate",
       headerName: "Valid Until",
@@ -121,41 +110,11 @@ const MenuPromos = () => {
     },
     { field: "noSold", headerName: "No. of Sold", type: "number", width: 100 },
     {
-      field: "status",
-      headerName: "Status",
-      width: 150,
-      renderCell: (params) => (
-        <div
-          style={{
-            backgroundColor:
-              params.row.noSold >= params.row.salesTarget
-                ? "#B03021" // Sold Out
-                : "#26B02B", // Available
-            color: "#FFF",
-            padding: "5px 10px",
-            borderRadius: "5px",
-          }}
-        >
-          {params.row.noSold >= params.row.salesTarget
-            ? "Sold Out"
-            : "Available"}
-        </div>
-      ),
-    },
-    {
       field: "action",
       headerName: "Action",
-      width: 150,
+      width: 80,
       renderCell: (params) => (
         <div style={{ display: "flex", gap: "1em" }}>
-          <EditIcon
-            onClick={() => handleEdit(params.row._id)}
-            sx={{
-              color: theme.palette.primary[300],
-              cursor: "pointer",
-              fontSize: "2.5em",
-            }}
-          />
           <DeleteForeverIcon
             onClick={() => handleDelete(params.row._id)}
             sx={{
@@ -227,7 +186,7 @@ const MenuPromos = () => {
       <Box
         m="1.5rem 2.5rem"
         height="67vh"
-        width="90vw"
+        width="75vw"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",

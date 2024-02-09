@@ -92,9 +92,9 @@ const MenuLoss = () => {
   };
 
   const columns = [
-    { field: "lossId", headerName: "ID", width: 80 },
+    { field: "id", headerName: "ID", width: 80 },
     { field: "dateTime", headerName: "Date & Time", width: 160 },
-    { field: "menuItem", headerName: "Menu Item", width: 150 },
+    { field: "menuItem", headerName: "Menu Item", width: 200 },
     { field: "category", headerName: "Category", width: 150 },
     { field: "salesTarget", headerName: "Sales Target", type: "number", width: 100 },
     { field: "noSold", headerName: "No. of Sold", type: "number", width: 100 },
@@ -210,7 +210,7 @@ const MenuLoss = () => {
       <Box
         m="1.5rem 2.5rem"
         height="67vh"
-        width="90vw"
+        width="70vw"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",

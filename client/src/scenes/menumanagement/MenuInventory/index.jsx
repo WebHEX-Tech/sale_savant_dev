@@ -94,7 +94,7 @@ const MenuInventory = () => {
   const columns = [
     { field: "menuId", headerName: "Menu ID", width: 80 },
     { field: "dateTime", headerName: "Date & Time", width: 160 },
-    { field: "menuItem", headerName: "Menu Item", width: 150 },
+    { field: "menuItem", headerName: "Menu Item", width: 200 },
     { field: "category", headerName: "Category", width: 150 },
     { field: "description", headerName: "Description", width: 250 },
     { field: "price", headerName: "Prices (Php)", type: "number", width: 100 },
@@ -212,7 +212,7 @@ const MenuInventory = () => {
       <Box
         m="1.5rem 2.5rem"
         height="67vh"
-        width="90vw"
+        width="82vw"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",
