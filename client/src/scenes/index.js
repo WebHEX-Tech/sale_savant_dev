@@ -1,4 +1,5 @@
 export {default as Dashboard} from './dashboard/index.jsx'
+export {default as Layout} from './layout/index.jsx'
 
 // exports for Menu Management
 export {default as MenuManagement} from './menumanagement/index.jsx'
@@ -13,5 +14,10 @@ export {default as EditMenu} from './menumanagement/EditModules/EditMenu.jsx'
 export {default as EditInventory} from './menumanagement/EditModules/EditInventory.jsx'
 export {default as EditMenuLoss} from './menumanagement/EditModules/EditLoss.jsx'
 
+// exports for Account Management
+export {default as AccountManagement} from './accountmanagement/index.jsx'
+export {default as ManagerAcc} from './accountmanagement/accounts/ManagerAcc.jsx'
+export {default as CashierAcc} from './accountmanagement/accounts/CashierAcc.jsx'
+
 export {default as RepSales} from './repsales/index.jsx'
-export {default as Layout} from './layout/index.jsx'
+

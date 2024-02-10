@@ -15,16 +15,14 @@ import {
   Typography,
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { Search } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 
 const MenuPromos = () => {
   const theme = useTheme();
-  const navigate = useNavigate();
   const [menuPromo, setMenuPromo] = useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
@@ -177,8 +175,7 @@ const MenuPromos = () => {
                 </IconButton>
               </FlexBetween>
             </Container>
-
-            <Container></Container>
+            
           </FlexBetween>
         </Toolbar>
       </Box>

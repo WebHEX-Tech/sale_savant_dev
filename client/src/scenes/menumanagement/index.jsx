@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, FlexBetween, Header } from "components";
-import { Box, Button, Container, Toolbar, Typography } from "@mui/material";
+import { useGetMenuQuery } from "state/api";
+import { Box, Button, CircularProgress, Container, Toolbar, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { Link } from "react-router-dom";
 import { useTheme } from "@emotion/react";
@@ -8,6 +9,7 @@ import { useTheme } from "@emotion/react";
 const MenuManagement = () => {
   const theme = useTheme();
   const [menuData, setMenuData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchMenuData = async () => {
@@ -29,10 +31,26 @@ const MenuManagement = () => {
     fetchMenuData();
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer); 
+  }, []);
+
+  const { data } = useGetMenuQuery();
+
+  useEffect(() => {
+    if (data) {
+      setMenuData(data); 
+    }
+  }, [data]);
+
   return (
     <>
       <Box>
-        <Header title={"Menu Management"} disp={"none"}/>
+        <Header title={"Menu Management"} disp={"none"} />
       </Box>
 
       <Box>
@@ -42,7 +60,7 @@ const MenuManagement = () => {
               style={{
                 textDecoration: "none",
                 color: theme.palette.primary[100],
-                marginBottom:'1em',
+                marginBottom: "1em",
               }}
               to="/add menu"
             >
@@ -60,11 +78,14 @@ const MenuManagement = () => {
             </Link>
           </FlexBetween>
 
-          <FlexBetween sx={{ gap: "1em" }}>
+          <FlexBetween sx={{ gap: "1em", flexDirection:{ xs:"column", sm:"row", lg:"row" },}}>
             <Link to="/menu inventory">
               <Button
                 variant="contained"
-                sx={{ background: theme.palette.primary[400], fontSize:'1.2em' }}
+                sx={{
+                  background: theme.palette.primary[400],
+                  fontSize: "1.2em",
+                }}
               >
                 Menu Inventory
               </Button>
@@ -73,7 +94,10 @@ const MenuManagement = () => {
             <Link to="/menu loss">
               <Button
                 variant="contained"
-                sx={{ background: theme.palette.primary[400], fontSize:'1.2em' }}
+                sx={{
+                  background: theme.palette.primary[400],
+                  fontSize: "1.2em",
+                }}
               >
                 Menu Loss
               </Button>
@@ -82,7 +106,10 @@ const MenuManagement = () => {
             <Link to="/menu promos">
               <Button
                 variant="contained"
-                sx={{ background: theme.palette.primary[400], fontSize:'1.2em' }}
+                sx={{
+                  background: theme.palette.primary[400],
+                  fontSize: "1.2em",
+                }}
               >
                 Promos
               </Button>
@@ -90,21 +117,31 @@ const MenuManagement = () => {
           </FlexBetween>
         </Toolbar>
       </Box>
-
-      <Box
-        sx={{ display: "flex", flexWrap: "wrap", gap: "1em", margin: "1.5em" }}
-      >
-        {menuData.map((menu) => (
-          <Card
-            key={menu._id}
-            img={menu.picturePath}
-            menuName={menu.menuItem}
-            price={menu.price}
-            salesTarget={menu.salesTarget}
-            menuId={menu._id}
-          />
-        ))}
-      </Box>
+      {isLoading || !menuData.length ? (
+        <Typography display="flex" alignItems="center" variant="h3" size={10} color={theme.palette.primary[300]} gap="0.5em" margin="5em">
+          <CircularProgress color="inherit"/> Loading...
+        </Typography>
+      ) : (
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "1em",
+            margin: "1.5em",
+          }}
+        >
+          {menuData.map((menu) => (
+            <Card
+              key={menu._id}
+              img={menu.picturePath}
+              menuName={menu.menuItem}
+              price={menu.price}
+              salesTarget={menu.salesTarget}
+              menuId={menu._id}
+            />
+          ))}
+        </Box>
+      )}
 
       <Box></Box>
     </>

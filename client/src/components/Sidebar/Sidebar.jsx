@@ -67,7 +67,7 @@ const navItems = [
     icon: <RequestQuoteOutlined />,
   },
   {
-    text: "User Management",
+    text: "Account Management",
     icon: <ManageAccountsOutlined />,
   },
 ];

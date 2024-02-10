@@ -203,8 +203,6 @@ const MenuInventory = () => {
                 </IconButton>
               </FlexBetween>
             </Container>
-
-            <Container></Container>
           </FlexBetween>
         </Toolbar>
       </Box>

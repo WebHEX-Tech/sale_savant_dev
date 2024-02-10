@@ -43,16 +43,9 @@ app.post("/menumanagement/addmenu", upload.single("picture"), AddMenu)
 
 // Admin Routes
 app.use("/home", routes.adminRoutes);
-app.use("/dashboard", routes.generalRoutes);
-app.use("/reports", routes.reportsRoutes);
 app.use("/menumanagement", routes.managementRoutes);
-app.use("/supply", routes.supplyRoutes);
 
 // Cashier Routes
-app.use("/cashier", routes.cashierRoutes);
-app.use("/orders", routes.ordersRoutes);
-app.use("/checkout", routes.checkoutRoutes);
-app.use("/refund", routes.refundRoutes);
 
 // Database
 const PORT = process.env.PORT || 9000;

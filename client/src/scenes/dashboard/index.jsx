@@ -1,8 +1,12 @@
+import { Box } from '@mui/material';
+import { Header } from 'components';
 import React from 'react'
 
 const Dashboard = () => {
   return (
-    <div style={{color:"#b03021", fontWeight:'700', fontSize:'2.5em', padding:'1em'}}>Dashboard</div>
+    <Box>
+        <Header title={"Dashboard"} disp={"none"} />
+      </Box>
   )
 }
 
