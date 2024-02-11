@@ -22,7 +22,7 @@ const EditInventorySchema = Yup.object().shape({
   description: Yup.string(),
 });
 
-const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert"];
+const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert", "Drinks"];
 
 const EditInventory = () => {
   const theme = useTheme();
@@ -246,7 +246,7 @@ const EditInventory = () => {
                         color: theme.palette.grey[900],
                       }}
                     >
-                      Add
+                      Save
                     </Button>
                     <Link to="/menu inventory">
                       <Button

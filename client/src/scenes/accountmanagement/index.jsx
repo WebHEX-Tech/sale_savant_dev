@@ -39,7 +39,7 @@ const AccountManagement = () => {
               }}
             >
               <Typography variant="h5" color="black">
-                View Account Registered
+                View Accounts Registered
               </Typography>
               <Link to="/manager accounts">
                 <Button variant="contained">View</Button>

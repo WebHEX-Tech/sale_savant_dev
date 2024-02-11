@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  IconButton,
   InputBase,
   Toolbar,
   Typography,
@@ -28,6 +27,7 @@ const MenuInventory = () => {
   const [menuInventory, setMenuInventory] = useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
+  const [searchInput, setSearchInput] = useState("");
 
   const fetchMenuInventory = async () => {
     try {
@@ -52,6 +52,16 @@ const MenuInventory = () => {
   useEffect(() => {
     fetchMenuInventory();
   }, []);
+
+  const handleSearchInputChange = (e) => {
+    setSearchInput(e.target.value);
+  };
+
+  const filteredRows = searchInput
+    ? menuInventory.filter((row) =>
+        row.menuItem.toLowerCase().includes(searchInput.toLowerCase())
+      )
+    : menuInventory;
 
   const handleConfirmDelete = async () => {
     try {
@@ -87,8 +97,8 @@ const MenuInventory = () => {
   };
 
   const handleEdit = (_id) => {
-    setSelectedItemId(_id)
-    navigate(`/edit inventory/${_id}`)
+    setSelectedItemId(_id);
+    navigate(`/edit inventory/${_id}`);
   };
 
   const columns = [
@@ -130,7 +140,9 @@ const MenuInventory = () => {
             borderRadius: "5px",
           }}
         >
-          {params.row.noSold >= params.row.salesTarget ? "Sold Out" : "Available"}
+          {params.row.noSold >= params.row.salesTarget
+            ? "Sold Out"
+            : "Available"}
         </div>
       ),
     },
@@ -142,11 +154,19 @@ const MenuInventory = () => {
         <div style={{ display: "flex", gap: "1em" }}>
           <EditIcon
             onClick={() => handleEdit(params.row._id)}
-            sx={{ color: theme.palette.primary[300], cursor: "pointer", fontSize: "2.5em" }}
+            sx={{
+              color: theme.palette.primary[300],
+              cursor: "pointer",
+              fontSize: "2.5em",
+            }}
           />
           <DeleteForeverIcon
             onClick={() => handleDelete(params.row._id)}
-            sx={{ color: theme.palette.secondary[400], cursor: "pointer", fontSize: "2.5em" }}
+            sx={{
+              color: theme.palette.secondary[400],
+              cursor: "pointer",
+              fontSize: "2.5em",
+            }}
           />
         </div>
       ),
@@ -156,8 +176,7 @@ const MenuInventory = () => {
   return (
     <>
       <Box>
-        
-        <Header title={"Menu Inventory"} link={"/menu management"}/>
+        <Header title={"Menu Inventory"} link={"/menu management"} />
       </Box>
 
       <Box>
@@ -167,7 +186,7 @@ const MenuInventory = () => {
               style={{
                 textDecoration: "none",
                 color: theme.palette.primary[100],
-                marginBottom:'1em',
+                marginBottom: "1em",
               }}
               to="/add inventory"
             >
@@ -195,12 +214,14 @@ const MenuInventory = () => {
                 gap="3rem"
                 minWidth="300px"
                 width="100%"
-                p="0.1rem 1.5rem"
+                p="0.5rem 1.5rem"
               >
-                <InputBase placeholder="Search..." />
-                <IconButton>
-                  <Search />
-                </IconButton>
+                <InputBase
+                  placeholder="Search Menu Item..."
+                  value={searchInput}
+                  onChange={handleSearchInputChange}
+                />
+                <Search />
               </FlexBetween>
             </Container>
           </FlexBetween>
@@ -237,7 +258,7 @@ const MenuInventory = () => {
         }}
       >
         <DataGrid
-          rows={menuInventory}
+          rows={filteredRows}
           columns={columns}
           initialState={{
             pagination: {
@@ -257,10 +278,10 @@ const MenuInventory = () => {
           Are you sure you want to delete this inventory?
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCancelDelete} sx={{color:"#000"}}>
+          <Button onClick={handleCancelDelete} sx={{ color: "#000" }}>
             Cancel
           </Button>
-          <Button onClick={handleConfirmDelete} sx={{color:"#26B02B"}}>
+          <Button onClick={handleConfirmDelete} sx={{ color: "#26B02B" }}>
             Confirm
           </Button>
         </DialogActions>

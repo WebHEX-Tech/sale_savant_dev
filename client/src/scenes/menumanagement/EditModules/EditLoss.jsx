@@ -5,7 +5,6 @@ import {
   InputLabel,
   MenuItem,
   TextField,
-  Typography,
   useTheme,
 } from "@mui/material";
 import { Formik, Field, Form } from "formik";
@@ -24,7 +23,7 @@ const EditLossSchema = Yup.object().shape({
     lossPrice: Yup.number().required("Required"),
   });
 
-const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert"];
+const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert", "Drinks"];
 
 const EditMenuLoss = () => {
   const theme = useTheme();
@@ -276,7 +275,7 @@ const EditMenuLoss = () => {
                         color: theme.palette.grey[900],
                       }}
                     >
-                      Edit
+                      Save
                     </Button>
                     <Link to="/menu loss">
                       <Button

@@ -43,8 +43,12 @@ function App() {
               <Route path="/account management" element={<scenes.AccountManagement/>} />
               <Route path="/manager accounts" element={<scenes.ManagerAcc/>} />
               <Route path="/cashier accounts" element={<scenes.CashierAcc/>} />
+              <Route path="/add account" element={<scenes.AddAccount/>} />
+              <Route path={`/edit account/:id`} element={<scenes.EditAccount/>} />
 
+              {/* Reports Routes */}
               <Route path="/reports/rep-sales" element={<scenes.RepSales />} />
+              <Route path="/reports/discount" element={<scenes.DiscountsPromos/>} />
             </Route>
           </Routes>
         </ThemeProvider>

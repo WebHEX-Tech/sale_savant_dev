@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   InputLabel,
+  ListSubheader,
   MenuItem,
   TextField,
   Typography,
@@ -24,12 +25,13 @@ const AddLossSchema = Yup.object().shape({
   lossPrice: Yup.number().required("Required"),
 });
 
-const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert"];
+const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert", "Drinks"];
 
 const AddLoss = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [menuItems, setMenuItems] = useState([]);
+  // eslint-disable-next-line
   const [selectedMenuItem, setSelectedMenuItem] = useState("");
 
   useEffect(() => {
@@ -68,6 +70,13 @@ const AddLoss = () => {
 
     setSelectedMenuItem(value);
   };
+
+  const groupedMenuItems = categories.reduce((acc, category) => {
+    const categoryItems = menuItems
+      .filter((menuItem) => menuItem.category === category)
+      .sort((a, b) => a.menuItem.localeCompare(b.menuItem));
+    return { ...acc, [category]: categoryItems };
+  }, {});
 
   const initialValues = {
     dateTime: new Date().toISOString().substring(0, 16),
@@ -160,11 +169,26 @@ const AddLoss = () => {
                   error={Boolean(touched.menuItem) && Boolean(errors.menuItem)}
                   helperText={touched.menuItem && errors.menuItem}
                 >
-                  {menuItems.map((menuItem) => (
-                    <MenuItem key={menuItem.menuItem} value={menuItem.menuItem}>
-                      {menuItem.menuItem}
-                    </MenuItem>
-                  ))}
+                  {Object.entries(groupedMenuItems).map(([category, items]) => [
+                    <ListSubheader
+                      key={`category-${category}`}
+                      sx={{
+                        background: theme.palette.primary[500],
+                        color: theme.palette.secondary[400],
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {category}
+                    </ListSubheader>,
+                    ...items.map((menuItem) => (
+                      <MenuItem
+                        key={menuItem.menuItem}
+                        value={menuItem.menuItem}
+                      >
+                        {menuItem.menuItem}
+                      </MenuItem>
+                    )),
+                  ])}
                 </Field>
                 <InputLabel htmlFor="category">Category</InputLabel>
                 <Field

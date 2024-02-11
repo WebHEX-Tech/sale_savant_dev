@@ -5,14 +5,14 @@ import User from "../models/User.js";
 // Add User
 export const addUser = async (req, res) => {
   try {
-    const { userName, userType, userNumber, password } = req.body;
+    const { userName, role, userNumber, password } = req.body;
 
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
 
     const newUser = new User({
       userName,
-      userType,
+      role,
       userNumber,
       password: passwordHash,
     });
@@ -55,5 +55,73 @@ export const login = async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).end();
+  }
+};
+
+// Get User
+export const getUser = async (req, res) => {
+  try {
+    const user = await User.find();
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
+export const getUserId = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
+// Update User
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userName, role, userNumber } = req.body;
+
+    const existingUser = await User.findById(id);
+
+    if (!existingUser) {
+      return res.status(404).json({ error: "user not found" });
+    }
+
+    existingUser.userName = userName;
+    existingUser.role = role;
+    existingUser.userNumber = userNumber;
+
+    const updatedUser = await existingUser.save();
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Delete User
+export const deleteAccount = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingAccount = await User.findById(id);
+
+    if (!existingAccount) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    await User.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

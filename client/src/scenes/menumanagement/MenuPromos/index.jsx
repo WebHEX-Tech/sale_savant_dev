@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  IconButton,
   InputBase,
   Toolbar,
   Typography,
@@ -26,6 +25,7 @@ const MenuPromos = () => {
   const [menuPromo, setMenuPromo] = useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
+  const [searchInput, setSearchInput] = useState("");
 
   const fetchMenuPromos = async () => {
     try {
@@ -50,6 +50,16 @@ const MenuPromos = () => {
   useEffect(() => {
     fetchMenuPromos();
   }, []);
+
+  const handleSearchInputChange = (e) => {
+    setSearchInput(e.target.value);
+  };
+
+  const filteredRows = searchInput
+    ? menuPromo.filter((row) =>
+        row.menuItem.toLowerCase().includes(searchInput.toLowerCase())
+      )
+    : menuPromo;
 
   const handleConfirmDelete = async () => {
     try {
@@ -90,11 +100,15 @@ const MenuPromos = () => {
     { field: "menuItem", headerName: "Menu Item", width: 200 },
     { field: "category", headerName: "Category", width: 150 },
     { field: "promoDesc", headerName: "Promo Description", width: 280 },
-    { field: "pricePromo", headerName: "Prices (Php)", type: "number", width: 100 },
+    {
+      field: "pricePromo",
+      headerName: "Prices (Php)",
+      type: "number",
+      width: 100,
+    },
     {
       field: "validDate",
       headerName: "Valid Until",
-      type: "number",
       width: 150,
     },
     {
@@ -167,15 +181,16 @@ const MenuPromos = () => {
                 gap="3rem"
                 minWidth="300px"
                 width="100%"
-                p="0.1rem 1.5rem"
+                p="0.5rem 1.5rem"
               >
-                <InputBase placeholder="Search..." />
-                <IconButton>
-                  <Search />
-                </IconButton>
+                <InputBase
+                  placeholder="Search Menu Item..."
+                  value={searchInput}
+                  onChange={handleSearchInputChange}
+                />
+                <Search />
               </FlexBetween>
             </Container>
-            
           </FlexBetween>
         </Toolbar>
       </Box>
@@ -210,7 +225,7 @@ const MenuPromos = () => {
         }}
       >
         <DataGrid
-          rows={menuPromo}
+          rows={filteredRows}
           columns={columns}
           initialState={{
             pagination: {

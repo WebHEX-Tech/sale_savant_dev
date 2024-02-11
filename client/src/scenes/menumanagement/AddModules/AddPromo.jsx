@@ -4,6 +4,7 @@ import {
   Button,
   Divider,
   InputLabel,
+  ListSubheader,
   MenuItem,
   TextField,
   Typography,
@@ -24,12 +25,13 @@ const AddPromoSchema = Yup.object().shape({
   noSold: Yup.number(),
 });
 
-const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert"];
+const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert", "Drinks"];
 
 const AddPromo = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [menuItems, setMenuItems] = useState([]);
+  // eslint-disable-next-line
   const [selectedMenuItem, setSelectedMenuItem] = useState("");
 
   useEffect(() => {
@@ -64,6 +66,13 @@ const AddPromo = () => {
 
     setSelectedMenuItem(value);
   };
+
+  const groupedMenuItems = categories.reduce((acc, category) => {
+    const categoryItems = menuItems
+      .filter((menuItem) => menuItem.category === category)
+      .sort((a, b) => a.menuItem.localeCompare(b.menuItem));
+    return { ...acc, [category]: categoryItems };
+  }, {});
 
   const initialValues = {
     promoName: "",
@@ -157,11 +166,26 @@ const AddPromo = () => {
                   error={Boolean(touched.menuItem) && Boolean(errors.menuItem)}
                   helperText={touched.menuItem && errors.menuItem}
                 >
-                  {menuItems.map((menuItem) => (
-                    <MenuItem key={menuItem.menuItem} value={menuItem.menuItem}>
-                      {menuItem.menuItem}
-                    </MenuItem>
-                  ))}
+                  {Object.entries(groupedMenuItems).map(([category, items]) => [
+                    <ListSubheader
+                      key={`category-${category}`}
+                      sx={{
+                        background: theme.palette.primary[500],
+                        color: theme.palette.secondary[400],
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {category}
+                    </ListSubheader>,
+                    ...items.map((menuItem) => (
+                      <MenuItem
+                        key={menuItem.menuItem}
+                        value={menuItem.menuItem}
+                      >
+                        {menuItem.menuItem}
+                      </MenuItem>
+                    )),
+                  ])}
                 </Field>
                 <InputLabel htmlFor="category">Category</InputLabel>
                 <Field
@@ -230,7 +254,7 @@ const AddPromo = () => {
                         Boolean(touched.pricePromo) &&
                         Boolean(errors.pricePromo)
                       }
-                      helperText={touched.pricePromo && errors.pricePromo}
+                      helperText={touched.pricePromo && errors.pricePromo ? errors.pricePromo : "Change current price to a discounted price"}
                     />
                   </Box>
 

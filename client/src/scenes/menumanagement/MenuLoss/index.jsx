@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  IconButton,
   InputBase,
   Toolbar,
   Typography,
@@ -28,6 +27,7 @@ const MenuLoss = () => {
   const [menuLoss, setMenuLoss] = useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
+  const [searchInput, setSearchInput] = useState("");
 
   const fetchMenuLoss = async () => {
     try {
@@ -52,6 +52,16 @@ const MenuLoss = () => {
   useEffect(() => {
     fetchMenuLoss();
   }, []);
+
+  const handleSearchInputChange = (e) => {
+    setSearchInput(e.target.value);
+  };
+
+  const filteredRows = searchInput
+    ? menuLoss.filter((row) =>
+        row.menuItem.toLowerCase().includes(searchInput.toLowerCase())
+      )
+    : menuLoss;
 
   const handleConfirmDelete = async () => {
     try {
@@ -96,7 +106,12 @@ const MenuLoss = () => {
     { field: "dateTime", headerName: "Date & Time", width: 160 },
     { field: "menuItem", headerName: "Menu Item", width: 200 },
     { field: "category", headerName: "Category", width: 150 },
-    { field: "salesTarget", headerName: "Sales Target", type: "number", width: 100 },
+    {
+      field: "salesTarget",
+      headerName: "Sales Target",
+      type: "number",
+      width: 100,
+    },
     { field: "noSold", headerName: "No. of Sold", type: "number", width: 100 },
     {
       field: "totalPrice",
@@ -193,12 +208,14 @@ const MenuLoss = () => {
                 gap="3rem"
                 minWidth="300px"
                 width="100%"
-                p="0.1rem 1.5rem"
+                p="0.5rem 1.5rem"
               >
-                <InputBase placeholder="Search..." />
-                <IconButton>
-                  <Search />
-                </IconButton>
+                <InputBase
+                  placeholder="Search Menu Item..."
+                  value={searchInput}
+                  onChange={handleSearchInputChange}
+                />
+                <Search />
               </FlexBetween>
             </Container>
           </FlexBetween>
@@ -235,7 +252,7 @@ const MenuLoss = () => {
         }}
       >
         <DataGrid
-          rows={menuLoss}
+          rows={filteredRows}
           columns={columns}
           initialState={{
             pagination: {

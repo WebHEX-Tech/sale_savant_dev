@@ -7,7 +7,7 @@ const UserSchema = new mongoose.Schema({
     min: 2,
     max: 50,
   },
-  userRole: {
+  role: {
     type: String,
     required: true,
     min: 5,
@@ -23,7 +23,6 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     min: 5,
-    max: 12,
   },
 }, {timestamps: true});
 

@@ -20,6 +20,7 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
   const navigate = useNavigate();
   const isAvailable = salesTarget !== 0 && salesTarget !== "0";
   const [openDialog, setOpenDialog] = useState(false);
+  // eslint-disable-next-line
   const [menuData, setMenuData] = useState([]);
 
   const fetchMenuData = async () => {

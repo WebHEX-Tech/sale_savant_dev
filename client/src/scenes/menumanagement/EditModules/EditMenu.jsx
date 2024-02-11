@@ -19,7 +19,7 @@ const EditMenuSchema = Yup.object().shape({
   description: Yup.string(),
 });
 
-const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert"];
+const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert", "Drinks"];
 
 const EditMenu = () => {
   const theme = useTheme();
@@ -204,7 +204,7 @@ const EditMenu = () => {
                         color: theme.palette.grey[900],
                       }}
                     >
-                      Edit
+                      Save
                     </Button>
                     <Link to="/menu management">
                       <Button

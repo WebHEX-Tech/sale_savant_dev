@@ -24,7 +24,7 @@ const AddMenuSchema = Yup.object().shape({
   description: Yup.string(),
 });
 
-const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert"];
+const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert", "Drinks"];
 
 const AddMenu = () => {
   const theme = useTheme();
