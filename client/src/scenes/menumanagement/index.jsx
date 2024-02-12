@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Card, FlexBetween, Header } from "components";
 import { useGetMenuQuery } from "state/api";
-import { Box, Button, CircularProgress, Container, Toolbar, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { Link } from "react-router-dom";
 import { useTheme } from "@emotion/react";
@@ -10,6 +21,7 @@ const MenuManagement = () => {
   const theme = useTheme();
   const [menuData, setMenuData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     const fetchMenuData = async () => {
@@ -36,16 +48,25 @@ const MenuManagement = () => {
       setIsLoading(false);
     }, 1500);
 
-    return () => clearTimeout(timer); 
+    return () => clearTimeout(timer);
   }, []);
 
   const { data } = useGetMenuQuery();
 
   useEffect(() => {
     if (data) {
-      setMenuData(data); 
+      setMenuData(data);
     }
   }, [data]);
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  const filteredMenuData =
+    selectedCategory === "All"
+      ? menuData
+      : menuData.filter((menu) => menu.category === selectedCategory);
 
   return (
     <>
@@ -55,12 +76,18 @@ const MenuManagement = () => {
 
       <Box>
         <Toolbar sx={{ justifyContent: "space-between", flexWrap: "wrap" }}>
-          <FlexBetween>
+          <FlexBetween
+            sx={{
+              gap: "1em",
+              marginTop: { xs: "1em", sm: "1em", lg: "0" },
+              flexWrap: { xs: "wrap", sm: "wrap", lg: "wrap" },
+              whiteSpace: "nowrap",
+            }}
+          >
             <Link
               style={{
                 textDecoration: "none",
                 color: theme.palette.primary[100],
-                marginBottom: "1em",
               }}
               to="/add menu"
             >
@@ -76,9 +103,33 @@ const MenuManagement = () => {
                 <Typography sx={{ fontSize: "1.5em" }}>Add Menu</Typography>
               </Container>
             </Link>
+
+            {/* Sorting Category Select */}
+            <FormControl sx={{ width: "200px", borderColor: theme.palette.secondary[300], color: theme.palette.primary[200] }}>
+              <InputLabel id="category-label">Category</InputLabel>
+              <Select
+                label="Category"
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+              >
+                <MenuItem value="All">All</MenuItem>
+                <MenuItem value="Main Dish">Main Dish</MenuItem>
+                <MenuItem value="Tausug Dish">Tausug Dish</MenuItem>
+                <MenuItem value="Dessert">Dessert</MenuItem>
+                <MenuItem value="Tausug Dessert">Tausug Dessert</MenuItem>
+                <MenuItem value="Drinks">Drinks</MenuItem>
+              </Select>
+            </FormControl>
           </FlexBetween>
 
-          <FlexBetween sx={{ gap: "1em", flexDirection:{ xs:"column", sm:"row", lg:"row" },}}>
+          <FlexBetween
+            sx={{
+              gap: "1em",
+              marginTop: { xs: "1em", sm: "1em", lg: "0" },
+              flexWrap: { xs: "wrap", sm: "nowrap", lg: "nowrap" },
+              whiteSpace: "nowrap",
+            }}
+          >
             <Link to="/menu inventory">
               <Button
                 variant="contained"
@@ -118,8 +169,16 @@ const MenuManagement = () => {
         </Toolbar>
       </Box>
       {isLoading || !menuData.length ? (
-        <Typography display="flex" alignItems="center" variant="h3" size={10} color={theme.palette.primary[300]} gap="0.5em" margin="5em">
-          <CircularProgress color="inherit"/> Loading...
+        <Typography
+          display="flex"
+          alignItems="center"
+          variant="h3"
+          size={10}
+          color={theme.palette.primary[300]}
+          gap="0.5em"
+          margin="5em"
+        >
+          <CircularProgress color="inherit" /> Loading...
         </Typography>
       ) : (
         <Box
@@ -130,7 +189,7 @@ const MenuManagement = () => {
             margin: "1.5em",
           }}
         >
-          {menuData.map((menu) => (
+          {filteredMenuData.map((menu) => (
             <Card
               key={menu._id}
               img={menu.picturePath}
@@ -142,8 +201,6 @@ const MenuManagement = () => {
           ))}
         </Box>
       )}
-
-      <Box></Box>
     </>
   );
 };
