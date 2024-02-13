@@ -3,27 +3,31 @@ import {
   Box,
   Button,
   InputLabel,
-  MenuItem,
+  IconButton,
+  InputAdornment,
   TextField,
   Typography,
   useTheme,
 } from "@mui/material";
-import LockOpenIcon from '@mui/icons-material/LockOpen';
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import { Header } from "components";
 import { Form, Formik, Field } from "formik";
 import * as Yup from "yup";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-const AddAccountSchema = Yup.object().shape({
-  userName: Yup.string().required("Required"),
-  role: Yup.string().required("Required"),
-  userNumber: Yup.number().required("Required"),
+const ChangePasswordSchema = Yup.object().shape({
+  password: Yup.string().required("Required"),
+  confirmPassword: Yup.string()
+    .required("Required")
+    .oneOf([Yup.ref("password"), null], "Password must match"),
 });
 
-const EditAccount = () => {
+const ChangePassword = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const { id } = useParams();
   const [account, setAccount] = useState(null);
@@ -48,16 +52,22 @@ const EditAccount = () => {
     fetchInventoryData();
   }, [id]);
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+
   const initialValues = account
     ? {
         userName: account.userName,
         role: account.role,
         userNumber: account.userNumber,
+        password: "",
       }
     : {
         userName: "",
         role: "",
         userNumber: "",
+        password: "",
       };
 
   if (account === null) {
@@ -66,20 +76,23 @@ const EditAccount = () => {
 
   const handleSubmit = async (values) => {
     try {
-      const response = await fetch(`http://localhost:3001/auth/updateAccount/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
+      const response = await fetch(
+        `http://localhost:3001/auth/updatePassword/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        }
+      );
 
       if (response.ok) {
         console.log("Account updated successfully!");
         setSuccessModalOpen(true);
         setTimeout(() => {
           setSuccessModalOpen(false);
-          navigate("/account management");
+          navigate("/manager accounts");
         }, 1500);
       } else {
         console.error("Failed to update account:", response.statusText);
@@ -88,10 +101,6 @@ const EditAccount = () => {
       console.error("An error occurred during the fetch:", error);
     }
   };
-
-  const handleChangePassword = () =>{
-    navigate(`/change password/${id}`)
-  }
 
   return (
     <>
@@ -117,77 +126,92 @@ const EditAccount = () => {
           }}
         >
           <Typography variant="h2" sx={{ color: theme.palette.grey[800] }}>
-            Edit Account: {initialValues.userName}
+            Change Password
           </Typography>
 
           <Box>
             <Formik
               initialValues={initialValues}
-              validationSchema={AddAccountSchema}
+              validationSchema={ChangePasswordSchema}
               onSubmit={handleSubmit}
             >
               {({ values, errors, touched, handleBlur, handleChange }) => (
                 <Form>
                   <Box sx={{ margin: { xs: "2em 1em", md: "2em 10em" } }}>
-                    <InputLabel htmlFor="userName">Account Name</InputLabel>
+                    <InputLabel htmlFor="password">New Password</InputLabel>
                     <Field
-                      name="userName"
+                      name="password"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      value={values.userName}
+                      value={values.password}
                       as={TextField}
                       fullWidth
+                      type={showPassword ? "text" : "password"}
                       sx={{
                         background: theme.palette.primary[700],
                         marginBottom: "1em",
                       }}
                       error={
-                        Boolean(touched.userName) && Boolean(errors.userName)
+                        Boolean(touched.password) && Boolean(errors.password)
                       }
-                      helperText={touched.userName && errors.userName}
+                      helperText={touched.password && errors.password}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={togglePasswordVisibility}
+                              edge="end"
+                            >
+                              {showPassword ? (
+                                <VisibilityOffIcon />
+                              ) : (
+                                <VisibilityIcon />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
                     />
 
-                    <InputLabel htmlFor="role">Role</InputLabel>
+                    <InputLabel htmlFor="confirmPassword">
+                      Confirm Password
+                    </InputLabel>
                     <Field
-                      name="role"
+                      name="confirmPassword"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      value={values.role}
+                      value={values.confirmPassword}
                       as={TextField}
                       fullWidth
-                      select
-                      sx={{
-                        background: theme.palette.primary[700],
-                        marginBottom: "1em",
-                      }}
-                      error={Boolean(touched.role) && Boolean(errors.role)}
-                      helperText={touched.role && errors.role}
-                    >
-                      <MenuItem value="Cashier">Cashier</MenuItem>
-                      <MenuItem value="Manager">Manager</MenuItem>
-                    </Field>
-
-                    <InputLabel htmlFor="userNumber">Unique Number</InputLabel>
-                    <Field
-                      name="userNumber"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      value={values.userNumber}
-                      as={TextField}
-                      fullWidth
+                      type={showPassword ? "text" : "password"}
                       sx={{
                         background: theme.palette.primary[700],
                         marginBottom: "1em",
                       }}
                       error={
-                        Boolean(touched.userNumber) &&
-                        Boolean(errors.userNumber)
+                        Boolean(touched.confirmPassword) &&
+                        Boolean(errors.confirmPassword)
                       }
-                      helperText={touched.userNumber && errors.userNumber}
+                      helperText={
+                        touched.confirmPassword && errors.confirmPassword
+                      }
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={togglePasswordVisibility}
+                              edge="end"
+                            >
+                              {showPassword ? (
+                                <VisibilityOffIcon />
+                              ) : (
+                                <VisibilityIcon />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
                     />
-                    <Button variant="contained" sx={{background: theme.palette.secondary[700]}} endIcon={<LockOpenIcon/>} onClick={handleChangePassword}>
-                      Change password
-                    </Button>
 
                     <Box mt={2} display="flex" justifyContent="flex-end">
                       <Box display="flex" flexDirection="column" gap="1em">
@@ -204,7 +228,7 @@ const EditAccount = () => {
                           Save
                         </Button>
 
-                        <Link to="/account management">
+                        <Link to="/manager accounts">
                           <Button
                             variant="outlined"
                             color="secondary"
@@ -236,7 +260,7 @@ const EditAccount = () => {
             backgroundColor: "rgba(255, 255, 255, 0.8)",
             padding: "1em",
             borderRadius: "10px",
-            color:'green'
+            color: "green",
           }}
         >
           <Typography
@@ -246,7 +270,7 @@ const EditAccount = () => {
             gap="0.5em"
           >
             <TaskAltIcon sx={{ fontSize: "1.5em" }} />
-            Successfully Updated
+            Password Changed Successfully 
           </Typography>
         </Box>
       )}
@@ -254,4 +278,4 @@ const EditAccount = () => {
   );
 };
 
-export default EditAccount;
+export default ChangePassword;

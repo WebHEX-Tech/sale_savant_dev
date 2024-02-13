@@ -6,7 +6,7 @@ import {
   SettingsOutlined,
   ArrowDropDownOutlined,
 } from "@mui/icons-material";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { FlexBetween } from "../index.js";
 import { useDispatch } from "react-redux";
 import { setMode } from "state";
@@ -29,9 +29,26 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
   const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const isOpen = Boolean(anchorEl);
-  const handleClick = (event) => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
+  const [menuType, setMenuType] = useState(null);
+
+  const handleClick = (event, type) => {
+    setAnchorEl(event.currentTarget);
+    setMenuType(type);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setMenuType(null);
+  };
+
+  const handleSettings1 = () => {
+    navigate("/manager accounts");
+    setMenuType(null);
+  };
+  const handleSettings2 = () => {
+    navigate("/void");
+    setMenuType(null);
+  };
   const handleLogout = () => navigate("/");
 
   return (
@@ -41,7 +58,10 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
         background: "none",
         boxShadow: "none",
         "& .MuiToolbar-root": {
-          backgroundColor: theme.palette.mode === 'dark' ? theme.palette.primary[800] : theme.palette.primary[500],
+          backgroundColor:
+            theme.palette.mode === "dark"
+              ? theme.palette.primary[800]
+              : theme.palette.primary[500],
         },
       }}
     >
@@ -62,13 +82,22 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
               <LightModeOutlined sx={{ fontSize: "25px" }} />
             )}
           </IconButton>
-          <IconButton>
+          <IconButton onClick={(e) => handleClick(e, "settings")}>
             <SettingsOutlined sx={{ fontSize: "25px" }} />
           </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={menuType === "settings"}
+            onClose={handleClose}
+            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          >
+            <MenuItem onClick={handleSettings1}>Account Management</MenuItem>
+            <MenuItem onClick={handleSettings2}>Void PIN</MenuItem>
+          </Menu>
 
           <FlexBetween>
             <Button
-              onClick={handleClick}
+              onClick={(e) => handleClick(e, "user")}
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -77,8 +106,9 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
                 gap: "1rem",
               }}
             >
-              <AccountCircleIcon fontSize="large"
-                sx={{ color:theme.palette.secondary[300] }}
+              <AccountCircleIcon
+                fontSize="large"
+                sx={{ color: theme.palette.secondary[300] }}
               />
               <Box textAlign="left">
                 <Typography
@@ -101,7 +131,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
             </Button>
             <Menu
               anchorEl={anchorEl}
-              open={isOpen}
+              open={menuType === "user"}
               onClose={handleClose}
               anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
             >

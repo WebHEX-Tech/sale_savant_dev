@@ -21,6 +21,8 @@ export {default as ManagerAcc} from './accountmanagement/accounts/ManagerAcc.jsx
 export {default as CashierAcc} from './accountmanagement/accounts/CashierAcc.jsx'
 export {default as AddAccount} from './accountmanagement/AddModules/AddAccount.jsx'
 export {default as EditAccount} from './accountmanagement/EditModules/EditAccount.jsx'
+export {default as ChangePassword} from './accountmanagement/EditModules/ChangePassword.jsx'
+export {default as EditVoid} from './accountmanagement/EditModules/EditVoid.jsx'
 
 // export for Reports
 export {default as DiscountsPromos} from './reports/DiscountsPromos.jsx'

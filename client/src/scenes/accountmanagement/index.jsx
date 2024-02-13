@@ -20,7 +20,7 @@ const AccountManagement = () => {
           </Typography>
         </div>
 
-        <Box display="flex" flexDirection="column" margin="2em 0" width="50vw" gap="1.5em">
+        <Box display="flex" flexDirection="column" margin="2em 0" sx={{width:{xs:'100%', md:'60vw', lg:'50vw'}}} gap="1.5em">
           <Box>
             <Typography variant="h5">Account Registered</Typography>
             <Typography variant="subtitle2">
@@ -32,6 +32,7 @@ const AccountManagement = () => {
               justifyContent="space-between"
               alignItems="center"
               width="100%"
+              gap="1em"
               sx={{
                 background: theme.palette.grey[300],
                 padding: "1em 2em",
@@ -58,6 +59,7 @@ const AccountManagement = () => {
               justifyContent="space-between"
               alignItems="center"
               width="100%"
+              gap="1em"
               sx={{
                 background: theme.palette.grey[300],
                 padding: "1em 2em",

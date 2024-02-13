@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const VoidSchema = new mongoose.Schema({
   voidPin: {
-    type: Number,
+    type: String,
     required: true,
   },
 }, {timestamps: true});

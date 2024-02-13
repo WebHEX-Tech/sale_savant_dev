@@ -46,6 +46,8 @@ function App() {
               <Route path="/cashier accounts" element={<scenes.CashierAcc/>} />
               <Route path="/add account" element={<scenes.AddAccount/>} />
               <Route path={`/edit account/:id`} element={<scenes.EditAccount/>} />
+              <Route path={`/change password/:id`} element={<scenes.ChangePassword/>} />
+              <Route path={`/edit void/:id`} element={<scenes.EditVoid />} />
 
               {/* Reports Routes */}
               <Route path="/reports/rep-sales" element={<scenes.RepSales />} />

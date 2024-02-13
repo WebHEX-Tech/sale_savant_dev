@@ -2,11 +2,17 @@ import { useTheme } from "@emotion/react";
 import { Box, Button, Typography } from "@mui/material";
 import { Header } from "components";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const Void = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [voidPin, setVoidPin] = useState([]);
+  const [isPinVisible, setIsPinVisible] = useState(false);
+  // eslint-disable-next-line
+  const [selectedItemId, setSelectedItemId] = useState(null);
 
   useEffect(() => {
     const fetchVoidPin = async () => {
@@ -26,10 +32,20 @@ const Void = () => {
 
     fetchVoidPin();
   }, []);
+
+  const togglePinVisibility = () => {
+    setIsPinVisible(!isPinVisible);
+  };
+
+  const handleEdit = (id) => {
+    setSelectedItemId(id);
+    navigate(`/edit void/${id}`);
+  };
+
   return (
     <>
       <Box>
-        <Header title={"Void"} disp={"none"} />
+        <Header title={"Void"} link={"/account management"} />
       </Box>
 
       <Box margin="0 4em">
@@ -45,8 +61,8 @@ const Void = () => {
           display="flex"
           flexDirection="column"
           margin="2em 0"
-          width="50vw"
           gap="1.5em"
+          sx={{width:{xs:'100%', md:'60vw', lg:'50vw'}}}
         >
           <Box>
             <Typography variant="h5">PIN</Typography>
@@ -55,6 +71,7 @@ const Void = () => {
               justifyContent="space-between"
               alignItems="center"
               width="100%"
+              gap="1em"
               sx={{
                 background: theme.palette.grey[300],
                 padding: "1em 2em",
@@ -65,16 +82,21 @@ const Void = () => {
                 variant="h5"
                 color="black"
                 sx={{
+                  display:"flex",
                   background: theme.palette.grey[100],
                   padding: "0.5em 1em",
                   borderRadius: "5px",
+                  gap:'2em'
                 }}
               >
-                {voidPin[0] ? voidPin[0].voidPin : ""}
+                {isPinVisible ? (voidPin[0] ? voidPin[0].voidPin : "") : "******"} 
+                
+                <Button onClick={togglePinVisibility} variant="outlined" sx={{ minWidth: 0, padding: 0, color:theme.palette.primary[300] }}> 
+                {isPinVisible ? <VisibilityOffIcon /> : <VisibilityIcon />}
+              </Button>
               </Typography>
-              <Link to="/edit void">
-                <Button variant="contained">Edit</Button>
-              </Link>
+              
+              <Button variant="contained" onClick={() => handleEdit(voidPin[0]._id)}>Edit</Button>
             </Box>
           </Box>
         </Box>

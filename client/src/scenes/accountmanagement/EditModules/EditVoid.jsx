@@ -3,83 +3,89 @@ import {
   Box,
   Button,
   InputLabel,
-  MenuItem,
+  IconButton,
+  InputAdornment,
   TextField,
   Typography,
   useTheme,
 } from "@mui/material";
-import LockOpenIcon from '@mui/icons-material/LockOpen';
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import { Header } from "components";
 import { Form, Formik, Field } from "formik";
 import * as Yup from "yup";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-const AddAccountSchema = Yup.object().shape({
-  userName: Yup.string().required("Required"),
-  role: Yup.string().required("Required"),
-  userNumber: Yup.number().required("Required"),
+const EditVoidSchema = Yup.object().shape({
+  currentVoidPin: Yup.string().required("Required"),
+  voidPin: Yup.string().required("Required"),
+  confirmVoidPin: Yup.string()
+    .required("Required")
+    .oneOf([Yup.ref("voidPin"), null], "PIN must match"),
 });
 
-const EditAccount = () => {
+const EditVoid = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const { id } = useParams();
-  const [account, setAccount] = useState(null);
+  const [voidPin, setVoidPin] = useState();
 
   useEffect(() => {
-    const fetchInventoryData = async () => {
+    const fetchVoidPin = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/auth/getAccount/${id}`
+          `http://localhost:3001/auth/getVoid/${id}`
         );
         if (response.ok) {
           const data = await response.json();
-          setAccount(data);
+          setVoidPin(data.voidPin);
         } else {
-          console.error("Failed to fetch account data:", response.statusText);
+          console.error("Failed to fetch void data:", response.statusText);
         }
       } catch (error) {
         console.error("An error occurred during the fetch:", error);
       }
     };
 
-    fetchInventoryData();
+    fetchVoidPin();
   }, [id]);
 
-  const initialValues = account
-    ? {
-        userName: account.userName,
-        role: account.role,
-        userNumber: account.userNumber,
-      }
-    : {
-        userName: "",
-        role: "",
-        userNumber: "",
-      };
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
 
-  if (account === null) {
+  console.log(voidPin)
+  const initialValues = {
+    voidPin: "",
+  };
+
+  if (voidPin === null) {
     return <div>Loading...</div>;
   }
 
   const handleSubmit = async (values) => {
+
     try {
-      const response = await fetch(`http://localhost:3001/auth/updateAccount/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
+      const response = await fetch(
+        `http://localhost:3001/auth/updateVoid/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        }
+      );
 
       if (response.ok) {
         console.log("Account updated successfully!");
         setSuccessModalOpen(true);
         setTimeout(() => {
           setSuccessModalOpen(false);
-          navigate("/account management");
+          navigate("/void");
         }, 1500);
       } else {
         console.error("Failed to update account:", response.statusText);
@@ -89,14 +95,10 @@ const EditAccount = () => {
     }
   };
 
-  const handleChangePassword = () =>{
-    navigate(`/change password/${id}`)
-  }
-
   return (
     <>
       <Box>
-        <Header title={"Account Management"} disp={"none"} />
+        <Header title={"Void"} disp={"none"} />
       </Box>
 
       <Box
@@ -117,24 +119,26 @@ const EditAccount = () => {
           }}
         >
           <Typography variant="h2" sx={{ color: theme.palette.grey[800] }}>
-            Edit Account: {initialValues.userName}
+            Edit Void Pin
           </Typography>
 
           <Box>
             <Formik
               initialValues={initialValues}
-              validationSchema={AddAccountSchema}
+              validationSchema={EditVoidSchema}
               onSubmit={handleSubmit}
             >
               {({ values, errors, touched, handleBlur, handleChange }) => (
                 <Form>
                   <Box sx={{ margin: { xs: "2em 1em", md: "2em 10em" } }}>
-                    <InputLabel htmlFor="userName">Account Name</InputLabel>
+                    <InputLabel htmlFor="currentVoidPin">
+                      Current PIN
+                    </InputLabel>
                     <Field
-                      name="userName"
+                      name="currentVoidPin"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      value={values.userName}
+                      value={values.currentVoidPin}
                       as={TextField}
                       fullWidth
                       sx={{
@@ -142,52 +146,90 @@ const EditAccount = () => {
                         marginBottom: "1em",
                       }}
                       error={
-                        Boolean(touched.userName) && Boolean(errors.userName)
+                        Boolean(touched.currentVoidPin) &&
+                        (errors.currentVoidPin ||
+                          values.currentVoidPin !== voidPin)
                       }
-                      helperText={touched.userName && errors.userName}
+                      helperText={
+                        touched.currentVoidPin &&
+                        values.currentVoidPin !== voidPin &&
+                        "Current PIN does not match"
+                      }
                     />
-
-                    <InputLabel htmlFor="role">Role</InputLabel>
+                    <InputLabel htmlFor="voidPin">New PIN</InputLabel>
                     <Field
-                      name="role"
+                      name="voidPin"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      value={values.role}
+                      value={values.voidPin}
                       as={TextField}
                       fullWidth
-                      select
-                      sx={{
-                        background: theme.palette.primary[700],
-                        marginBottom: "1em",
-                      }}
-                      error={Boolean(touched.role) && Boolean(errors.role)}
-                      helperText={touched.role && errors.role}
-                    >
-                      <MenuItem value="Cashier">Cashier</MenuItem>
-                      <MenuItem value="Manager">Manager</MenuItem>
-                    </Field>
-
-                    <InputLabel htmlFor="userNumber">Unique Number</InputLabel>
-                    <Field
-                      name="userNumber"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      value={values.userNumber}
-                      as={TextField}
-                      fullWidth
+                      type={showPassword ? "text" : "password"}
                       sx={{
                         background: theme.palette.primary[700],
                         marginBottom: "1em",
                       }}
                       error={
-                        Boolean(touched.userNumber) &&
-                        Boolean(errors.userNumber)
+                        Boolean(touched.voidPin) && Boolean(errors.voidPin)
                       }
-                      helperText={touched.userNumber && errors.userNumber}
+                      helperText={touched.voidPin && errors.voidPin}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={togglePasswordVisibility}
+                              edge="end"
+                            >
+                              {showPassword ? (
+                                <VisibilityOffIcon />
+                              ) : (
+                                <VisibilityIcon />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
                     />
-                    <Button variant="contained" sx={{background: theme.palette.secondary[700]}} endIcon={<LockOpenIcon/>} onClick={handleChangePassword}>
-                      Change password
-                    </Button>
+
+                    <InputLabel htmlFor="confirmVoidPin">
+                      Confirm PIN
+                    </InputLabel>
+                    <Field
+                      name="confirmVoidPin"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.confirmVoidPin}
+                      as={TextField}
+                      fullWidth
+                      type={showPassword ? "text" : "password"}
+                      sx={{
+                        background: theme.palette.primary[700],
+                        marginBottom: "1em",
+                      }}
+                      error={
+                        Boolean(touched.confirmVoidPin) &&
+                        Boolean(errors.confirmVoidPin)
+                      }
+                      helperText={
+                        touched.confirmVoidPin && errors.confirmVoidPin
+                      }
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={togglePasswordVisibility}
+                              edge="end"
+                            >
+                              {showPassword ? (
+                                <VisibilityOffIcon />
+                              ) : (
+                                <VisibilityIcon />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
 
                     <Box mt={2} display="flex" justifyContent="flex-end">
                       <Box display="flex" flexDirection="column" gap="1em">
@@ -204,7 +246,7 @@ const EditAccount = () => {
                           Save
                         </Button>
 
-                        <Link to="/account management">
+                        <Link to="/void">
                           <Button
                             variant="outlined"
                             color="secondary"
@@ -236,7 +278,7 @@ const EditAccount = () => {
             backgroundColor: "rgba(255, 255, 255, 0.8)",
             padding: "1em",
             borderRadius: "10px",
-            color:'green'
+            color: "green",
           }}
         >
           <Typography
@@ -254,4 +296,4 @@ const EditAccount = () => {
   );
 };
 
-export default EditAccount;
+export default EditVoid;

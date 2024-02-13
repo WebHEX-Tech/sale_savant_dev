@@ -76,6 +76,18 @@ export const getVoidPin = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+export const getVoidPinId = async (req, res) => {
+  try {
+    const voidId = req.params.id;
+    const pin = await Void.findById(voidId);
+    if (!pin) {
+      return res.status(404).json({ message: "Pin not found" });
+    }
+    res.status(200).json(pin);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
 
 export const getUserId = async (req, res) => {
   try {
@@ -94,7 +106,7 @@ export const getUserId = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { userName, role, userNumber } = req.body;
+    const { userName, role, userNumber, password } = req.body;
 
     const existingUser = await User.findById(id);
 
@@ -111,6 +123,51 @@ export const updateUser = async (req, res) => {
     res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const updateUserPassword = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { password } = req.body;
+
+    const existingUser = await User.findById(id);
+
+    if (!existingUser) {
+      return res.status(404).json({ error: "user not found" });
+    }
+
+    const salt = await bcrypt.genSalt();
+    const passwordHash = await bcrypt.hash(password, salt);
+    
+    existingUser.password = passwordHash;
+
+    const updatedUser = await existingUser.save();
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const updateVoid = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { voidPin } = req.body;
+
+    const existingVoid = await Void.findById(id);
+
+    if (!existingVoid) {
+      return res.status(404).json({ error: "Void not found" });
+    }
+
+    existingVoid.voidPin =voidPin;
+
+    const updatedVoid = await existingVoid.save();
+
+    res.status(200).json(updatedVoid);
+  } catch (error) {
+    console.error("Error updating pin:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
