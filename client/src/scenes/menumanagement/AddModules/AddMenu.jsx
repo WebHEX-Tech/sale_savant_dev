@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   InputLabel,
   MenuItem,
   TextField,
@@ -24,11 +27,19 @@ const AddMenuSchema = Yup.object().shape({
   description: Yup.string(),
 });
 
-const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert", "Drinks"];
+const categories = [
+  "Main Dish",
+  "Tausug Dish",
+  "Dessert",
+  "Tausug Dessert",
+  "Drinks",
+];
 
 const AddMenu = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState("");
 
   const initialValues = {
     menuItem: "",
@@ -57,7 +68,7 @@ const AddMenu = () => {
 
       if (response.ok) {
         console.log("Menu added successfully!");
-        navigate('/menu management');
+        navigate("/menu management");
       } else {
         console.error("Failed to add menu:", response.statusText);
       }
@@ -70,7 +81,7 @@ const AddMenu = () => {
     <>
       <Box>
         <Box>
-          <Header title={"Add Menu"} disp={"none"}/>
+          <Header title={"Add Menu"} disp={"none"} />
         </Box>
 
         <Formik
@@ -150,11 +161,21 @@ const AddMenu = () => {
                   p="1rem"
                 >
                   <Dropzone
+                    accept={{
+                      "image/jpg": [],
+                      "image/jpeg": [],
+                      "image/png": [],
+                    }}
                     acceptedFiles=".jpg,.jpeg,.png"
                     multiple={false}
-                    onDrop={(acceptedFiles) =>
-                      setFieldValue("picture", acceptedFiles[0])
-                    }
+                    onDrop={(acceptedFiles, rejectedFiles) => {
+                      if (rejectedFiles && rejectedFiles.length > 0) {
+                        setDialogMessage("Please upload files with .jpg, .jpeg, or .png formats only.");
+                        setOpenDialog(true);
+                      } else {
+                        setFieldValue("picture", acceptedFiles[0]);
+                      }
+                    }}
                   >
                     {({ getRootProps, getInputProps }) => (
                       <Box
@@ -237,6 +258,12 @@ const AddMenu = () => {
             </Form>
           )}
         </Formik>
+        
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+          <DialogTitle color={theme.palette.secondary[400]}>File Format Error</DialogTitle>
+          <DialogContent>{dialogMessage}</DialogContent>
+          <Button onClick={() => setOpenDialog(false)} variant="contained">OK</Button>
+        </Dialog>
       </Box>
     </>
   );

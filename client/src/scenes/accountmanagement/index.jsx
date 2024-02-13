@@ -65,7 +65,7 @@ const AccountManagement = () => {
               }}
             >
               <Typography variant="h5" color="black">Void Settings</Typography>
-              <Link>
+              <Link to="/void">
                 <Button variant="contained">View</Button>
               </Link>
             </Box>

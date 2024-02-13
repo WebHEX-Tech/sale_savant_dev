@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import Void from "../models/Void.js";
 
 // Add User
 export const addUser = async (req, res) => {
@@ -58,11 +59,19 @@ export const login = async (req, res) => {
   }
 };
 
-// Get User
+// Get 
 export const getUser = async (req, res) => {
   try {
     const user = await User.find();
     res.status(200).json(user);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+export const getVoidPin = async (req, res) => {
+  try {
+    const pin = await Void.find();
+    res.status(200).json(pin);
   } catch (err) {
     res.status(404).json({ message: err.message });
   }

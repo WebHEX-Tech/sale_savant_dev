@@ -75,12 +75,19 @@ const MenuManagement = () => {
       </Box>
 
       <Box>
-        <Toolbar sx={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+        <Toolbar
+          sx={{
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            flexDirection: { xs: "column-reverse", sm: "row", lg: "row" },
+          }}
+        >
           <FlexBetween
             sx={{
               gap: "1em",
-              marginTop: { xs: "1em", sm: "1em", lg: "0" },
-              flexWrap: { xs: "wrap", sm: "wrap", lg: "wrap" },
+              marginTop: { xs: "2em", sm: "0", lg: "0" },
+              marginBottom: { xs: "0", sm: "2em", lg: "0" },
+              flexWrap: { xs: "wrap", sm: "wrap", lg: "nowrap" },
               whiteSpace: "nowrap",
             }}
           >
@@ -97,6 +104,7 @@ const MenuManagement = () => {
                   gap: "0.5em",
                   justifyContent: "center",
                   alignItems: "center",
+                  padding: "0",
                 }}
               >
                 <AddCircleIcon sx={{ color: "#35D03B", fontSize: "3em" }} />
@@ -105,12 +113,22 @@ const MenuManagement = () => {
             </Link>
 
             {/* Sorting Category Select */}
-            <FormControl sx={{ width: "200px", borderColor: theme.palette.secondary[300], color: theme.palette.primary[200] }}>
-              <InputLabel id="category-label">Category</InputLabel>
+            <FormControl>
+              <InputLabel
+                id="category-label"
+                sx={{ color: theme.palette.primary[200] }}
+              >
+                Category
+              </InputLabel>
               <Select
                 label="Category"
                 value={selectedCategory}
                 onChange={handleCategoryChange}
+                sx={{
+                  width: "180px",
+                  border: theme.palette.secondary[300],
+                  color: theme.palette.primary[200],
+                }}
               >
                 <MenuItem value="All">All</MenuItem>
                 <MenuItem value="Main Dish">Main Dish</MenuItem>
@@ -122,13 +140,16 @@ const MenuManagement = () => {
             </FormControl>
           </FlexBetween>
 
-          <FlexBetween
+          <Box
             sx={{
+              display: "flex",
               gap: "1em",
-              marginTop: { xs: "1em", sm: "1em", lg: "0" },
-              flexWrap: { xs: "wrap", sm: "nowrap", lg: "nowrap" },
+              flexDirection: { xs: "column", sm: "row", lg: "row" },
+              justifyContent: "flex-start",
               whiteSpace: "nowrap",
+              width: { xs: "100%", sm: "inherit", lg: "inherit" },
             }}
+            gap="1em"
           >
             <Link to="/menu inventory">
               <Button
@@ -165,7 +186,7 @@ const MenuManagement = () => {
                 Promos
               </Button>
             </Link>
-          </FlexBetween>
+          </Box>
         </Toolbar>
       </Box>
       {isLoading || !menuData.length ? (

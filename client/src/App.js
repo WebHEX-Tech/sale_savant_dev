@@ -41,6 +41,7 @@ function App() {
 
               {/* Account Management Routes */}
               <Route path="/account management" element={<scenes.AccountManagement/>} />
+              <Route path="/void" element={<scenes.Void/>}/>
               <Route path="/manager accounts" element={<scenes.ManagerAcc/>} />
               <Route path="/cashier accounts" element={<scenes.CashierAcc/>} />
               <Route path="/add account" element={<scenes.AddAccount/>} />
