@@ -1,7 +1,7 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import React from "react";
 
-const FilterCards = ({ title, icon }) => {
+const Receipt = ({ title, icon }) => {
   const theme = useTheme();
   return (
     <>
@@ -19,4 +19,4 @@ const FilterCards = ({ title, icon }) => {
   );
 };
 
-export default FilterCards;
+export default Receipt;

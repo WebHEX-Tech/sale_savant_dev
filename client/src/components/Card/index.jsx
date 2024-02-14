@@ -72,7 +72,7 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
   };
 
   return (
-    <Card variant="outlined" sx={{ width: 280, position: "relative" }}>
+    <Card variant="outlined" sx={{ width: 280, position: "relative", background:theme.palette.primary[400], color:theme.palette.grey[900] }}>
       {!isAvailable && (
         <div
           style={{
@@ -120,7 +120,7 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
           <div style={{ display: "flex", flexDirection: "column", gap: "1em" }}>
               <Button
                 variant="contained"
-                sx={{ background: theme.palette.primary[500] }}
+                sx={{background:'#fff', '&:hover': {background:theme.palette.primary[600]}}}
                 onClick={handleEditClick}
               >
                 Edit

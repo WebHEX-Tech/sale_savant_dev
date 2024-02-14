@@ -251,7 +251,7 @@ export const deleteMenu = async (req, res) => {
         return res.status(404).json({ error: "image item not found" });
       }
       fs.unlinkSync(imagePath);
-    }
+    }r
 
     await Menu.findByIdAndDelete(id);
 
