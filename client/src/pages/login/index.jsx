@@ -11,6 +11,8 @@ import * as yup from "yup";
 import "./login.css";
 import * as image from "assets/index";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setLogin } from "state";
 
 const loginSchema = yup.object().shape({
   userNumber: yup.string().required("required"),
@@ -19,6 +21,7 @@ const loginSchema = yup.object().shape({
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const initialValuesLogin = {
     userNumber: "",
@@ -36,10 +39,22 @@ const Login = () => {
       });
 
       if (response.ok) {
-        const data = response.status === 204 ? {} : await response.json();
+        const data = await response.json();
         console.log("Login successful!", data.token);
-
-        navigate("/home");
+        dispatch(
+          setLogin({
+            user: data.user,
+            token: data.token,
+          })
+        );
+        
+        if (data.user.role === "Manager") {
+          navigate("/home");
+        } else if (data.user.role === "Cashier") {
+          navigate("/take-order");
+        } else {
+          console.error("Unknown role:", data.user.role);
+        }
       } else {
         console.error("Login failed:", response.statusText);
       }

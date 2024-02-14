@@ -26,7 +26,7 @@ function App() {
               <Route path="/dashboard" element={<scenes.Dashboard />} />
 
               {/* Menu Management Routes */}
-              <Route path="/menu management" element={<scenes.MenuManagement />} />
+              <Route path="/menu management" element={isAuth ? <scenes.MenuManagement /> : <Navigate to="/" />} />
               <Route path="/menu inventory" element={<scenes.MenuInventory/>} />
               <Route path="/menu loss" element={<scenes.MenuLoss/>} />
               <Route path="/menu promos" element={<scenes.MenuPromos/>} />
@@ -53,6 +53,12 @@ function App() {
               <Route path="/reports/rep-sales" element={<scenes.RepSales />} />
               <Route path="/reports/discount" element={<scenes.DiscountsPromos/>} />
             </Route>
+
+            {/* Cashier Routes */}
+            <Route element={<pages.CashierLayout/>}>
+              <Route path="/take-order" element={<pages.TakeOrder/>}/>
+            </Route>
+            
           </Routes>
         </ThemeProvider>
       </BrowserRouter>

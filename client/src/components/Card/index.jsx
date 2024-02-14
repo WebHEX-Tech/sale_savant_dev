@@ -144,6 +144,9 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
           <DialogContentText>
             Are you sure you want to remove this menu?
           </DialogContentText>
+          <DialogContentText sx={{color:theme.palette.secondary[400], marginTop:'1em'}}>
+            (This action will also delete associated inventory, dish loss, and promo items.)
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelRemove} sx={{ color: "#000" }}>

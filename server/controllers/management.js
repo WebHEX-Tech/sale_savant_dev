@@ -245,15 +245,29 @@ export const deleteMenu = async (req, res) => {
       return res.status(404).json({ error: "Menu item not found" });
     }
 
+    const promoItem = await MenuPromo.findOne({ menuItem: existingItem.menuItem });
+    const lossItem = await MenuLoss.findOne({ menuItem: existingItem.menuItem });
+    const inventoryItem = await MenuInventory.findOne({ menuItem: existingItem.menuItem });
+
+    await Menu.findByIdAndDelete(id);
+
+    if (promoItem) {
+      await MenuPromo.findByIdAndDelete(promoItem._id);
+    }
+    if (lossItem) {
+      await MenuLoss.findByIdAndDelete(lossItem._id);
+    }
+    if (inventoryItem) {
+      await MenuInventory.findByIdAndDelete(inventoryItem._id);
+    }
+
     if (existingItem.picturePath) {
       const imagePath = path.join(__dirname, "../public/assets", existingItem.picturePath);
       if(!imagePath){
         return res.status(404).json({ error: "image item not found" });
       }
       fs.unlinkSync(imagePath);
-    }r
-
-    await Menu.findByIdAndDelete(id);
+    }
 
     res.status(200).json({ message: "Menu item deleted successfully" });
   } catch (error) {
