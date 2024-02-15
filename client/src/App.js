@@ -57,7 +57,11 @@ function App() {
 
             {/* Cashier Routes */}
             <Route element={isAuth ? <pages.CashierLayout/> : <Navigate to="/" />}>
-              <Route path="/take-order" element={<pages.TakeOrder/>}/>
+              <Route path="/home-cashier" element={<pages.TakeOrder/>}/>
+              <Route path="/take-order" element={<Navigate to="/home-cashier" />}/>
+
+              {/* Customer Order */}
+              <Route path="/order-ticket" element={<pages.OrderMenu/>} />
             </Route>
             
           </Routes>

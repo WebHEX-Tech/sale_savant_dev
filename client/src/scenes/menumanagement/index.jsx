@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Card, FlexBetween, Header } from "components";
+import { Card as ItemCard, FlexBetween, Header } from "components";
 import { useGetMenuQuery } from "state/api";
 import {
   Box,
   Button,
-  CircularProgress,
+  Card,
+  CardContent,
   Container,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
+  Skeleton,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -46,7 +48,7 @@ const MenuManagement = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1500);
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -190,17 +192,51 @@ const MenuManagement = () => {
         </Toolbar>
       </Box>
       {isLoading || !menuData.length ? (
-        <Typography
-          display="flex"
-          alignItems="center"
-          variant="h3"
-          size={10}
-          color={theme.palette.primary[300]}
-          gap="0.5em"
-          margin="5em"
-        >
-          <CircularProgress color="inherit" /> Loading...
-        </Typography>
+        <Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "1em",
+              margin: "1.5em",
+            }}
+          >
+            {[...Array(15).keys()].map((index) => (
+              <Card sx={{ width: 280, background: theme.palette.primary[400] }}>
+                <Skeleton
+                  sx={{ height: 180 }}
+                  animation="wave"
+                  variant="rectangular"
+                />
+                <CardContent>
+                  <FlexBetween>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "1em",
+                        width: "100%",
+                      }}
+                    >
+                      <Skeleton
+                        animation="wave"
+                        variant="text"
+                        height={40}
+                        width="80%"
+                      />
+                      <Skeleton
+                        animation="wave"
+                        variant="text"
+                        height={40}
+                        width="50%"
+                      />
+                    </div>
+                  </FlexBetween>
+                </CardContent>
+              </Card>
+            ))}
+          </Box>
+        </Box>
       ) : (
         <Box
           sx={{
@@ -211,7 +247,7 @@ const MenuManagement = () => {
           }}
         >
           {filteredMenuData.map((menu) => (
-            <Card
+            <ItemCard
               key={menu._id}
               img={menu.picturePath}
               menuName={menu.menuItem}

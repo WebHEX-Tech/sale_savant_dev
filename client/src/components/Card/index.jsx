@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Skeleton,
 } from "@mui/material";
 import { FlexBetween } from "components";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +23,14 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
   const [openDialog, setOpenDialog] = useState(false);
   // eslint-disable-next-line
   const [menuData, setMenuData] = useState([]);
+  const [imageLoading, setImageLoading] = useState(true);
+
+  useEffect(() => {
+    const imageElement = new Image();
+    imageElement.src = `http://localhost:3001/assets/${img}`;
+    imageElement.onload = () => setImageLoading(false);
+    imageElement.onerror = () => setImageLoading(false);
+  }, [img]);
 
   const fetchMenuData = async () => {
     try {
@@ -103,13 +112,17 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
           </Typography>
         </div>
       )}
-      <CardMedia
-        component="img"
-        sx={{ height: 180 }}
-        alt={menuName}
-        image={`http://localhost:3001/assets/${img}`}
-        loading="lazy"
-      />
+      {imageLoading ? (
+        <Skeleton animation="wave" variant="rectangular" width={280} height={180} />
+      ) : (
+        <CardMedia
+          component="img"
+          sx={{ height: 180 }}
+          alt={menuName}
+          src={`http://localhost:3001/assets/${img}`}
+          loading="lazy"
+        />
+      )}
       <CardContent>
         <FlexBetween>
           <div style={{ display: "flex", flexDirection: "column", gap: "1em" }}>

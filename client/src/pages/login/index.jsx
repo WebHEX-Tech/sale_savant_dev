@@ -56,7 +56,7 @@ const Login = () => {
         if (data.user.role === "Manager") {
           navigate("/home");
         } else if (data.user.role === "Cashier") {
-          navigate("/take-order");
+          navigate("/home-cashier");
         } else {
           console.error("Unknown role:", data.user.role);
         }

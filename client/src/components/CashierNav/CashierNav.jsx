@@ -3,7 +3,6 @@ import {
   LightModeOutlined,
   DarkModeOutlined,
   ArrowDropDownOutlined,
-  Search,
 } from "@mui/icons-material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { FlexBetween } from "../index.js";
@@ -19,8 +18,6 @@ import {
   Menu,
   MenuItem,
   useTheme,
-  Container,
-  InputBase,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -30,13 +27,6 @@ const CashierNav = ({ user }) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const isOpen = Boolean(anchorEl);
-  const [searchInput, setSearchInput] = useState("");
-
-  const handleSearchInputChange = (e) => {
-    setSearchInput(e.target.value);
-  };
-
-  const filteredRows = () => {};
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -65,29 +55,8 @@ const CashierNav = ({ user }) => {
         },
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between" }}>
-        {/* LEFT SIDE */}
-        <FlexBetween>
-          <Container>
-            <FlexBetween
-              backgroundColor={theme.palette.secondary[700]}
-              borderRadius="9px"
-              gap="3rem"
-              minWidth="300px"
-              width="100%"
-              p="0.5rem 1.5rem"
-            >
-              <InputBase
-                placeholder="Search Menu Item..."
-                value={searchInput}
-                onChange={handleSearchInputChange}
-              />
-              <Search />
-            </FlexBetween>
-          </Container>
-        </FlexBetween>
+      <Toolbar sx={{ justifyContent: "flex-end" }}>
 
-        {/* RIGHT SIDE */}
         <FlexBetween gap="1.5rem">
           <IconButton onClick={() => dispatch(setMode())}>
             {theme.palette.mode === "dark" ? (
@@ -124,7 +93,7 @@ const CashierNav = ({ user }) => {
                   fontSize="0.75rem"
                   sx={{ color: theme.palette.secondary[200] }}
                 >
-                  {"Admin"}
+                  {"Cashier"}
                 </Typography>
               </Box>
               <ArrowDropDownOutlined
