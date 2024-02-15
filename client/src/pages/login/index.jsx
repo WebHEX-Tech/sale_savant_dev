@@ -47,6 +47,11 @@ const Login = () => {
             token: data.token,
           })
         );
+        console.log("Dispatched setLogin action:", setLogin({
+          user: data.user,
+          token: data.token,
+        }));
+        
         
         if (data.user.role === "Manager") {
           navigate("/home");

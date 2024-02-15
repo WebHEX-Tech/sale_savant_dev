@@ -10,7 +10,8 @@ import * as pages from "./pages/index";
 function App() {
   const mode = useSelector((state) => state.global.mode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-  const isAuth = Boolean(useSelector((state) => state.token));
+  const isAuth = Boolean(useSelector((state) => state.global.token));
+  console.log(isAuth)
 
   return (
     <div className="app">
@@ -21,7 +22,7 @@ function App() {
             <Route path="/" element={<pages.Login />} />
 
             {/* Admin Routes */}
-            <Route element={<scenes.Layout />}>
+            <Route element={isAuth ? <scenes.Layout /> : <Navigate to="/" />}>
               <Route path="/home" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<scenes.Dashboard />} />
 
@@ -55,7 +56,7 @@ function App() {
             </Route>
 
             {/* Cashier Routes */}
-            <Route element={<pages.CashierLayout/>}>
+            <Route element={isAuth ? <pages.CashierLayout/> : <Navigate to="/" />}>
               <Route path="/take-order" element={<pages.TakeOrder/>}/>
             </Route>
             

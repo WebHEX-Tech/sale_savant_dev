@@ -9,7 +9,7 @@ import {
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { FlexBetween } from "../index.js";
 import { useDispatch } from "react-redux";
-import { setMode } from "state";
+import { setLogout, setMode } from "state";
 import {
   AppBar,
   Button,
@@ -49,7 +49,10 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
     navigate("/void");
     setMenuType(null);
   };
-  const handleLogout = () => navigate("/");
+  const handleLogout = () => {
+    navigate("/");
+    dispatch(setLogout())
+  };
 
   return (
     <AppBar

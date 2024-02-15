@@ -8,7 +8,7 @@ import {
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { FlexBetween } from "../index.js";
 import { useDispatch } from "react-redux";
-import { setMode } from "state";
+import { setLogout, setMode } from "state";
 import {
   AppBar,
   Button,
@@ -36,7 +36,7 @@ const CashierNav = ({ user }) => {
     setSearchInput(e.target.value);
   };
 
-  const filteredRows = ()=>{}
+  const filteredRows = () => {};
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -46,7 +46,10 @@ const CashierNav = ({ user }) => {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => navigate("/");
+  const handleLogout = () => {
+    navigate("/");
+    dispatch(setLogout())
+  };
 
   return (
     <AppBar
@@ -65,23 +68,23 @@ const CashierNav = ({ user }) => {
       <Toolbar sx={{ justifyContent: "space-between" }}>
         {/* LEFT SIDE */}
         <FlexBetween>
-        <Container>
-              <FlexBetween
-                backgroundColor={theme.palette.secondary[700]}
-                borderRadius="9px"
-                gap="3rem"
-                minWidth="300px"
-                width="100%"
-                p="0.5rem 1.5rem"
-              >
-                <InputBase
-                  placeholder="Search Menu Item..."
-                  value={searchInput}
-                  onChange={handleSearchInputChange}
-                />
-                <Search />
-              </FlexBetween>
-            </Container>
+          <Container>
+            <FlexBetween
+              backgroundColor={theme.palette.secondary[700]}
+              borderRadius="9px"
+              gap="3rem"
+              minWidth="300px"
+              width="100%"
+              p="0.5rem 1.5rem"
+            >
+              <InputBase
+                placeholder="Search Menu Item..."
+                value={searchInput}
+                onChange={handleSearchInputChange}
+              />
+              <Search />
+            </FlexBetween>
+          </Container>
         </FlexBetween>
 
         {/* RIGHT SIDE */}
