@@ -6,6 +6,7 @@ import {
   CardContent,
   Container,
   Divider,
+  Drawer,
   FormControl,
   InputBase,
   InputLabel,
@@ -14,18 +15,21 @@ import {
   Skeleton,
   Toolbar,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Card as ItemCard, FlexBetween } from "components";
+import { Card as ItemCard, FlexBetween, Receipt } from "components";
 import React, { useEffect, useState } from "react";
 import { useGetMenuQuery } from "state/api";
 
-const OrderMenu = () => {
+const OrderMenu = (props) => {
   const theme = useTheme();
   const [menuData, setMenuData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchValue, setSearchValue] = useState("");
+  const [isReceiptOpen, setIsReceiptOpen] = useState(false);
+  const { window } = props;
 
   useEffect(() => {
     const fetchMenuData = async () => {
@@ -82,57 +86,98 @@ const OrderMenu = () => {
             menu.menuItem.toLowerCase().includes(searchValue.toLowerCase())
         );
 
+  const toggleReceiptDrawer = (open) => {
+    setIsReceiptOpen(open);
+  };
+
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+
   return (
     <Box
       display="flex"
       flexDirection={{ xs: "column", md: "row" }}
       width="100%"
     >
-      <Box
-        position={{ xs: "relative", md: "fixed" }}
-        margin="1em"
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          width: { xs: "95vw", md: "20vw" },
-          height: "90vh",
-          zIndex: 2,
-          boxShadow: { xs: "none", md: "0px 4px 6px rgba(0, 0, 0, 0.2)" },
-          borderRadius: "6px",
-        }}
-      >
+      {isDesktop ? (
         <Box
+          position="fixed"
+          margin="1em"
           sx={{
-            background: theme.palette.grey[800],
-            borderRadius: "6px 6px 0 0",
-            color: "#fff",
-            padding: "1em",
+            display: "flex",
+            flexDirection: "column",
+            width: { xs: "95vw", md: "20vw" },
+            height: "90vh",
+            zIndex: 2,
+            boxShadow: { xs: "none", md: "0px 4px 6px rgba(0, 0, 0, 0.2)" },
+            borderRadius: "6px",
           }}
         >
-          Receipt
-        </Box>
-        <Box
-          sx={{
-            background: theme.palette.grey[800],
-            borderRadius: "0 0 6px 6px",
-            color: "#fff",
-            padding: "1em",
-            marginTop: "auto",
-          }}
-        >
-          <FlexBetween padding="1em">
-            <Typography sx={{color:theme.palette.secondary[600]}}>Subtotal</Typography>
-            <Typography>999</Typography>
-          </FlexBetween>
-          <Divider />
+          <Box
+            sx={{
+              background: theme.palette.grey[800],
+              borderRadius: "6px 6px 0 0",
+              color: "#fff",
+              padding: "1em",
+            }}
+          >
+            Receipt
+          </Box>
+          <Box
+            sx={{
+              background: theme.palette.grey[800],
+              borderRadius: "0 0 6px 6px",
+              color: "#fff",
+              padding: "1em",
+              marginTop: "auto",
+            }}
+          >
+            <FlexBetween padding="1em">
+              <Typography sx={{ color: theme.palette.secondary[600] }}>
+                Subtotal
+              </Typography>
+              <Typography>999</Typography>
+            </FlexBetween>
+            <Divider />
 
-          <Box sx={{display:'flex', justifyContent:'center', gap:'3em', margin:'2em'}}>
-            <Button variant="contained">Select Table</Button>
-            <Button variant="contained" color="success">Submit Order</Button>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "3em",
+                margin: "2em",
+              }}
+            >
+              <Button variant="contained">Select Table</Button>
+              <Button variant="contained" color="success">
+                Submit Order
+              </Button>
+            </Box>
           </Box>
         </Box>
-      </Box>
-      
+      ) : (
+        <>
+          <Box sx={{ textAlign: "center", pt: 1 }}>
+            <Button onClick={() => toggleReceiptDrawer(true)}>Open</Button>
+          </Box>
+
+          <Drawer
+            container={
+              window !== undefined ? () => window.document.body : undefined
+            }
+            anchor="left"
+            open={isReceiptOpen}
+            onClose={() => toggleReceiptDrawer(false)}
+            onOpen={() => toggleReceiptDrawer(true)}
+            ModalProps={{
+              keepMounted: true,
+            }}
+          >
+            
+            <Receipt />
+          </Drawer>
+        </>
+      )}
+
       <Box flex="1" margin="3em" marginLeft={{ xs: 0, md: "20vw" }}>
         <Box>
           <Toolbar
