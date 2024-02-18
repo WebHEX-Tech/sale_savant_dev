@@ -4,7 +4,13 @@ import {
   Card,
   CardContent,
   CardMedia,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
+  FormControlLabel,
   IconButton,
   Typography,
   useTheme,
@@ -12,13 +18,50 @@ import {
 import { FlexBetween } from "components";
 import { Add, Remove } from "@mui/icons-material";
 import ClearIcon from "@mui/icons-material/Clear";
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { tables } from "pages/cashier/customerOrder/OrderMenu";
 
-const Receipt = ({ OrderType, OrderNo, addedDishes, setAddedDishes, menuData }) => {
+const Receipt = ({
+  OrderType,
+  OrderNo,
+  addedDishes,
+  setAddedDishes,
+  menuData,
+}) => {
   const theme = useTheme();
+  const navigate = useNavigate();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedTables, setSelectedTables] = useState([]);
 
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
+  const handleCheckboxChange = (tableName) => {
+    if (selectedTables.includes(tableName)) {
+      setSelectedTables(selectedTables.filter((table) => table !== tableName));
+    } else {
+      if (selectedTables.length < 2) {
+        setSelectedTables([...selectedTables, tableName]);
+      } else {
+        console.log("You can only select two tables.");
+      }
+    }
+  };
+
+  const handleConfirmTables = () => {
+    console.log("Selected Tables:", selectedTables);
+    handleCloseDialog();
+  };
+
+  // eslint-disable-next-line
   const handleAddDish = (dish) => {
-    setAddedDishes([...addedDishes, dish]);
+    setAddedDishes([...addedDishes, { ...dish, _id: dish.menuId }]);
   };
 
   const handleQuantityChange = (index, action) => {
@@ -66,8 +109,22 @@ const Receipt = ({ OrderType, OrderNo, addedDishes, setAddedDishes, menuData }) 
 
     return totalAmount;
   };
-  
-  const createReceipt = async () => {
+
+  const handleSubmitOrder = async () => {
+    const orderDetails = {
+      items: addedDishes.map((dish) => ({
+        menuItemId: dish._id,
+        menuItem: dish.menuName,
+        quantity: dish.quantity,
+        price: dish.price,
+        totalPrice: dish.total,
+      })),
+      orderType: OrderType,
+      tableNo: selectedTables.join(", "),
+      orderNo: OrderNo,
+      totalAmount: calculateTotalAmount().subTotal.toFixed(2),
+    };
+
     try {
       const response = await fetch(
         "http://localhost:3001/cashier/create-receipt",
@@ -76,22 +133,13 @@ const Receipt = ({ OrderType, OrderNo, addedDishes, setAddedDishes, menuData }) 
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            items: menuData.map((menu) => ({
-              menuItem: menu._id,
-              quantity: menu.quantity,
-              price: menu.price,
-            })),
-            tableNo: 0, 
-            orderNo: OrderNo,
-            orderType: OrderType,
-            totalAmount: calculateTotalAmount(),
-          }),
+          body: JSON.stringify(orderDetails),
         }
       );
 
       if (response.ok) {
-        console.log("Receipt created successfully");
+        console.log("Order submitted successfully");
+        navigate(`/order-placed/${OrderNo}`);
       } else {
         console.error("Failed to create receipt:", response.statusText);
       }
@@ -125,17 +173,32 @@ const Receipt = ({ OrderType, OrderNo, addedDishes, setAddedDishes, menuData }) 
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <Typography>
               Table No.{" "}
-              <span
-                style={{
-                  background: theme.palette.primary[800],
-                  color: theme.palette.secondary[300],
-                  fontWeight: "600",
-                  padding: "0 1em",
-                  borderRadius: "2px",
-                }}
-              >
-                10
-              </span>
+              {selectedTables.length === 0 ? (
+                <span
+                  style={{
+                    background: theme.palette.primary[800],
+                    color: theme.palette.secondary[300],
+                    fontWeight: "600",
+                    padding: "0 1em",
+                    borderRadius: "2px",
+                  }}
+                >
+                  0
+                </span>
+              ) : (
+                <span
+                  style={{
+                    background: theme.palette.primary[800],
+                    color: theme.palette.secondary[300],
+                    fontWeight: "600",
+                    padding: "0 1em",
+                    borderRadius: "2px",
+                    marginRight: "0.5em",
+                  }}
+                >
+                  {selectedTables.join(", ")}
+                </span>
+              )}
             </Typography>
             <Typography>
               Order No.{" "}
@@ -322,13 +385,48 @@ const Receipt = ({ OrderType, OrderNo, addedDishes, setAddedDishes, menuData }) 
               margin: "1em",
             }}
           >
-            <Button variant="contained">Select Table</Button>
-            <Button variant="contained" color="success">
+            <Button variant="contained" onClick={handleOpenDialog}>Select Table</Button>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleSubmitOrder}
+            >
               Submit Order
             </Button>
           </Box>
         </Box>
       </Box>
+
+      <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
+        <DialogTitle>Select Tables (Maximum Tables: 2)</DialogTitle>
+        <DialogContent>
+          {tables.map((table, index) => (
+            <FormControlLabel
+              key={index}
+              control={
+                <Checkbox
+                  checked={selectedTables.includes(table.value)}
+                  onChange={() => handleCheckboxChange(table.value)}
+                  color="secondary"
+                />
+              }
+              label={`${table.name} - Pax: ${table.pax}`}
+            />
+          ))}
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" onClick={handleCloseDialog}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleConfirmTables}
+          >
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

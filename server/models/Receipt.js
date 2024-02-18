@@ -28,7 +28,7 @@ const ReceiptSchema = new mongoose.Schema(
       },
     ],
     tableNo: {
-      type: Number,
+      type: String,
       required: true,
     },
     orderNo: {

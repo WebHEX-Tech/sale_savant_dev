@@ -24,27 +24,12 @@ const actions = [
   { icon: <TableRestaurantIcon />, name: "Modify Table" },
 ];
 
-const getOrderType = () => {
-  return localStorage.getItem("orderType"); 
-};
-
-const getOrderNo = () => {
-  return localStorage.getItem("orderNo"); 
-};
-
-const TakeOrder = () => {
+const NewOrder = () => {
   const theme = useTheme();
   const navigate = useNavigate();
 
   const handleOrderClick = (link) => {
     navigate(link);
-  };
-
-  const orderNo = Math.floor(100 + Math.random() * 900);
-
-  const handleOrderTypeSelect = (type, number) => {
-    localStorage.setItem("orderType", type);
-    localStorage.setItem("orderNo", number);
   };
 
   const handleDialClick = (action, number) => {
@@ -96,11 +81,11 @@ const TakeOrder = () => {
         <CardContent>
           <Typography
             gutterBottom
-            variant="h3"
+            variant="h1"
             component="div"
-            sx={{ color: theme.palette.secondary[400], fontWeight: "600" }}
+            sx={{ color: theme.palette.secondary[400], fontWeight: "600", fontSize:{xs:"2em", md:"2.5em", lg:"3em"}, textAlign:'center' }}
           >
-            SaleSavant
+            Order Placed Successfully!
           </Typography>
         </CardContent>
         <CardActions
@@ -119,27 +104,10 @@ const TakeOrder = () => {
             }}
             variant="contained"
             onClick={() => {
-              handleOrderClick("/order-ticket");
-              handleOrderTypeSelect("Dine-In", orderNo);
+              handleOrderClick("/home-cashier")
             }}
           >
-            Dine-In
-          </Button>
-          <Button
-            sx={{
-              fontSize: "1.2em",
-              padding: "0.5em 1.5em",
-              background: theme.palette.primary[600],
-              color: theme.palette.secondary[500],
-              fontWeight: "bold",
-            }}
-            variant="contained"
-            onClick={() => {
-              handleOrderClick("/order-ticket");
-              handleOrderTypeSelect("Take-Out", orderNo);
-            }}
-          >
-            Take-Out
+            New Order
           </Button>
         </CardActions>
         <SpeedDial
@@ -162,5 +130,4 @@ const TakeOrder = () => {
   );
 };
 
-export { getOrderType, getOrderNo };
-export default TakeOrder;
+export default NewOrder;

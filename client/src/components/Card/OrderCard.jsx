@@ -36,7 +36,6 @@ const OrderCard = ({ img, menuName, price, salesTarget, menuId, onAddDish }) => 
       quantity,
       total,
       menuId,
-      total,
     };
     onAddDish(dish);
     setIsModalOpen(false);
@@ -96,7 +95,7 @@ const OrderCard = ({ img, menuName, price, salesTarget, menuId, onAddDish }) => 
           position: "relative",
           background: theme.palette.primary[400],
           color: theme.palette.grey[900],
-          cursor: isAvailable ? "pointer" : "default",
+          cursor: isAvailable ? "pointer" : "not-allowed",
         }}
         onClick={handleCardClick}
       >

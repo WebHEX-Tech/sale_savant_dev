@@ -11,7 +11,6 @@ function App() {
   const mode = useSelector((state) => state.global.mode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const isAuth = Boolean(useSelector((state) => state.global.token));
-  console.log(isAuth)
 
   return (
     <div className="app">
@@ -62,6 +61,8 @@ function App() {
 
               {/* Customer Order */}
               <Route path="/order-ticket" element={<pages.OrderMenu/>} />
+              <Route path={`/order-placed/:OrderNo`} element={<pages.NewOrder />} />
+              <Route path="/modify-table" element={<pages.ModifyTable/>}/>
             </Route>
             
           </Routes>
