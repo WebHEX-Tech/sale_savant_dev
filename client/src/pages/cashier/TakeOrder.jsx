@@ -22,13 +22,29 @@ const actions = [
   { icon: <ProductionQuantityLimitsIcon />, name: "Refunds" },
 ];
 
+const getOrderType = () => {
+  return localStorage.getItem("orderType"); 
+};
+
+const getOrderNo = () => {
+  return localStorage.getItem("orderNo"); 
+};
+
 const TakeOrder = () => {
   const theme = useTheme();
   const navigate = useNavigate();
 
   const handleOrderClick = (link) => {
-    navigate(link)
-  }
+    navigate(link);
+  };
+
+  const orderNo = Math.floor(100 + Math.random() * 900);
+
+  const handleOrderTypeSelect = (type, number) => {
+    localStorage.setItem("orderType", type);
+    localStorage.setItem("orderNo", number);
+  };
+
   return (
     <Box
       display="flex"
@@ -46,7 +62,7 @@ const TakeOrder = () => {
           alignItems: "center",
           justifyContent: "center",
           position: "relative",
-          background:theme.palette.grey[300]
+          background: theme.palette.grey[300],
         }}
       >
         <img
@@ -76,24 +92,42 @@ const TakeOrder = () => {
           }}
         >
           <Button
-            sx={{ fontSize: "1.2em", padding: "0.5em 1.5em", background:theme.palette.primary[600], color: theme.palette.secondary[500], fontWeight: "bold" }}
+            sx={{
+              fontSize: "1.2em",
+              padding: "0.5em 1.5em",
+              background: theme.palette.primary[600],
+              color: theme.palette.secondary[500],
+              fontWeight: "bold",
+            }}
             variant="contained"
-            onClick={() => handleOrderClick("/order-ticket")}
+            onClick={() => {
+              handleOrderClick("/order-ticket");
+              handleOrderTypeSelect("Dine-In", orderNo);
+            }}
           >
-            Dine-in
+            Dine-In
           </Button>
           <Button
-            sx={{ fontSize: "1.2em", padding: "0.5em 1.5em", background:theme.palette.primary[600], color: theme.palette.secondary[500], fontWeight: "bold" }}
+            sx={{
+              fontSize: "1.2em",
+              padding: "0.5em 1.5em",
+              background: theme.palette.primary[600],
+              color: theme.palette.secondary[500],
+              fontWeight: "bold",
+            }}
             variant="contained"
-            onClick={() => handleOrderClick("/order-ticket")}
+            onClick={() => {
+              handleOrderClick("/order-ticket");
+              handleOrderTypeSelect("Take-Out", orderNo);
+            }}
           >
-            Take out
+            Take-Out
           </Button>
         </CardActions>
         <SpeedDial
           ariaLabel="Menu"
           sx={{ position: "absolute", top: 16, right: 16 }}
-          icon={<SpeedDialIcon openIcon={<RestaurantMenuIcon/>} />}
+          icon={<SpeedDialIcon openIcon={<RestaurantMenuIcon />} />}
           direction="down"
         >
           {actions.map((action) => (
@@ -109,4 +143,5 @@ const TakeOrder = () => {
   );
 };
 
+export { getOrderType, getOrderNo };
 export default TakeOrder;

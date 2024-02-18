@@ -46,6 +46,7 @@ app.use("/home", routes.adminRoutes);
 app.use("/menumanagement", routes.managementRoutes);
 
 // Cashier Routes
+app.use("/cashier", routes.cashierRoutes)
 
 // Database
 const PORT = process.env.PORT || 3001;
