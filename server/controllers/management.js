@@ -235,7 +235,27 @@ export const deleteMenuInventory = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const cleanInventory = async (req, res) => {
+  try {
+    const distinctMenuItems = await MenuInventory.distinct('menuItem');
 
+    await Promise.all(distinctMenuItems.map(async (menuItem) => {
+      const menu = await Menu.findOne({ menuItem });
+
+      if (menu) {
+        menu.salesTarget = 0;
+        await menu.save();
+      }
+    }));
+    
+    await MenuInventory.deleteMany({});
+
+    res.status(204).send(); 
+  } catch (error) {
+    console.error("Error cleaning inventory:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 export const deleteMenu = async (req, res) => {
   try {
     const { id } = req.params;

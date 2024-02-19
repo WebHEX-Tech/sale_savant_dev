@@ -13,13 +13,13 @@ import {
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
 import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
-import TableRestaurantIcon from '@mui/icons-material/TableRestaurant';
+import TableRestaurantIcon from "@mui/icons-material/TableRestaurant";
 import * as image from "assets/index.js";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const actions = [
-  { icon: <ShoppingCartIcon />, name: "Orders" },
+  { icon: <ShoppingCartIcon />, name: "Checkout" },
   { icon: <ProductionQuantityLimitsIcon />, name: "Refunds" },
   { icon: <TableRestaurantIcon />, name: "Modify Table" },
 ];
@@ -34,7 +34,7 @@ const NewOrder = () => {
 
   const handleDialClick = (action, number) => {
     switch (action) {
-      case "Orders":
+      case "Checkout":
         navigate("/checkout-list");
         break;
       case "Refunds":
@@ -83,7 +83,12 @@ const NewOrder = () => {
             gutterBottom
             variant="h1"
             component="div"
-            sx={{ color: theme.palette.secondary[400], fontWeight: "600", fontSize:{xs:"2em", md:"2.5em", lg:"3em"}, textAlign:'center' }}
+            sx={{
+              color: theme.palette.secondary[400],
+              fontWeight: "600",
+              fontSize: { xs: "2em", md: "2.5em", lg: "3em" },
+              textAlign: "center",
+            }}
           >
             Order Placed Successfully!
           </Typography>
@@ -104,7 +109,7 @@ const NewOrder = () => {
             }}
             variant="contained"
             onClick={() => {
-              handleOrderClick("/home-cashier")
+              handleOrderClick("/home-cashier");
             }}
           >
             New Order
@@ -118,6 +123,7 @@ const NewOrder = () => {
         >
           {actions.map((action) => (
             <SpeedDialAction
+              sx={{ width: "4.5em", height: "4.5em" }}
               key={action.name}
               icon={action.icon}
               tooltipTitle={action.name}

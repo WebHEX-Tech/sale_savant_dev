@@ -26,6 +26,7 @@ const MenuInventory = () => {
   const navigate = useNavigate();
   const [menuInventory, setMenuInventory] = useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [cleanDialogOpen, setCleanDialogOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [searchInput, setSearchInput] = useState("");
 
@@ -62,6 +63,36 @@ const MenuInventory = () => {
         row.menuItem.toLowerCase().includes(searchInput.toLowerCase())
       )
     : menuInventory;
+
+  const handleOpenCleanDialog = () => {
+    setCleanDialogOpen(true);
+  };
+
+  const handleCloseCleanDialog = () => {
+    setCleanDialogOpen(false);
+  };
+
+  const handleCleanInventory = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3001/menumanagement/cleanInventory",
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        console.log("Inventory cleaned successfully");
+        fetchMenuInventory(); 
+      } else {
+        console.error("Failed to clean inventory:", response.statusText);
+      }
+    } catch (error) {
+      console.error("An error occurred during clean inventory:", error);
+    } finally {
+      handleCloseCleanDialog(); 
+    }
+  };
 
   const handleConfirmDelete = async () => {
     try {
@@ -207,6 +238,9 @@ const MenuInventory = () => {
           </FlexBetween>
 
           <FlexBetween>
+            <Button variant="contained" color="error" size="small" onClick={handleOpenCleanDialog}>
+              Clean Inventory
+            </Button>
             <Container>
               <FlexBetween
                 backgroundColor={theme.palette.secondary[700]}
@@ -282,6 +316,22 @@ const MenuInventory = () => {
             Cancel
           </Button>
           <Button onClick={handleConfirmDelete} sx={{ color: "#26B02B" }}>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={cleanDialogOpen} onClose={handleCloseCleanDialog}>
+        <DialogTitle color="error">Confirm Clean Inventory</DialogTitle>
+        <DialogContent>
+          Are you sure you want to clean the inventory? <span style={{color:"#E11800"}}>This action cannot be
+          undone.</span>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseCleanDialog} sx={{ color: "#000" }}>
+            Cancel
+          </Button>
+          <Button onClick={handleCleanInventory} variant="contained" color="success" sx={{ color: "#fff" }}>
             Confirm
           </Button>
         </DialogActions>

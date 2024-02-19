@@ -23,7 +23,13 @@ const AddInventorySchema = Yup.object().shape({
   description: Yup.string(),
 });
 
-const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert", "Drinks"];
+const categories = [
+  "Main Dish",
+  "Tausug Dish",
+  "Dessert",
+  "Tausug Dessert",
+  "Drinks",
+];
 
 const AddInventory = () => {
   const navigate = useNavigate();
@@ -59,6 +65,7 @@ const AddInventory = () => {
       setValues({
         ...selectedMenu,
         dateTime: new Date().toISOString().substring(0, 16),
+        noSold: 0,
       });
     }
 

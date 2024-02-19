@@ -109,3 +109,23 @@ export const updateTableStatus = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+// Delete
+export const deleteTable = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const table = await Table.findById(id);
+
+    if (!table) {
+      return res.status(404).json({ error: "Table not found" });
+    }
+
+    await Table.findByIdAndDelete(id);
+
+    res.status(200).json({ message: `Table ${table.tableNo} deleted successfully` });
+  } catch (error) {
+    console.error("Error deleting table:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

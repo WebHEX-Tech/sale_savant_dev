@@ -1,5 +1,5 @@
 import express from "express";
-import { createReceipt, AddTable, getOrderReceipt, getTable, updateTableStatus } from "../controllers/cashierReceipt.js";
+import { createReceipt, AddTable, getOrderReceipt, getTable, updateTableStatus, deleteTable } from "../controllers/cashierReceipt.js";
 
 const router = express.Router();
 
@@ -13,5 +13,8 @@ router.get("/get-table", getTable)
 
 // Update
 router.put("/update-table-status", updateTableStatus)
+
+// Delete
+router.delete("/delete-table/:id", deleteTable)
 
 export default router;

@@ -13,23 +13,23 @@ import {
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
 import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
-import TableRestaurantIcon from '@mui/icons-material/TableRestaurant';
+import TableRestaurantIcon from "@mui/icons-material/TableRestaurant";
 import * as image from "assets/index.js";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const actions = [
-  { icon: <ShoppingCartIcon />, name: "Orders" },
+  { icon: <ShoppingCartIcon />, name: "Checkout" },
   { icon: <ProductionQuantityLimitsIcon />, name: "Refunds" },
   { icon: <TableRestaurantIcon />, name: "Modify Table" },
 ];
 
 const getOrderType = () => {
-  return localStorage.getItem("orderType"); 
+  return localStorage.getItem("orderType");
 };
 
 const getOrderNo = () => {
-  return localStorage.getItem("orderNo"); 
+  return localStorage.getItem("orderNo");
 };
 
 const TakeOrder = () => {
@@ -49,7 +49,7 @@ const TakeOrder = () => {
 
   const handleDialClick = (action, number) => {
     switch (action) {
-      case "Orders":
+      case "Checkout":
         navigate("/checkout-list");
         break;
       case "Refunds":
@@ -150,6 +150,7 @@ const TakeOrder = () => {
         >
           {actions.map((action) => (
             <SpeedDialAction
+              sx={{ width: "4.5em", height: "4.5em" }}
               key={action.name}
               icon={action.icon}
               tooltipTitle={action.name}

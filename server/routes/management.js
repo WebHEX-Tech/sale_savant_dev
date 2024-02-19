@@ -11,6 +11,7 @@ import {
   getLossId,
   getMenuPromo,
   deleteMenuInventory,
+  cleanInventory,
   deleteMenu,
   deleteMenuLoss,
   deletePromo,
@@ -45,5 +46,6 @@ router.delete("/menu/:id", deleteMenu);
 router.delete("/menuInventory/:id", deleteMenuInventory);
 router.delete("/menuLoss/:id", deleteMenuLoss);
 router.delete("/menuPromo/:id", deletePromo)
+router.delete("/cleanInventory", cleanInventory)
 
 export default router;
