@@ -17,7 +17,14 @@ import {
 import { FlexBetween } from "components";
 import { Add, Remove } from "@mui/icons-material";
 
-const OrderCard = ({ img, menuName, price, salesTarget, menuId, onAddDish }) => {
+const OrderCard = ({
+  img,
+  menuName,
+  price,
+  salesTarget,
+  menuId,
+  onAddDish,
+}) => {
   const theme = useTheme();
   const isAvailable = salesTarget !== 0 && salesTarget !== "0";
   // eslint-disable-next-line
@@ -185,39 +192,45 @@ const OrderCard = ({ img, menuName, price, salesTarget, menuId, onAddDish }) => 
                 {menuName}
               </Typography>
               <Typography variant="subtitle1">{`Php ${price}`}</Typography>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "1em",
-                }}
-              >
-                <IconButton
-                  sx={{
-                    background: theme.palette.secondary[700],
-                    fontSize: "0.8em",
-                    "&:hover": {
-                        background: theme.palette.secondary[500], 
-                      },
+
+              <FlexBetween>
+                <div>
+                  Available: {salesTarget}
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1em",
                   }}
-                  onClick={handleRemoveQuantity}
                 >
-                  <Remove fontSize="0.8em" />
-                </IconButton>
-                <Typography>{quantity}</Typography>
-                <IconButton
-                  sx={{
-                    background: theme.palette.secondary[700],
-                    fontSize: "0.8em",
-                    "&:hover": {
-                        background: theme.palette.secondary[500], 
+                  <IconButton
+                    sx={{
+                      background: theme.palette.secondary[700],
+                      fontSize: "0.8em",
+                      "&:hover": {
+                        background: theme.palette.secondary[500],
                       },
-                  }}
-                  onClick={handleAddQuantity}
-                >
-                  <Add fontSize="0.8em" />
-                </IconButton>
-              </div>
+                    }}
+                    onClick={handleRemoveQuantity}
+                  >
+                    <Remove fontSize="0.8em" />
+                  </IconButton>
+                  <Typography>{quantity}</Typography>
+                  <IconButton
+                    sx={{
+                      background: theme.palette.secondary[700],
+                      fontSize: "0.8em",
+                      "&:hover": {
+                        background: theme.palette.secondary[500],
+                      },
+                    }}
+                    onClick={handleAddQuantity}
+                  >
+                    <Add fontSize="0.8em" />
+                  </IconButton>
+                </div>
+              </FlexBetween>
               <Divider />
               <div
                 style={{
@@ -232,15 +245,13 @@ const OrderCard = ({ img, menuName, price, salesTarget, menuId, onAddDish }) => 
             </div>
           </Stack>
         </DialogContent>
-        <DialogActions sx={{ padding: "1em", background:theme.palette.primary[500] }}>
+        <DialogActions
+          sx={{ padding: "1em", background: theme.palette.primary[500] }}
+        >
           <Button variant="contained" onClick={handleModalClose}>
             Cancel
           </Button>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleAddDish}
-          >
+          <Button variant="contained" color="success" onClick={handleAddDish}>
             Add Dish
           </Button>
         </DialogActions>

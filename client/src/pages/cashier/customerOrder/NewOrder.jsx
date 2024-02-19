@@ -35,7 +35,7 @@ const NewOrder = () => {
   const handleDialClick = (action, number) => {
     switch (action) {
       case "Orders":
-        navigate("/checkout-orders");
+        navigate("/checkout-list");
         break;
       case "Refunds":
         navigate("/refund-orders");

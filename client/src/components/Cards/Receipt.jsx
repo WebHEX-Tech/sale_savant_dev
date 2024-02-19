@@ -18,9 +18,8 @@ import {
 import { FlexBetween } from "components";
 import { Add, Remove } from "@mui/icons-material";
 import ClearIcon from "@mui/icons-material/Clear";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { tables } from "pages/cashier/customerOrder/OrderMenu";
 
 const Receipt = ({
   OrderType,
@@ -33,6 +32,27 @@ const Receipt = ({
   const navigate = useNavigate();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTables, setSelectedTables] = useState([]);
+  const [tables, setTables] = useState([]);
+
+  useEffect(() => {
+    const fetchTableData = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3001/cashier/get-table"
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setTables(data);
+        } else {
+          console.error("Failed to fetch table data:", response.statusText);
+        }
+      } catch (error) {
+        console.error("An error occurred during the fetch:", error);
+      }
+    };
+
+    fetchTableData();
+  }, []);
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
@@ -54,9 +74,36 @@ const Receipt = ({
     }
   };
 
-  const handleConfirmTables = () => {
-    console.log("Selected Tables:", selectedTables);
-    handleCloseDialog();
+  const handleConfirmTables = async () => {
+    try {
+      const updatedTables = tables.map((table) => {
+        if (selectedTables.includes(table.tableNo)) {
+          return { ...table, status: "Occupied" };
+        }
+        return table;
+      });
+
+      const response = await fetch(
+        "http://localhost:3001/cashier/update-table-status",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedTables),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Table status updated successfully");
+        console.log("Selected Tables:", selectedTables);
+        handleCloseDialog();
+      } else {
+        console.error("Failed to update table status:", response.statusText);
+      }
+    } catch (error) {
+      console.error("An error occurred during table status update:", error);
+    }
   };
 
   // eslint-disable-next-line
@@ -389,7 +436,10 @@ const Receipt = ({
             <Button
               variant="contained"
               color="success"
-              onClick={handleSubmitOrder}
+              onClick={() => {
+                handleSubmitOrder();
+                handleConfirmTables();
+              }}
             >
               Submit Order
             </Button>
@@ -398,19 +448,31 @@ const Receipt = ({
       </Box>
 
       <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle>Select Tables (Maximum Tables: 2)</DialogTitle>
+        <DialogTitle sx={{background:theme.palette.primary[800], borderBottom:"solid black 1px"}}>
+          <FlexBetween>
+            <Typography>Select Tables (Maximum Tables: 2)</Typography>
+            <div style={{display:"flex", justifyContent:"center", alignItems:'center', gap:'0.3em'}}>
+              <div style={{width:'15px', height:'15px',border:"#B03021 solid 2px", borderRadius:"2px"}}></div>
+            <Typography> Occupied</Typography>
+            </div>
+          </FlexBetween>
+        </DialogTitle>
         <DialogContent>
           {tables.map((table, index) => (
             <FormControlLabel
               key={index}
               control={
                 <Checkbox
-                  checked={selectedTables.includes(table.value)}
-                  onChange={() => handleCheckboxChange(table.value)}
-                  color="secondary"
+                  checked={selectedTables.includes(table.tableNo)}
+                  onChange={() => handleCheckboxChange(table.tableNo)}
+                  color={table.status === "Occupied" ? "default" : "secondary"}
+                  disabled={table.status === "Occupied"}
+                  sx={{
+                    color: table.status === "Occupied" ? "#B03021" : undefined,
+                  }}
                 />
               }
-              label={`${table.name} - Pax: ${table.pax}`}
+              label={`Table ${table.tableNo} (Pax: ${table.pax})`}
             />
           ))}
         </DialogContent>
@@ -421,7 +483,7 @@ const Receipt = ({
           <Button
             variant="contained"
             color="success"
-            onClick={handleConfirmTables}
+            onClick={handleCloseDialog}
           >
             Confirm
           </Button>

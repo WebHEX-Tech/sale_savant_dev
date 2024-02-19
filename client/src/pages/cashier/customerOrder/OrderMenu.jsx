@@ -35,34 +35,10 @@ import { useGetMenuQuery } from "state/api";
 import { getOrderNo, getOrderType } from "../TakeOrder";
 import { useNavigate } from "react-router-dom";
 
-const tables = [
-  { name: "Table 01", pax: 4, value: "01" },
-  { name: "Table 02", pax: 4, value: "02" },
-  { name: "Table 03", pax: 4, value: "03" },
-  { name: "Table 04", pax: 4, value: "04" },
-  { name: "Table 05", pax: 4, value: "05" },
-  { name: "Table 06", pax: 4, value: "06" },
-  { name: "Table 07", pax: 2, value: "07" },
-  { name: "Table 08", pax: 2, value: "08" },
-  { name: "Table 09", pax: 2, value: "09" },
-  { name: "Table 10", pax: 2, value: "10" },
-  { name: "Table 11", pax: 2, value: "11" },
-  { name: "Table 12", pax: 2, value: "12" },
-  { name: "Table 13", pax: 2, value: "13" },
-  { name: "Table 14", pax: 2, value: "14" },
-  { name: "Table 15", pax: 6, value: "15" },
-  { name: "Table 16", pax: 6, value: "16" },
-  { name: "Table 17", pax: 6, value: "17" },
-  { name: "Table 18", pax: 8, value: "18" },
-  { name: "Table 19", pax: 8, value: "19" },
-  { name: "Table 20", pax: 6, value: "20" },
-  { name: "Table 21", pax: 6, value: "21" },
-  { name: "Table 22", pax: 6, value: "22" },
-];
-
 const OrderMenu = (props) => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const [tables, setTables] = useState([]);
   const [menuData, setMenuData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -96,6 +72,24 @@ const OrderMenu = (props) => {
   }, []);
 
   useEffect(() => {
+    const fetchTableData = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/cashier/get-table");
+        if (response.ok) {
+          const data = await response.json();
+          setTables(data);
+        } else {
+          console.error("Failed to fetch table data:", response.statusText);
+        }
+      } catch (error) {
+        console.error("An error occurred during the fetch:", error);
+      }
+    };
+
+    fetchTableData();
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1500);
@@ -120,7 +114,7 @@ const OrderMenu = (props) => {
   };
 
   const handleCancelOrder = () => {
-    navigate("/take-order")
+    navigate("/take-order");
   };
 
   const handleCheckboxChange = (tableName) => {
@@ -135,9 +129,36 @@ const OrderMenu = (props) => {
     }
   };
 
-  const handleConfirmTables = () => {
-    console.log("Selected Tables:", selectedTables);
-    handleCloseDialog();
+  const handleConfirmTables = async () => {
+    try {
+      const updatedTables = tables.map((table) => {
+        if (selectedTables.includes(table.tableNo)) {
+          return { ...table, status: "Occupied" };
+        }
+        return table;
+      });
+
+      const response = await fetch(
+        "http://localhost:3001/cashier/update-table-status",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedTables),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Table status updated successfully");
+        console.log("Selected Tables:", selectedTables);
+        handleCloseDialog();
+      } else {
+        console.error("Failed to update table status:", response.statusText);
+      }
+    } catch (error) {
+      console.error("An error occurred during table status update:", error);
+    }
   };
 
   const handleCategoryChange = (event) => {
@@ -220,6 +241,8 @@ const OrderMenu = (props) => {
 
       if (response.ok) {
         console.log("Order submitted successfully");
+
+        handleConfirmTables();
         navigate(`/order-placed/${OrderNo}`);
       } else {
         console.error("Failed to create receipt:", response.statusText);
@@ -314,18 +337,18 @@ const OrderMenu = (props) => {
                         0
                       </span>
                     ) : (
-                        <span
-                          style={{
-                            background: theme.palette.primary[800],
-                            color: theme.palette.secondary[300],
-                            fontWeight: "600",
-                            padding: "0 1em",
-                            borderRadius: "2px",
-                            marginRight: "0.5em",
-                          }}
-                        >
-                          {selectedTables.join(", ")}
-                        </span>
+                      <span
+                        style={{
+                          background: theme.palette.primary[800],
+                          color: theme.palette.secondary[300],
+                          fontWeight: "600",
+                          padding: "0 0.2em",
+                          borderRadius: "2px",
+                          marginRight: "0.5em",
+                        }}
+                      >
+                        {selectedTables.join(", ")}
+                      </span>
                     )}
                   </Typography>
                   <Typography>
@@ -529,7 +552,10 @@ const OrderMenu = (props) => {
                   <Button
                     variant="contained"
                     color="success"
-                    onClick={handleSubmitOrder}
+                    onClick={() => {
+                      handleSubmitOrder();
+                      handleConfirmTables();
+                    }}
                   >
                     Submit Order
                   </Button>
@@ -738,19 +764,31 @@ const OrderMenu = (props) => {
       </Box>
 
       <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle>Select Tables (Maximum Tables: 2)</DialogTitle>
+        <DialogTitle sx={{background:theme.palette.primary[800], borderBottom:"solid black 1px"}}>
+          <FlexBetween>
+            <Typography>Select Tables (Maximum Tables: 2)</Typography>
+            <div style={{display:"flex", justifyContent:"center", alignItems:'center', gap:'0.3em'}}>
+              <div style={{width:'15px', height:'15px',border:"#B03021 solid 2px", borderRadius:"2px"}}></div>
+            <Typography> Occupied</Typography>
+            </div>
+          </FlexBetween>
+        </DialogTitle>
         <DialogContent>
           {tables.map((table, index) => (
             <FormControlLabel
               key={index}
               control={
                 <Checkbox
-                  checked={selectedTables.includes(table.value)}
-                  onChange={() => handleCheckboxChange(table.value)}
-                  color="secondary"
+                  checked={selectedTables.includes(table.tableNo)}
+                  onChange={() => handleCheckboxChange(table.tableNo)}
+                  color={table.status === "Occupied" ? "default" : "secondary"}
+                  disabled={table.status === "Occupied"}
+                  sx={{
+                    color: table.status === "Occupied" ? "#B03021" : undefined,
+                  }}
                 />
               }
-              label={`${table.name} - Pax: ${table.pax}`}
+              label={`Table ${table.tableNo} (Pax: ${table.pax})`}
             />
           ))}
         </DialogContent>
@@ -761,7 +799,7 @@ const OrderMenu = (props) => {
           <Button
             variant="contained"
             color="success"
-            onClick={handleConfirmTables}
+            onClick={handleCloseDialog}
           >
             Confirm
           </Button>
@@ -771,5 +809,4 @@ const OrderMenu = (props) => {
   );
 };
 
-export { tables };
 export default OrderMenu;

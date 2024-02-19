@@ -63,6 +63,10 @@ function App() {
               <Route path="/order-ticket" element={<pages.OrderMenu/>} />
               <Route path={`/order-placed/:OrderNo`} element={<pages.NewOrder />} />
               <Route path="/modify-table" element={<pages.ModifyTable/>}/>
+
+              {/* Checkout Order */}
+              <Route path="/checkout-list" element={<pages.CheckoutList />} />
+
             </Route>
             
           </Routes>
