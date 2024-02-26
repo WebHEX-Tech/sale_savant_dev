@@ -104,13 +104,13 @@ const ModifyTable = () => {
       <FlexBetween
         sx={{
           flexDirection: { xs: "column", sm: "column", md: "row" },
-          gap: "1em",
+          gap: "2em",
         }}
       >
         <div style={{ display: "flex", gap: "1em" }}>
           <Button
             variant="contained"
-            sx={{background:theme.palette.primary[500]}}
+            sx={{ background: theme.palette.primary[500] }}
             onClick={() => handleButtonClick("/take-order")}
           >
             Take Order
@@ -124,39 +124,55 @@ const ModifyTable = () => {
           <Button variant="contained">Refunds</Button>
         </div>
 
-        <div style={{ display: "flex", gap: "2em" }}>
-          <div
-            style={{
+        <Box
+          sx={{
+            display: "flex",
+            gap: "1em",
+            flexDirection: { xs: "column-reverse", sm: "column-reverse", md: "row" },
+          }}
+        >
+          <Box
+            sx={{
+              border: "black 1px solid",
+              borderRadius: "5px",
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "0.5em",
+              gap: "2em",
+              padding: " 0.5em 1em",
             }}
           >
-            <CircleIcon sx={{ color: "#1BD7EC", fontSize: "2.5em" }} />
-            <Typography variant="h4"> Vacant</Typography>
-          </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.2em",
+              }}
+            >
+              <CircleIcon sx={{ color: "#1BD7EC", fontSize: "2.5em" }} />
+              <Typography variant="h4"> Vacant</Typography>
+            </div>
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "0.5em",
-            }}
-          >
-            <CircleIcon sx={{ color: "#B03021", fontSize: "2.5em" }} />
-            <Typography variant="h4"> Occupied</Typography>
-          </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.2em",
+              }}
+            >
+              <CircleIcon sx={{ color: "#FF5A5A", fontSize: "2.5em" }} />
+              <Typography variant="h4"> Occupied</Typography>
+            </div>
+          </Box>
 
-          <Button
-            variant="contained"
-            color="success"
-            onClick={() => setOpenDialog(true)}
-          >
-            Add Table
-          </Button>
-        </div>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => setOpenDialog(true)}
+            >
+              Add Table
+            </Button>
+        </Box>
       </FlexBetween>
 
       <Box
@@ -179,7 +195,7 @@ const ModifyTable = () => {
             alignItems="center"
             gap="0.5em"
             sx={{
-              background: table.status === "Occupied" ? "#B03021" : "#1BD7EC",
+              background: table.status === "Occupied" ? "#FF5A5A" : "#1BD7EC",
               color: "#000",
               padding: "1em",
               borderRadius: "8px",
@@ -202,7 +218,7 @@ const ModifyTable = () => {
                 fontSize: "1em",
               }}
             >
-              <ClearIcon sx={{ fontSize: "1em" }} />
+              <ClearIcon sx={{ fontSize: "1em", color: table.status === "Occupied" ? "#88F3FF" : "#C50000",}} />
             </IconButton>
             <div>
               <Typography variant="h5">Table</Typography>

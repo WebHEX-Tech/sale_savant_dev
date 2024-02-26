@@ -207,6 +207,7 @@ const Receipt = ({
           zIndex: 2,
           boxShadow: { xs: "none", md: "0px 4px 6px rgba(0, 0, 0, 0.2)" },
           borderRadius: "6px",
+          background: "#fff",
         }}
       >
         <Box
