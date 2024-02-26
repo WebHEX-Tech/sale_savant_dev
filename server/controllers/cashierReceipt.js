@@ -6,7 +6,7 @@ import MenuInventory from "../models/MenuInventory.js";
 // Add
 export const createReceipt = async (req, res) => {
   try {
-    const { items, orderType, tableNo, orderNo, totalAmount } = req.body;
+    const { items, orderType, tableNo, orderNo, totalAmount, status } = req.body;
     let salesTargetDeducted = false;
 
     // Iterate through items to deduct salesTarget for each menu item
@@ -48,6 +48,7 @@ export const createReceipt = async (req, res) => {
       tableNo,
       orderNo,
       totalAmount,
+      status
     });
     const savedReceipt = await newReceipt.save();
     res.status(201).json(savedReceipt);

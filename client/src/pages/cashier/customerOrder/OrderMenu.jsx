@@ -224,6 +224,7 @@ const OrderMenu = (props) => {
       orderType: OrderType,
       tableNo: selectedTables.join(", "),
       orderNo: OrderNo,
+      status: "Unpaid",
       totalAmount: calculateTotalAmount().subTotal.toFixed(2),
     };
 

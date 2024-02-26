@@ -1,6 +1,6 @@
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
-import { FlexBetween } from "components";
-import React, { useRef } from "react";
+import { Box, Button, Typography, useTheme } from "@mui/material";
+import { FlexBetween, TableOrder } from "components";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CircleIcon from "@mui/icons-material/Circle";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
@@ -13,6 +13,27 @@ const CheckoutList = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const sliderRef = useRef(null);
+  const [receipt, setReceipt] = useState([]);
+
+  useEffect(() => {
+    const fetchReceiptData = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3001/cashier/get-receipt"
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setReceipt(data);
+        } else {
+          console.error("Failed to fetch receipt data:", response.statusText);
+        }
+      } catch (error) {
+        console.error("An error occurred during the fetch:", error);
+      }
+    };
+
+    fetchReceiptData();
+  }, []);
 
   const handleButtonClick = (link) => {
     navigate(link);
@@ -24,8 +45,7 @@ const CheckoutList = () => {
     infinite: false,
     speed: 500,
     slidesToShow: 3,
-    slidesToScroll: 3,
-    initialSlide: 0,
+    swipeToSlide: true,
     responsive: [
       {
         breakpoint: 960,
@@ -115,10 +135,10 @@ const CheckoutList = () => {
           <Box
             height="75vh"
             sx={{
-              background: theme.palette.grey[100],
+              background: theme.palette.grey[400],
               borderRadius: "5px",
-              padding: { xs:"1em", sm:"1em",md:"3em"},
-              width: { xs: "85vw", md: "77vw" },
+              padding: { xs: "1em", sm: "1em", md: "3em" },
+              width: { xs: "85vw", md: "75vw" },
             }}
           >
             {/* Slider */}
@@ -141,20 +161,15 @@ const CheckoutList = () => {
             </FlexBetween>
 
             <Slider ref={sliderRef} {...settings}>
-              {[...Array(6)].map((_, index) => (
-                <div key={index}>
-                  <Box
-                    sx={{
-                      border: "1px solid #ccc",
-                      padding: "20px",
-                      textAlign: "center",
-                      height: "55vh",
-                      margin: "1em",
-                    }}
-                  >
-                    Container {index + 1}
-                  </Box>
-                </div>
+              {receipt.map((item, index) => (
+                <TableOrder
+                  key={index}
+                  tableNo={item.tableNo}
+                  orderNo={item.orderNo}
+                  orderType={item.orderType}
+                  totalAmount={item.totalAmount}
+                  status={item.status}
+                />
               ))}
             </Slider>
           </Box>
