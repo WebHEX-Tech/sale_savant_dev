@@ -58,7 +58,12 @@ const Receipt = ({
     setIsDialogOpen(true);
   };
 
+  const handleConfirm = () => {
+    setIsDialogOpen(false);
+  };
+
   const handleCloseDialog = () => {
+    setSelectedTables([]);
     setIsDialogOpen(false);
   };
 
@@ -205,7 +210,7 @@ const Receipt = ({
           width: { xs: "80vw", md: "20vw" },
           height: "90vh",
           zIndex: 2,
-          boxShadow: { xs: "none", md: "0px 4px 6px rgba(0, 0, 0, 0.2)" },
+          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
           borderRadius: "6px",
           background: "#fff",
         }}
@@ -448,44 +453,77 @@ const Receipt = ({
         </Box>
       </Box>
 
-      <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle sx={{background:theme.palette.primary[800], borderBottom:"solid black 1px"}}>
+      <Dialog open={isDialogOpen}>
+        <DialogTitle
+          sx={{
+            background: theme.palette.primary[800],
+            borderBottom: "solid black 1px",
+          }}
+        >
           <FlexBetween>
             <Typography>Select Tables (Maximum Tables: 2)</Typography>
-            <div style={{display:"flex", justifyContent:"center", alignItems:'center', gap:'0.3em'}}>
-              <div style={{width:'15px', height:'15px',border:"#B03021 solid 2px", borderRadius:"2px"}}></div>
-            <Typography> Occupied</Typography>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "0.3em",
+              }}
+            >
+              <div
+                style={{
+                  width: "15px",
+                  height: "15px",
+                  border: "#B03021 solid 2px",
+                  borderRadius: "2px",
+                }}
+              ></div>
+              <Typography> Occupied</Typography>
             </div>
           </FlexBetween>
         </DialogTitle>
-        <DialogContent>
-          {tables.map((table, index) => (
-            <FormControlLabel
-              key={index}
-              control={
-                <Checkbox
-                  checked={selectedTables.includes(table.tableNo)}
-                  onChange={() => handleCheckboxChange(table.tableNo)}
-                  color={table.status === "Occupied" ? "default" : "secondary"}
-                  disabled={table.status === "Occupied"}
-                  sx={{
-                    color: table.status === "Occupied" ? "#B03021" : undefined,
-                  }}
-                />
-              }
-              label={`Table ${table.tableNo} (Pax: ${table.pax})`}
-            />
-          ))}
+        <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedTables.includes("Take-out")}
+                onChange={() => handleCheckboxChange("Take-out")}
+                color="secondary"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 25 } }}
+              />
+            }
+            sx={{ marginTop: "1em", "& .MuiTypography-root": { fontSize: 18 } }}
+            label="Take-out"
+          />
+          <Divider sx={{ margin: "1em 0" }} />
+          <div>
+            {tables.map((table, index) => (
+              <FormControlLabel
+                key={index}
+                control={
+                  <Checkbox
+                    checked={selectedTables.includes(table.tableNo)}
+                    onChange={() => handleCheckboxChange(table.tableNo)}
+                    color={
+                      table.status === "Occupied" ? "default" : "secondary"
+                    }
+                    disabled={table.status === "Occupied"}
+                    sx={{
+                      color:
+                        table.status === "Occupied" ? "#B03021" : undefined,
+                    }}
+                  />
+                }
+                label={`Table ${table.tableNo} (Pax: ${table.pax})`}
+              />
+            ))}
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" onClick={handleCloseDialog}>
+          <Button variant="contained" color="error" onClick={handleCloseDialog}>
             Cancel
           </Button>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleCloseDialog}
-          >
+          <Button variant="contained" color="success" onClick={handleConfirm}>
             Confirm
           </Button>
         </DialogActions>

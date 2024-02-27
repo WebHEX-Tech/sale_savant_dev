@@ -99,10 +99,12 @@ const OrderCard = ({
         variant="outlined"
         sx={{
           width: 280,
+          height: 320,
           position: "relative",
           background: theme.palette.primary[400],
           color: theme.palette.grey[900],
           cursor: isAvailable ? "pointer" : "not-allowed",
+          borderRadius:"15px",
         }}
         onClick={handleCardClick}
       >
@@ -146,7 +148,7 @@ const OrderCard = ({
         ) : (
           <CardMedia
             component="img"
-            sx={{ height: 180 }}
+            sx={{ height: 210 }}
             alt={menuName}
             src={`http://localhost:3001/assets/${img}`}
             loading="lazy"
@@ -157,7 +159,7 @@ const OrderCard = ({
             <div
               style={{ display: "flex", flexDirection: "column", gap: "1em" }}
             >
-              <Typography variant="h6">{menuName}</Typography>
+              <Typography variant="h5">{menuName}</Typography>
               <Typography variant="subtitle1">{`Php ${price}`}</Typography>
             </div>
           </FlexBetween>
@@ -194,9 +196,10 @@ const OrderCard = ({
               <Typography variant="subtitle1">{`Php ${price}`}</Typography>
 
               <FlexBetween>
-                <div>
-                  Available: {salesTarget}
+                <div style={{ border: "1px solid black", padding:"0.2em 0.8em", borderRadius:"8px", whiteSpace:"nowrap"}}>
+                  Available: <span style={{fontWeight:"700", color:"#218951"}}>{salesTarget}</span>
                 </div>
+
                 <div
                   style={{
                     display: "flex",

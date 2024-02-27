@@ -109,7 +109,12 @@ const OrderMenu = (props) => {
     setIsDialogOpen(true);
   };
 
+  const handleConfirm = () => {
+    setIsDialogOpen(false);
+  };
+
   const handleCloseDialog = () => {
+    setSelectedTables([]);
     setIsDialogOpen(false);
   };
 
@@ -346,6 +351,7 @@ const OrderMenu = (props) => {
                           padding: "0 0.2em",
                           borderRadius: "2px",
                           marginRight: "0.5em",
+                          whiteSpace:"nowrap",
                         }}
                       >
                         {selectedTables.join(", ")}
@@ -359,7 +365,7 @@ const OrderMenu = (props) => {
                         background: theme.palette.primary[800],
                         color: theme.palette.secondary[300],
                         fontWeight: "600",
-                        padding: "0 1em",
+                        padding: "0 0.5em",
                         borderRadius: "2px",
                       }}
                     >
@@ -583,7 +589,6 @@ const OrderMenu = (props) => {
               anchor="left"
               open={isReceiptOpen}
               onClose={() => toggleReceiptDrawer(false)}
-              onOpen={() => toggleReceiptDrawer(true)}
               ModalProps={{
                 keepMounted: true,
               }}
@@ -702,7 +707,13 @@ const OrderMenu = (props) => {
               >
                 {[...Array(16).keys()].map((index) => (
                   <Card
-                    sx={{ width: 280, background: theme.palette.primary[400] }}
+                    key={index}
+                    sx={{
+                      width: 280,
+                      height: 320,
+                      background: theme.palette.primary[400],
+                      borderRadius: "15px",
+                    }}
                   >
                     <Skeleton
                       sx={{ height: 180 }}
@@ -748,9 +759,9 @@ const OrderMenu = (props) => {
                 margin: "1.5em",
               }}
             >
-              {filteredMenuData.map((menu) => (
+              {filteredMenuData.map((menu, index) => (
                 <ItemCard
-                  key={menu._id}
+                  key={index}
                   img={menu.picturePath}
                   menuName={menu.menuItem}
                   price={menu.price}
@@ -764,44 +775,77 @@ const OrderMenu = (props) => {
         </Box>
       </Box>
 
-      <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle sx={{background:theme.palette.primary[800], borderBottom:"solid black 1px"}}>
+      <Dialog open={isDialogOpen}>
+        <DialogTitle
+          sx={{
+            background: theme.palette.primary[800],
+            borderBottom: "solid black 1px",
+          }}
+        >
           <FlexBetween>
             <Typography>Select Tables (Maximum Tables: 2)</Typography>
-            <div style={{display:"flex", justifyContent:"center", alignItems:'center', gap:'0.3em'}}>
-              <div style={{width:'15px', height:'15px',border:"#B03021 solid 2px", borderRadius:"2px"}}></div>
-            <Typography> Occupied</Typography>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "0.3em",
+              }}
+            >
+              <div
+                style={{
+                  width: "15px",
+                  height: "15px",
+                  border: "#B03021 solid 2px",
+                  borderRadius: "2px",
+                }}
+              ></div>
+              <Typography> Occupied</Typography>
             </div>
           </FlexBetween>
         </DialogTitle>
-        <DialogContent>
-          {tables.map((table, index) => (
-            <FormControlLabel
-              key={index}
-              control={
-                <Checkbox
-                  checked={selectedTables.includes(table.tableNo)}
-                  onChange={() => handleCheckboxChange(table.tableNo)}
-                  color={table.status === "Occupied" ? "default" : "secondary"}
-                  disabled={table.status === "Occupied"}
-                  sx={{
-                    color: table.status === "Occupied" ? "#B03021" : undefined,
-                  }}
-                />
-              }
-              label={`Table ${table.tableNo} (Pax: ${table.pax})`}
-            />
-          ))}
+        <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedTables.includes("Take-out")}
+                onChange={() => handleCheckboxChange("Take-out")}
+                color="secondary"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 25 } }}
+              />
+            }
+            sx={{ marginTop: "1em", "& .MuiTypography-root": { fontSize: 18 } }}
+            label="Take-out"
+          />
+          <Divider sx={{ margin: "1em 0" }} />
+          <div>
+            {tables.map((table, index) => (
+              <FormControlLabel
+                key={index}
+                control={
+                  <Checkbox
+                    checked={selectedTables.includes(table.tableNo)}
+                    onChange={() => handleCheckboxChange(table.tableNo)}
+                    color={
+                      table.status === "Occupied" ? "default" : "secondary"
+                    }
+                    disabled={table.status === "Occupied"}
+                    sx={{
+                      color:
+                        table.status === "Occupied" ? "#B03021" : undefined,
+                    }}
+                  />
+                }
+                label={`Table ${table.tableNo} (Pax: ${table.pax})`}
+              />
+            ))}
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" onClick={handleCloseDialog}>
+          <Button variant="contained" color="error" onClick={handleCloseDialog}>
             Cancel
           </Button>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleCloseDialog}
-          >
+          <Button variant="contained" color="success" onClick={handleConfirm}>
             Confirm
           </Button>
         </DialogActions>
