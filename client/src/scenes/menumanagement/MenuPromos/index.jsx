@@ -57,7 +57,7 @@ const MenuPromos = () => {
 
   const filteredRows = searchInput
     ? menuPromo.filter((row) =>
-        row.menuItem.toLowerCase().includes(searchInput.toLowerCase())
+        row.promoName.toLowerCase().includes(searchInput.toLowerCase())
       )
     : menuPromo;
 
@@ -97,19 +97,45 @@ const MenuPromos = () => {
   const columns = [
     { field: "id", headerName: "Promo ID", width: 80 },
     { field: "promoName", headerName: "Promo Name", width: 200 },
-    { field: "menuItem", headerName: "Menu Item", width: 200 },
-    { field: "category", headerName: "Category", width: 150 },
-    { field: "promoDesc", headerName: "Promo Description", width: 280 },
+    { field: "applicability", headerName: "Promo Applicability", width: 200 },
+    { field: "promoDesc", headerName: "Promo Description", width: 250 },
     {
-      field: "pricePromo",
-      headerName: "Prices (Php)",
+      field: "promoType",
+      headerName: "Promo Type",
+      width: 150,
+      renderCell: (params) => (
+        <div>
+          {params.row.promoType === "Percentage"
+            ? params.row.promoType
+            : params.row.promoType + " Amount"}
+        </div>
+      ),
+    },
+    {
+      field: "promoValue",
+      headerName: "Promo Value",
       type: "number",
       width: 100,
+      renderCell: (params) => (
+        <div>
+          {params.row.promoType === "Percentage"
+            ? params.row.promoValue + "%"
+            : params.row.promoValue}
+        </div>
+      ),
     },
     {
       field: "validDate",
       headerName: "Valid Until",
       width: 150,
+      valueFormatter: (params) => {
+        const date = new Date(params.value);
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        });
+      },
     },
     {
       field: "divider",
@@ -120,7 +146,27 @@ const MenuPromos = () => {
         <Divider orientation="vertical" sx={{ marginLeft: "2em" }} />
       ),
     },
-    { field: "noSold", headerName: "No. of Sold", type: "number", width: 100 },
+    { field: "promoUsage", headerName: "Usage", type: "number", width: 50 },
+    {
+      field: "promoStatus",
+      headerName: "Status",
+      width: 100,
+      renderCell: (params) => (
+        <div
+          style={{
+            backgroundColor:
+              params.row.promoStatus === "Expired"
+                ? "#B03021" // Expired
+                : "#26B02B", // Active
+            color: "#FFF",
+            padding: "5px 10px",
+            borderRadius: "5px",
+          }}
+        >
+          {params.row.promoStatus}
+        </div>
+      ),
+    },
     {
       field: "action",
       headerName: "Action",
@@ -184,7 +230,7 @@ const MenuPromos = () => {
                 p="0.5rem 1.5rem"
               >
                 <InputBase
-                  placeholder="Search Menu Item..."
+                  placeholder="Search Promo Name..."
                   value={searchInput}
                   onChange={handleSearchInputChange}
                 />
@@ -197,7 +243,7 @@ const MenuPromos = () => {
 
       <Box
         m="1.5rem 2.5rem"
-        height="67vh"
+        height="65vh"
         width="75vw"
         sx={{
           "& .MuiDataGrid-root": {

@@ -6,22 +6,18 @@ const MenuPromoSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    menuItem: {
+    applicability: {
       type: String,
       required: true,
-      min: 2,
-      max: 50,
     },
-    category: {
+    promoType:{
       type: String,
       required: true,
-      min: 2,
-      max: 50,
     },
     promoDesc: {
       type: String,
     },
-    pricePromo: {
+    promoValue: {
       type: Number,
       required: true,
     },
@@ -29,8 +25,13 @@ const MenuPromoSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-    noSold: {
+    promoStatus: {
+      type: String,
+      required: true,
+    },
+    promoUsage: {
       type: Number,
+      required: true,
     },
   },
   { timestamps: true }

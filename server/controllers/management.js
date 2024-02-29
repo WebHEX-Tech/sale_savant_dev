@@ -111,22 +111,24 @@ export const AddPromo = async (req, res) => {
   try {
     const {
       promoName,
-      menuItem,
-      category,
+      promoType,
       promoDesc,
-      pricePromo,
+      promoValue,
       validDate,
-      noSold,
+      promoStatus,
+      promoUsage,
+      applicability,
     } = req.body;
 
     const newPromo = new MenuPromo({
       promoName,
-      menuItem,
-      category,
+      promoType,
       promoDesc,
-      pricePromo,
+      promoValue,
       validDate,
-      noSold,
+      promoStatus,
+      promoUsage,
+      applicability,
     });
 
     const savedPromo = await newPromo.save();
@@ -134,10 +136,9 @@ export const AddPromo = async (req, res) => {
     res.status(201).json(savedPromo);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: error.message || "Internal Server Error" });
   }
 };
-
 
 // Get Function
 export const getMenu = async (req, res) => {

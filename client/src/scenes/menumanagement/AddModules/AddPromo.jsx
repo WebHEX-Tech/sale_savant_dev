@@ -3,8 +3,8 @@ import {
   Box,
   Button,
   Divider,
+  InputAdornment,
   InputLabel,
-  ListSubheader,
   MenuItem,
   TextField,
   Typography,
@@ -12,27 +12,42 @@ import {
 } from "@mui/material";
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
-import { Header } from "components";
+import { FlexBetween, Header } from "components";
 import { Link, useNavigate } from "react-router-dom";
 
 const AddPromoSchema = Yup.object().shape({
-  promoName: Yup.string().required("Required"),
-  menuItem: Yup.string().required("Required"),
-  category: Yup.string().required("Required"),
-  promoDesc: Yup.string(),
-  pricePromo: Yup.number().required("Required"),
-  validDate: Yup.date().required("Required"),
-  noSold: Yup.number(),
+  promoName: Yup.string().required("Promo Name is required"),
+  applicability: Yup.string().required("Promo Applicability is required"),
+  promoType: Yup.string().required("Promo Type is required"),
+  promoDesc: Yup.string().required("Promo Description is required"),
+  promoValue: Yup.number().required("Promo Value is required"),
+  validDate: Yup.date().required("Valid Date is required"),
 });
 
-const categories = ["Main Dish", "Tausug Dish", "Dessert", "Tausug Dessert", "Drinks"];
+const categories = [
+  "Main Dish",
+  "Tausug Dish",
+  "Dessert",
+  "Tausug Dessert",
+  "Drinks",
+];
 
 const AddPromo = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [menuItems, setMenuItems] = useState([]);
-  // eslint-disable-next-line
-  const [selectedMenuItem, setSelectedMenuItem] = useState("");
+
+  const handleChangePromoType = (e, setFieldValue, values) => {
+    const { name, value } = e.target;
+
+    const promoType =
+      value === "All Menu" || categories.includes(value)
+        ? "Percentage"
+        : "Fixed";
+
+    setFieldValue(name, value);
+    setFieldValue("promoType", promoType);
+  };
 
   useEffect(() => {
     const fetchMenu = async () => {
@@ -54,19 +69,6 @@ const AddPromo = () => {
     fetchMenu();
   }, []);
 
-  const handleMenuItemChange = async (value, setValues) => {
-    const selectedMenu = menuItems.find((menu) => menu.menuItem === value);
-
-    if (selectedMenu) {
-      setValues({
-        ...selectedMenu,
-        pricePromo: selectedMenu.price,
-      });
-    }
-
-    setSelectedMenuItem(value);
-  };
-
   const groupedMenuItems = categories.reduce((acc, category) => {
     const categoryItems = menuItems
       .filter((menuItem) => menuItem.category === category)
@@ -76,15 +78,21 @@ const AddPromo = () => {
 
   const initialValues = {
     promoName: "",
-    menuItem: "",
-    category: "",
+    applicability: "",
+    promoType: "",
     promoDesc: "",
-    pricePromo: "",
+    promoValue: "",
     validDate: "",
-    noSold: 0,
+    promoStatus: "",
+    promoUsage: 0,
   };
 
   const handleSubmit = async (values) => {
+    const currentDate = new Date();
+    const validUntilDate = new Date(values.validDate);
+    const promoStatus = validUntilDate >= currentDate ? "Active" : "Expired";
+
+    const updatedValues = { ...values, promoStatus };
     try {
       const response = await fetch(
         "http://localhost:3001/menumanagement/addPromo",
@@ -93,7 +101,7 @@ const AddPromo = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(values),
+          body: JSON.stringify(updatedValues),
         }
       );
 
@@ -126,7 +134,7 @@ const AddPromo = () => {
             touched,
             handleBlur,
             handleChange,
-            setValues,
+            setFieldValue,
           }) => (
             <Form>
               <Box sx={{ margin: "0 2em", width: "60%" }}>
@@ -147,15 +155,16 @@ const AddPromo = () => {
                   }
                   helperText={touched.promoName && errors.promoName}
                 />
-                <InputLabel htmlFor="menuItem">Menu Item</InputLabel>
+                <InputLabel htmlFor="applicability">
+                  Promo Applicability
+                </InputLabel>
                 <Field
-                  name="menuItem"
+                  name="applicability"
                   onBlur={handleBlur}
-                  onChange={(e) => {
-                    handleChange(e);
-                    handleMenuItemChange(e.target.value, setValues);
-                  }}
-                  value={values.menuItem}
+                  onChange={(e) =>
+                    handleChangePromoType(e, setFieldValue, values)
+                  }
+                  value={values.applicability}
                   as={TextField}
                   fullWidth
                   select
@@ -163,12 +172,23 @@ const AddPromo = () => {
                     background: theme.palette.primary[700],
                     marginBottom: "1em",
                   }}
-                  error={Boolean(touched.menuItem) && Boolean(errors.menuItem)}
-                  helperText={touched.menuItem && errors.menuItem}
+                  error={Boolean(touched.applicability && errors.applicability)}
+                  helperText={touched.applicability && errors.applicability}
                 >
+                  <MenuItem
+                    value="All Menu"
+                    sx={{
+                      fontSize: "1.5em",
+                      background: theme.palette.secondary[600],
+                    }}
+                  >
+                    All Menu
+                  </MenuItem>
+                  <Divider />
                   {Object.entries(groupedMenuItems).map(([category, items]) => [
-                    <ListSubheader
+                    <MenuItem
                       key={`category-${category}`}
+                      value={category}
                       sx={{
                         background: theme.palette.primary[500],
                         color: theme.palette.secondary[400],
@@ -176,47 +196,57 @@ const AddPromo = () => {
                       }}
                     >
                       {category}
-                    </ListSubheader>,
+                    </MenuItem>,
                     ...items.map((menuItem) => (
                       <MenuItem
                         key={menuItem.menuItem}
                         value={menuItem.menuItem}
+                        sx={{display:"flex", justifyContent:"space-between"}}
                       >
-                        {menuItem.menuItem}
+                        <div>{menuItem.menuItem}</div>
+                        <div>{menuItem.price}</div>
                       </MenuItem>
                     )),
                   ])}
                 </Field>
-                <InputLabel htmlFor="category">Category</InputLabel>
-                <Field
-                  disabled
-                  name="category"
+                <InputLabel htmlFor="promoType">Promo Type</InputLabel>
+                <TextField
+                  name="promoType"
                   onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.category}
-                  select
-                  as={TextField}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  value={values.promoType}
                   fullWidth
+                  select
                   sx={{
                     background: theme.palette.primary[700],
                     marginBottom: "1em",
                   }}
-                  error={Boolean(touched.category) && Boolean(errors.category)}
-                  helperText={touched.category && errors.category}
+                  error={Boolean(touched.promoType && errors.promoType)}
+                  helperText={touched.promoType && errors.promoType}
                 >
-                  {categories.map((category) => (
-                    <MenuItem key={category} value={category}>
-                      {category}
-                    </MenuItem>
-                  ))}
-                </Field>
+                  <MenuItem value="Percentage">Percentage Discount</MenuItem>
+                  <MenuItem value="Fixed">Fixed Amount Discount</MenuItem>
+                </TextField>
 
                 <Divider sx={{ margin: "1.5em 0" }} />
                 <Typography variant="h4" sx={{ marginBottom: "1em" }}>
                   Validation and Price
                 </Typography>
 
-                <Box display="flex" gap="2em" >
+                <Box
+                  display="flex"
+                  gap="2em"
+                  sx={{
+                    flexDirection: {
+                      xs: "column",
+                      sm: "column",
+                      md: "column",
+                      lg: "row",
+                    },
+                  }}
+                >
                   <Box>
                     <InputLabel htmlFor="validDate">Valid Until</InputLabel>
                     <Field
@@ -228,7 +258,6 @@ const AddPromo = () => {
                       as={TextField}
                       sx={{
                         background: theme.palette.primary[700],
-                        width: "300px",
                         marginBottom: "1em",
                       }}
                       error={
@@ -236,30 +265,54 @@ const AddPromo = () => {
                       }
                       helperText={touched.validDate && errors.validDate}
                     />
-                    <InputLabel htmlFor="validDate">Price (in Php)</InputLabel>
-                    <Field
-                      name="pricePromo"
-                      type="number"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      value={values.pricePromo}
-                      as={TextField}
-                      fullWidth
-                      sx={{
-                        background: theme.palette.primary[700],
-                        width: "300px",
-                        marginBottom: "1em",
-                      }}
-                      error={
-                        Boolean(touched.pricePromo) &&
-                        Boolean(errors.pricePromo)
-                      }
-                      helperText={touched.pricePromo && errors.pricePromo ? errors.pricePromo : "Change current price to a discounted price"}
-                    />
+                    <InputLabel htmlFor="promoValue">Promo Value</InputLabel>
+                    {values.promoType !== "Percentage" ? (
+                      <TextField
+                        name="promoValue"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.promoValue}
+                        fullWidth
+                        type="number"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              Php
+                            </InputAdornment>
+                          ),
+                        }}
+                        sx={{
+                          background: theme.palette.primary[700],
+                          marginBottom: "0.5em",
+                        }}
+                        error={Boolean(touched.promoValue && errors.promoValue)}
+                        helperText={touched.promoValue && errors.promoValue}
+                      />
+                    ) : (
+                      <TextField
+                        name="promoValue"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.promoValue}
+                        fullWidth
+                        type="number"
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">%</InputAdornment>
+                          ),
+                        }}
+                        sx={{
+                          background: theme.palette.primary[700],
+                          marginBottom: "0.5em",
+                        }}
+                        error={Boolean(touched.promoValue && errors.promoValue)}
+                        helperText={touched.promoValue && errors.promoValue}
+                      />
+                    )}
                   </Box>
 
                   <Box width="100%">
-                    <InputLabel htmlFor="validDate">
+                    <InputLabel htmlFor="promoDesc">
                       Promo Description
                     </InputLabel>
                     <Field
