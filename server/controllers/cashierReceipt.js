@@ -2,11 +2,20 @@ import Receipt from "../models/Receipt.js";
 import Menu from "../models/Menu.js";
 import Table from "../models/Table.js";
 import MenuInventory from "../models/MenuInventory.js";
+import MenuPromo from "../models/MenuPromo.js";
 
 // Add
 export const createReceipt = async (req, res) => {
   try {
-    const { items, orderType, tableNo, orderNo, totalAmount, status } = req.body;
+    const {
+      items,
+      orderType,
+      tableNo,
+      orderNo,
+      totalAmount,
+      status,
+      promoUsed,
+    } = req.body;
     let salesTargetDeducted = false;
 
     // Iterate through items to deduct salesTarget for each menu item
@@ -18,11 +27,9 @@ export const createReceipt = async (req, res) => {
           .json({ message: `Menu item ${item.menuItemId} not found` });
       }
       if (item.quantity > menu.salesTarget) {
-        return res
-          .status(400)
-          .json({
-            message: `Not enough sales target available for menu item ${menu.menuItem}`,
-          });
+        return res.status(400).json({
+          message: `Not enough sales target available for menu item ${menu.menuItem}`,
+        });
       }
       menu.salesTarget -= item.quantity;
       await menu.save();
@@ -38,6 +45,19 @@ export const createReceipt = async (req, res) => {
       }
     }
 
+    // Update promo usage
+    if (promoUsed && promoUsed.length > 0) {
+      for (const promo of promoUsed) {
+        const menuPromo = await MenuPromo.findOne({
+          promoName: promo.promoName,
+        });
+        if (menuPromo) {
+          menuPromo.promoUsage += promo.promoUsage;
+          await menuPromo.save();
+        }
+      }
+    }
+
     if (!salesTargetDeducted) {
       return res.status(400).json({ message: "No sales target deducted" });
     }
@@ -48,7 +68,8 @@ export const createReceipt = async (req, res) => {
       tableNo,
       orderNo,
       totalAmount,
-      status
+      status,
+      promoUsed,
     });
     const savedReceipt = await newReceipt.save();
     res.status(201).json(savedReceipt);
@@ -124,7 +145,9 @@ export const deleteTable = async (req, res) => {
 
     await Table.findByIdAndDelete(id);
 
-    res.status(200).json({ message: `Table ${table.tableNo} deleted successfully` });
+    res
+      .status(200)
+      .json({ message: `Table ${table.tableNo} deleted successfully` });
   } catch (error) {
     console.error("Error deleting table:", error);
     res.status(500).json({ error: "Internal Server Error" });

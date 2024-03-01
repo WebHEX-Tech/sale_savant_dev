@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Button,
   Drawer,
@@ -62,12 +63,14 @@ const CheckoutList = () => {
     speed: 500,
     slidesToShow: 3,
     swipeToSlide: true,
+    initialSlide: 1,
     responsive: [
       {
         breakpoint: 1380,
         settings: {
           slidesToShow: 2,
           slidesToScroll: 2,
+          initialSlide: 1,
         },
       },
       {
@@ -75,6 +78,7 @@ const CheckoutList = () => {
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          initialSlide: 1,
         },
       },
     ],
@@ -171,12 +175,18 @@ const CheckoutList = () => {
               >
                 New Order
               </Button>
-              <Button
-                variant="contained"
-                sx={{ background: theme.palette.primary[500] }}
+              <Badge
+                color="secondary"
+                badgeContent={receipt.length}
+                invisible={receipt.length === 0}
               >
-                Checkout
-              </Button>
+                <Button
+                  variant="contained"
+                  sx={{ background: theme.palette.primary[500] }}
+                >
+                  Checkout
+                </Button>
+              </Badge>
               <Button variant="contained">Refunds</Button>
             </div>
 

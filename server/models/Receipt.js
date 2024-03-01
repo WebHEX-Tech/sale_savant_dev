@@ -27,6 +27,16 @@ const ReceiptSchema = new mongoose.Schema(
         },
       },
     ],
+    promoUsed: [
+      {
+        promoName: {
+          type: String,
+        },
+        promoUsage :{
+          type: Number,
+        }
+      }
+    ],
     tableNo: {
       type: String,
       required: true,

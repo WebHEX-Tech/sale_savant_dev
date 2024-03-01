@@ -12,14 +12,14 @@ import {
 } from "@mui/material";
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
-import { FlexBetween, Header } from "components";
+import { Header } from "components";
 import { Link, useNavigate } from "react-router-dom";
 
 const AddPromoSchema = Yup.object().shape({
   promoName: Yup.string().required("Promo Name is required"),
   applicability: Yup.string().required("Promo Applicability is required"),
   promoType: Yup.string().required("Promo Type is required"),
-  promoDesc: Yup.string().required("Promo Description is required"),
+  promoDesc: Yup.string(),
   promoValue: Yup.number().required("Promo Value is required"),
   validDate: Yup.date().required("Valid Date is required"),
 });
@@ -171,6 +171,10 @@ const AddPromo = () => {
                   sx={{
                     background: theme.palette.primary[700],
                     marginBottom: "1em",
+                    "& .MuiSelect-select": {
+                      display:"flex",
+                      justifyContent:"space-between",
+                    }
                   }}
                   error={Boolean(touched.applicability && errors.applicability)}
                   helperText={touched.applicability && errors.applicability}
@@ -201,10 +205,13 @@ const AddPromo = () => {
                       <MenuItem
                         key={menuItem.menuItem}
                         value={menuItem.menuItem}
-                        sx={{display:"flex", justifyContent:"space-between"}}
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
                       >
                         <div>{menuItem.menuItem}</div>
-                        <div>{menuItem.price}</div>
+                        <div>Php {menuItem.price}</div>
                       </MenuItem>
                     )),
                   ])}

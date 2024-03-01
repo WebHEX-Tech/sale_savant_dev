@@ -6,6 +6,7 @@ import {
   CardContent,
   CardMedia,
   Checkbox,
+  Chip,
   Container,
   Dialog,
   DialogActions,
@@ -40,6 +41,7 @@ const OrderMenu = (props) => {
   const navigate = useNavigate();
   const [tables, setTables] = useState([]);
   const [menuData, setMenuData] = useState([]);
+  const [menuPromo, setMenuPromo] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchValue, setSearchValue] = useState("");
@@ -47,6 +49,8 @@ const OrderMenu = (props) => {
   const [addedDishes, setAddedDishes] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTables, setSelectedTables] = useState([]);
+  const [isPromoDialogOpen, setIsPromoDialogOpen] = useState(false);
+  const [selectedPromos, setSelectedPromos] = useState([]);
   const { window } = props;
   const OrderType = getOrderType();
   const OrderNo = getOrderNo();
@@ -69,6 +73,30 @@ const OrderMenu = (props) => {
     };
 
     fetchMenuData();
+  }, []);
+
+  const fetchMenuPromos = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3001/menumanagement/menuPromo"
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const menuPromoWithId = data.map((item, index) => ({
+          ...item,
+          id: index + 1,
+        }));
+        setMenuPromo(menuPromoWithId);
+      } else {
+        console.error("Failed to fetch menu promo:", response.statusText);
+      }
+    } catch (error) {
+      console.error("An error occurred during the fetch:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMenuPromos();
   }, []);
 
   useEffect(() => {
@@ -105,6 +133,94 @@ const OrderMenu = (props) => {
     }
   }, [data]);
 
+  // Promo Dialog
+  const handleAddSelectedPromo = (promo) => {
+    if (
+      !selectedPromos.some((selectedPromo) => selectedPromo.id === promo.id)
+    ) {
+      setSelectedPromos([...selectedPromos, promo]);
+    }
+  };
+
+  const handleRemoveSelectedPromo = (promo) => {
+    setSelectedPromos(
+      selectedPromos.filter((selectedPromo) => selectedPromo.id !== promo.id)
+    );
+  };
+
+  const handleOpenPromoDialog = () => {
+    setIsPromoDialogOpen(true);
+  };
+
+  const handleClosePromoDialog = () => {
+    setIsPromoDialogOpen(false);
+  };
+
+  const resetOriginalPrices = () => {
+    const updatedDishes = addedDishes.map((dish) => {
+      const originalMenu = menuData.find(
+        (menu) => menu.menuItem === dish.menuName
+      );
+      console.log(originalMenu);
+      const originalPrice = originalMenu.price;
+      return {
+        ...dish,
+        total: originalPrice * dish.quantity,
+        price: originalPrice,
+      };
+    });
+    setAddedDishes(updatedDishes);
+  };
+
+  const handleCancelPromoDialog = () => {
+    setSelectedPromos([]);
+    resetOriginalPrices();
+    setIsPromoDialogOpen(false);
+  };
+
+  const handleApplyPromo = () => {
+    handleClosePromoDialog();
+    selectedPromos.forEach((promo) => {
+      if (promo.promoType === "Percentage") {
+        const updatedDishes = addedDishes.map((dish) => {
+          if (
+            promo.applicability === "All Menu" ||
+            promo.applicability.includes(dish.menuName) ||
+            promo.applicability.includes(dish.category)
+          ) {
+            const discountedPrice =
+              dish.price - (dish.price * (promo.promoValue / 100)) / 100;
+            return {
+              ...dish,
+              total: discountedPrice * dish.quantity,
+              price: discountedPrice,
+            };
+          }
+          return dish;
+        });
+        setAddedDishes(updatedDishes);
+      } else if (promo.promoType === "Fixed") {
+        const updatedDishes = addedDishes.map((dish) => {
+          if (
+            promo.applicability === "All Menu" ||
+            promo.applicability.includes(dish.menuName) ||
+            promo.applicability.includes(dish.category)
+          ) {
+            const discountedPrice = promo.promoValue;
+            return {
+              ...dish,
+              total: discountedPrice * dish.quantity,
+              price: discountedPrice,
+            };
+          }
+          return dish;
+        });
+        setAddedDishes(updatedDishes);
+      }
+    });
+  };
+
+  // Table Dialog
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
   };
@@ -118,6 +234,7 @@ const OrderMenu = (props) => {
     setIsDialogOpen(false);
   };
 
+  // Cancel Order
   const handleCancelOrder = () => {
     navigate("/take-order");
   };
@@ -218,6 +335,7 @@ const OrderMenu = (props) => {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
   const handleSubmitOrder = async () => {
+
     const orderDetails = {
       items: addedDishes.map((dish) => ({
         menuItemId: dish._id,
@@ -225,6 +343,17 @@ const OrderMenu = (props) => {
         quantity: dish.quantity,
         price: dish.price,
         totalPrice: dish.total,
+      })),
+      promoUsed: selectedPromos.map((promo) => ({
+        promoName: promo.promoName,
+        promoUsage: addedDishes.reduce((acc, dish) => {
+          if (promo.applicability === "All Menu" ||
+              promo.applicability.includes(dish.menuName) ||
+              promo.applicability.includes(dish.category)) {
+            return acc + dish.quantity;
+          }
+          return acc;
+        }, 0)
       })),
       orderType: OrderType,
       tableNo: selectedTables.join(", "),
@@ -309,8 +438,8 @@ const OrderMenu = (props) => {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                width: { xs: "95vw", md: "20vw" },
-                height: "90vh",
+                width: { xs: "95vw", md: "24vw" },
+                height: "87vh",
                 zIndex: 2,
                 boxShadow: { xs: "none", md: "0px 4px 6px rgba(0, 0, 0, 0.2)" },
                 borderRadius: "6px",
@@ -351,7 +480,7 @@ const OrderMenu = (props) => {
                           padding: "0 0.2em",
                           borderRadius: "2px",
                           marginRight: "0.5em",
-                          whiteSpace:"nowrap",
+                          whiteSpace: "nowrap",
                         }}
                       >
                         {selectedTables.join(", ")}
@@ -425,7 +554,7 @@ const OrderMenu = (props) => {
                             <Typography variant="body1" fontWeight={600}>
                               {dish.menuName}
                             </Typography>
-                            <Typography variant="body1">{`Php ${dish.price}`}</Typography>
+                            <Typography variant="body1">{`Php ${dish.price.toFixed(2)}`}</Typography>
                           </div>
                         </div>
 
@@ -446,7 +575,7 @@ const OrderMenu = (props) => {
                               fontWeight: "600",
                               color: theme.palette.secondary[400],
                             }}
-                          >{`Php ${dish.total}`}</Typography>
+                          >{`Php ${dish.total.toFixed(2)}`}</Typography>
 
                           <div
                             style={{
@@ -549,16 +678,28 @@ const OrderMenu = (props) => {
                   sx={{
                     display: "flex",
                     justifyContent: "center",
-                    gap: "2em",
+                    gap: "0.5em",
                     margin: "1em",
                   }}
                 >
-                  <Button variant="contained" onClick={handleOpenDialog}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={handleOpenDialog}
+                  >
                     Select Table
                   </Button>
                   <Button
                     variant="contained"
+                    size="small"
+                    onClick={handleOpenPromoDialog}
+                  >
+                    Apply Promo
+                  </Button>
+                  <Button
+                    variant="contained"
                     color="success"
+                    size="small"
                     onClick={() => {
                       handleSubmitOrder();
                       handleConfirmTables();
@@ -605,12 +746,13 @@ const OrderMenu = (props) => {
                 addedDishes={addedDishes}
                 setAddedDishes={setAddedDishes}
                 menuData={menuData}
+                menuPromo={menuPromo}
               />
             </Drawer>
           </>
         )}
 
-        <Box flex="1" margin="3em" marginLeft={{ xs: 0, md: "20vw" }}>
+        <Box flex="1" margin="3em" marginLeft={{ xs: 0, md: "24vw" }}>
           <Box>
             <Toolbar
               sx={{
@@ -767,6 +909,7 @@ const OrderMenu = (props) => {
                   price={menu.price}
                   salesTarget={menu.salesTarget}
                   menuId={menu._id}
+                  category={menu.category}
                   onAddDish={handleAddDish}
                 />
               ))}
@@ -847,6 +990,97 @@ const OrderMenu = (props) => {
           </Button>
           <Button variant="contained" color="success" onClick={handleConfirm}>
             Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={isPromoDialogOpen}
+        onClose={handleClosePromoDialog}
+        sx={{ "& .MuiPaper-root": { background: theme.palette.grey[300] } }}
+        fullWidth
+      >
+        <DialogTitle sx={{ color: "#000" }}>Apply Promo</DialogTitle>
+        <DialogContent>
+          <FormControl>
+            <Box marginBottom="1em">
+              <Typography color="#000"> Applicable Promo/s</Typography>
+              {menuPromo.map(
+                (promo) =>
+                  (addedDishes.some(
+                    (dish) =>
+                      promo.applicability.includes(dish.menuName) ||
+                      promo.applicability.includes(dish.category)
+                  ) ||
+                    promo.applicability === "All Menu") && (
+                    <Chip
+                      key={promo.id}
+                      label={
+                        <Typography variant="caption">
+                          {promo.promoType === "Fixed" ? (
+                            <>
+                              Starts at Php {promo.promoValue} <br /> Promo:{" "}
+                              {promo.promoName}
+                            </>
+                          ) : (
+                            <>
+                              {promo.promoValue}% off Promo: {promo.promoName}
+                            </>
+                          )}
+                        </Typography>
+                      }
+                      clickable
+                      onClick={() => {
+                        if (promo.promoStatus !== "Expired") {
+                          handleAddSelectedPromo(promo);
+                        }
+                      }}
+                      color={
+                        promo.promoStatus === "Expired" ? "error" : "primary"
+                      }
+                      sx={{
+                        margin: "0.5em",
+                        padding: "1.5em 0.2em",
+                        border: "1px #9D9D9D solid",
+                        cursor:
+                          promo.promoStatus === "Expired"
+                            ? "not-allowed"
+                            : "pointer",
+                        opacity: promo.promoStatus === "Expired" ? 0.5 : 1,
+                      }}
+                    />
+                  )
+              )}
+            </Box>
+            <Box>
+              <Typography color="#000"> Selected Promo/s</Typography>
+              {selectedPromos.map((selectedPromo) => (
+                <Chip
+                  key={selectedPromo.id}
+                  label={selectedPromo.promoName}
+                  onDelete={() => handleRemoveSelectedPromo(selectedPromo)}
+                  color="success"
+                  sx={{ margin: "0.5em" }}
+                />
+              ))}
+            </Box>
+          </FormControl>
+          <FormControl fullWidth></FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={handleCancelPromoDialog}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleApplyPromo}
+          >
+            Apply
           </Button>
         </DialogActions>
       </Dialog>

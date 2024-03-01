@@ -5,11 +5,13 @@ import {
   CardContent,
   CardMedia,
   Checkbox,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
+  FormControl,
   FormControlLabel,
   IconButton,
   Typography,
@@ -27,19 +29,20 @@ const Receipt = ({
   addedDishes,
   setAddedDishes,
   menuData,
+  menuPromo,
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTables, setSelectedTables] = useState([]);
   const [tables, setTables] = useState([]);
+  const [isPromoDialogOpen, setIsPromoDialogOpen] = useState(false);
+  const [selectedPromos, setSelectedPromos] = useState([]);
 
   useEffect(() => {
     const fetchTableData = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:3001/cashier/get-table"
-        );
+        const response = await fetch("http://localhost:3001/cashier/get-table");
         if (response.ok) {
           const data = await response.json();
           setTables(data);
@@ -54,6 +57,94 @@ const Receipt = ({
     fetchTableData();
   }, []);
 
+  // Promo Dialog
+  const handleAddSelectedPromo = (promo) => {
+    if (
+      !selectedPromos.some((selectedPromo) => selectedPromo.id === promo.id)
+    ) {
+      setSelectedPromos([...selectedPromos, promo]);
+    }
+  };
+
+  const handleRemoveSelectedPromo = (promo) => {
+    setSelectedPromos(
+      selectedPromos.filter((selectedPromo) => selectedPromo.id !== promo.id)
+    );
+  };
+
+  const handleOpenPromoDialog = () => {
+    setIsPromoDialogOpen(true);
+  };
+
+  const handleClosePromoDialog = () => {
+    setIsPromoDialogOpen(false);
+  };
+
+  const resetOriginalPrices = () => {
+    const updatedDishes = addedDishes.map((dish) => {
+      const originalMenu = menuData.find(
+        (menu) => menu.menuItem === dish.menuName
+      );
+      console.log(originalMenu);
+      const originalPrice = originalMenu.price;
+      return {
+        ...dish,
+        total: originalPrice * dish.quantity,
+        price: originalPrice,
+      };
+    });
+    setAddedDishes(updatedDishes);
+  };
+
+  const handleCancelPromoDialog = () => {
+    setSelectedPromos([]);
+    resetOriginalPrices();
+    setIsPromoDialogOpen(false);
+  };
+
+  const handleApplyPromo = () => {
+    handleClosePromoDialog();
+    selectedPromos.forEach((promo) => {
+      if (promo.promoType === "Percentage") {
+        const updatedDishes = addedDishes.map((dish) => {
+          if (
+            promo.applicability === "All Menu" ||
+            promo.applicability.includes(dish.menuName) ||
+            promo.applicability.includes(dish.category)
+          ) {
+            const discountedPrice =
+              dish.price - (dish.price * (promo.promoValue / 100)) / 100;
+            return {
+              ...dish,
+              total: discountedPrice * dish.quantity,
+              price: discountedPrice,
+            };
+          }
+          return dish;
+        });
+        setAddedDishes(updatedDishes);
+      } else if (promo.promoType === "Fixed") {
+        const updatedDishes = addedDishes.map((dish) => {
+          if (
+            promo.applicability === "All Menu" ||
+            promo.applicability.includes(dish.menuName) ||
+            promo.applicability.includes(dish.category)
+          ) {
+            const discountedPrice = promo.promoValue;
+            return {
+              ...dish,
+              total: discountedPrice * dish.quantity,
+              price: discountedPrice,
+            };
+          }
+          return dish;
+        });
+        setAddedDishes(updatedDishes);
+      }
+    });
+  };
+
+  // Table Dialog
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
   };
@@ -171,9 +262,21 @@ const Receipt = ({
         price: dish.price,
         totalPrice: dish.total,
       })),
+      promoUsed: selectedPromos.map((promo) => ({
+        promoName: promo.promoName,
+        promoUsage: addedDishes.reduce((acc, dish) => {
+          if (promo.applicability === "All Menu" ||
+              promo.applicability.includes(dish.menuName) ||
+              promo.applicability.includes(dish.category)) {
+            return acc + dish.quantity;
+          }
+          return acc;
+        }, 0)
+      })),
       orderType: OrderType,
       tableNo: selectedTables.join(", "),
       orderNo: OrderNo,
+      status: "Unpaid",
       totalAmount: calculateTotalAmount().subTotal.toFixed(2),
     };
 
@@ -208,7 +311,7 @@ const Receipt = ({
           display: "flex",
           flexDirection: "column",
           width: { xs: "80vw", md: "20vw" },
-          height: "90vh",
+          height: "87vh",
           zIndex: 2,
           boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
           borderRadius: "6px",
@@ -316,7 +419,7 @@ const Receipt = ({
                       <Typography variant="body1" fontWeight={600}>
                         {dish.menuName}
                       </Typography>
-                      <Typography variant="body1">{`Php ${dish.price}`}</Typography>
+                      <Typography variant="body1">{`Php ${dish.price.toFixed(2) }`}</Typography>
                     </div>
                   </div>
 
@@ -337,7 +440,7 @@ const Receipt = ({
                         fontWeight: "600",
                         color: theme.palette.secondary[400],
                       }}
-                    >{`Php ${dish.total}`}</Typography>
+                    >{`Php ${dish.total.toFixed(2)}`}</Typography>
 
                     <div
                       style={{
@@ -407,6 +510,7 @@ const Receipt = ({
               flexDirection: "column",
               gap: "0.2em",
               padding: "0 0.5em",
+              marginBottom:"1em"
             }}
           >
             <FlexBetween>
@@ -428,20 +532,30 @@ const Receipt = ({
               </Typography>
             </FlexBetween>
           </div>
-          <Divider />
+          <Divider margin="1em 0"/>
 
           <Box
             sx={{
               display: "flex",
               justifyContent: "center",
-              gap: "2em",
+              gap: "0.5em",
               margin: "1em",
             }}
           >
-            <Button variant="contained" onClick={handleOpenDialog}>Select Table</Button>
+            <Button variant="contained" size="small" onClick={handleOpenDialog}>
+              Select Table
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleOpenPromoDialog}
+            >
+              Apply Promo
+            </Button>
             <Button
               variant="contained"
               color="success"
+              size="small"
               onClick={() => {
                 handleSubmitOrder();
                 handleConfirmTables();
@@ -525,6 +639,98 @@ const Receipt = ({
           </Button>
           <Button variant="contained" color="success" onClick={handleConfirm}>
             Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={isPromoDialogOpen}
+        onClose={handleClosePromoDialog}
+        sx={{ "& .MuiPaper-root": { background: theme.palette.grey[300] } }}
+        fullWidth
+      >
+        <DialogTitle sx={{ color: "#000" }}>Apply Promo</DialogTitle>
+        <DialogContent>
+          <FormControl>
+            <Box marginBottom="1em">
+              <Typography> Applicable Promo/s</Typography>
+              {menuPromo.map(
+                (promo) =>
+                  (addedDishes.some(
+                    (dish) =>
+                      promo.applicability.includes(dish.menuName) ||
+                      promo.applicability.includes(dish.category)
+                  ) ||
+                    promo.applicability === "All Menu") && (
+                    <Chip
+                      key={promo.id}
+                      label={
+                        <Typography variant="caption">
+                          {promo.promoType === "Fixed" ? (
+                            <>
+                              Starts at Php {promo.promoValue} <br /> Promo:{" "}
+                              {promo.promoName}
+                            </>
+                          ) : (
+                            <>
+                              {promo.promoValue}% off Promo: {promo.promoName}
+                            </>
+                          )}
+                        </Typography>
+                      }
+                      clickable
+                      onClick={() => {
+                        if (promo.promoStatus !== "Expired") {
+                          handleAddSelectedPromo(promo);
+                        }
+                      }}
+                      color={
+                        promo.promoStatus === "Expired" ? "error" : "primary"
+                      }
+                      sx={{
+                        margin: "0.5em",
+                        padding: "1.5em 0.2em",
+                        border: "1px #9D9D9D solid",
+                        cursor:
+                          promo.promoStatus === "Expired"
+                            ? "not-allowed"
+                            : "pointer",
+                        opacity: promo.promoStatus === "Expired" ? 0.5 : 1,
+                      }}
+                    />
+                  )
+              )}
+            </Box>
+            <Box>
+              <Typography> Selected Promo/s</Typography>
+              {/* Selected Promos */}
+              {selectedPromos.map((selectedPromo) => (
+                <Chip
+                  key={selectedPromo.id}
+                  label={selectedPromo.promoName}
+                  onDelete={() => handleRemoveSelectedPromo(selectedPromo)}
+                  color="success"
+                  sx={{ margin: "0.5em" }}
+                />
+              ))}
+            </Box>
+          </FormControl>
+          <FormControl fullWidth></FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={handleCancelPromoDialog}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleApplyPromo}
+          >
+            Apply
           </Button>
         </DialogActions>
       </Dialog>

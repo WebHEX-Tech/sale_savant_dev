@@ -23,6 +23,7 @@ const OrderCard = ({
   price,
   salesTarget,
   menuId,
+  category,
   onAddDish,
 }) => {
   const theme = useTheme();
@@ -42,6 +43,7 @@ const OrderCard = ({
       price,
       quantity,
       total,
+      category,
       menuId,
     };
     onAddDish(dish);

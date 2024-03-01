@@ -24,7 +24,7 @@ const OrderReceipt = ({ tableNo, orderNo, orderType, items, totalAmount }) => {
           display: "flex",
           flexDirection: "column",
           width: { xs: "80vw", md: "21vw" },
-          height: "90vh",
+          height: "87vh",
           zIndex: 2,
           boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)" ,
           borderRadius: "6px",
@@ -116,7 +116,7 @@ const OrderReceipt = ({ tableNo, orderNo, orderType, items, totalAmount }) => {
                       <Typography variant="body1" fontWeight={600}>
                         {dish.menuItem}
                       </Typography>
-                      <Typography variant="body1">{`Php ${dish.price}`}</Typography>
+                      <Typography variant="body1">{`Php ${dish.price.toFixed(2)}`}</Typography>
                     </div>
                   </div>
 
@@ -141,7 +141,7 @@ const OrderReceipt = ({ tableNo, orderNo, orderType, items, totalAmount }) => {
                         fontWeight: "600",
                         color: theme.palette.secondary[400],
                       }}
-                    >{`Php ${dish.totalPrice}`}</Typography>
+                    >{`Php ${dish.totalPrice.toFixed(2)}`}</Typography>
                   </div>
                 </FlexBetween>
               </CardContent>
@@ -171,7 +171,7 @@ const OrderReceipt = ({ tableNo, orderNo, orderType, items, totalAmount }) => {
             </FlexBetween>
             <FlexBetween>
               <Typography sx={{ fontWeight: "600" }}>Subtotal</Typography>
-              <Typography sx={{ fontWeight: "600" }}>Php {totalAmount}</Typography>
+              <Typography sx={{ fontWeight: "600" }}>Php {totalAmount.toFixed(2)}</Typography>
             </FlexBetween>
           </div>
           <Divider sx={{ marginTop: "1em" }} />

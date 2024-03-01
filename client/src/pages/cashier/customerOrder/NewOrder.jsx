@@ -1,5 +1,6 @@
 import { useTheme } from "@emotion/react";
 import {
+  Badge,
   Box,
   Button,
   Card,
@@ -15,18 +16,43 @@ import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantity
 import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
 import TableRestaurantIcon from "@mui/icons-material/TableRestaurant";
 import * as image from "assets/index.js";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-const actions = [
-  { icon: <ShoppingCartIcon />, name: "Checkout" },
-  { icon: <ProductionQuantityLimitsIcon />, name: "Refunds" },
-  { icon: <TableRestaurantIcon />, name: "Modify Table" },
-];
 
 const NewOrder = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const [receipt, setReceipt] = useState([]);
+
+  const actions = [
+    {
+      icon: <ShoppingCartIcon />,
+      name: "Checkout",
+      badgeContent: receipt.length,
+    },
+    { icon: <ProductionQuantityLimitsIcon />, name: "Refunds" },
+    { icon: <TableRestaurantIcon />, name: "Modify Table" },
+  ];
+
+  useEffect(() => {
+    const fetchReceiptData = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3001/cashier/get-receipt"
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setReceipt(data);
+        } else {
+          console.error("Failed to fetch receipt data:", response.statusText);
+        }
+      } catch (error) {
+        console.error("An error occurred during the fetch:", error);
+      }
+    };
+
+    fetchReceiptData();
+  }, []);
 
   const handleOrderClick = (link) => {
     navigate(link);
@@ -53,7 +79,9 @@ const NewOrder = () => {
       display="flex"
       justifyContent="center"
       alignItems="center"
-      sx={{ margin: { xs: "2em", md: "4em 8em", lg: "4em 10em" } }}
+      sx={{
+        margin: { xs: "2em", md: "2em 8em", lg: "2em 10em", xl: "4em 10em" },
+      }}
       height="80vh"
     >
       <Card
@@ -115,22 +143,42 @@ const NewOrder = () => {
             New Order
           </Button>
         </CardActions>
-        <SpeedDial
-          ariaLabel="Menu"
+        
+        <Badge
           sx={{ position: "absolute", top: 16, right: 16 }}
-          icon={<SpeedDialIcon openIcon={<RestaurantMenuIcon />} />}
-          direction="down"
+          color="secondary"
+          variant="dot"
+          badgeContent={receipt.length}
+          invisible={receipt.length === 0}
         >
-          {actions.map((action) => (
-            <SpeedDialAction
-              sx={{ width: "4.5em", height: "4.5em" }}
-              key={action.name}
-              icon={action.icon}
-              tooltipTitle={action.name}
-              onClick={() => handleDialClick(action.name)}
-            />
-          ))}
-        </SpeedDial>
+          <SpeedDial
+            ariaLabel="Menu"
+            icon={<SpeedDialIcon openIcon={<RestaurantMenuIcon />} />}
+            direction="down"
+          >
+            {actions.map((action) => (
+              <SpeedDialAction
+                sx={{ width: "4.5em", height: "4.5em" }}
+                key={action.name}
+                icon={
+                  action.name === "Checkout" ? (
+                    <Badge
+                      badgeContent={action.badgeContent}
+                      color="secondary"
+                      size="small"
+                    >
+                      {action.icon}
+                    </Badge>
+                  ) : (
+                    action.icon
+                  )
+                }
+                tooltipTitle={action.name}
+                onClick={() => handleDialClick(action.name)}
+              />
+            ))}
+          </SpeedDial>
+        </Badge>
       </Card>
     </Box>
   );

@@ -120,14 +120,14 @@ const MenuPromos = () => {
         <div>
           {params.row.promoType === "Percentage"
             ? params.row.promoValue + "%"
-            : params.row.promoValue}
+            : "Php " + params.row.promoValue}
         </div>
       ),
     },
     {
       field: "validDate",
       headerName: "Valid Until",
-      width: 150,
+      width: 110,
       valueFormatter: (params) => {
         const date = new Date(params.value);
         return date.toLocaleDateString("en-US", {
