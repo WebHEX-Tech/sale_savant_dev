@@ -17,6 +17,7 @@ import { Header } from "components";
 import { Form, Formik, Field } from "formik";
 import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const AddAccountSchema = Yup.object().shape({
   userName: Yup.string().required("Required"),
@@ -47,7 +48,7 @@ const AddAccount = () => {
 
   const handleSubmit = async (values) => {
     try {
-      const response = await fetch("http://localhost:3001/auth/createAccount", {
+      const response = await fetch(`${baseUrl}auth/createAccount`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -14,6 +14,7 @@ import { Header } from "components";
 import { Form, Formik, Field } from "formik";
 import * as Yup from "yup";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const AddAccountSchema = Yup.object().shape({
   userName: Yup.string().required("Required"),
@@ -32,7 +33,7 @@ const EditAccount = () => {
     const fetchInventoryData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/auth/getAccount/${id}`
+          `${baseUrl}auth/getAccount/${id}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -66,7 +67,7 @@ const EditAccount = () => {
 
   const handleSubmit = async (values) => {
     try {
-      const response = await fetch(`http://localhost:3001/auth/updateAccount/${id}`, {
+      const response = await fetch(`${baseUrl}auth/updateAccount/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

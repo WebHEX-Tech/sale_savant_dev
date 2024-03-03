@@ -18,6 +18,7 @@ import * as Yup from "yup";
 import { FlexBetween, Header } from "components";
 import { Link, useNavigate } from "react-router-dom";
 import Dropzone from "react-dropzone";
+import { baseUrl } from "state/api";
 
 const AddMenuSchema = Yup.object().shape({
   menuItem: Yup.string().required("Required"),
@@ -60,7 +61,7 @@ const AddMenu = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:3001/menumanagement/addmenu",
+        `${baseUrl}menumanagement/addmenu`,
         {
           method: "POST",
           body: formData,

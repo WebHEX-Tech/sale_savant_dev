@@ -19,6 +19,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { baseUrl } from "state/api";
 
 const CheckoutList = () => {
   const theme = useTheme();
@@ -32,7 +33,7 @@ const CheckoutList = () => {
     const fetchReceiptData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3001/cashier/get-receipt"
+          `${baseUrl}cashier/get-receipt`
         );
         if (response.ok) {
           const data = await response.json();

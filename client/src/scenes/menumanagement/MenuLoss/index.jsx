@@ -20,6 +20,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { Search } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
+import { baseUrl } from "state/api";
 
 const MenuLoss = () => {
   const theme = useTheme();
@@ -32,7 +33,7 @@ const MenuLoss = () => {
   const fetchMenuLoss = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/menumanagement/menuLoss"
+        `${baseUrl}menumanagement/menuLoss`
       );
       if (response.ok) {
         const data = await response.json();
@@ -66,7 +67,7 @@ const MenuLoss = () => {
   const handleConfirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3001/menumanagement/menuLoss/${selectedItemId}`,
+        `${baseUrl}menumanagement/menuLoss/${selectedItemId}`,
         {
           method: "DELETE",
         }

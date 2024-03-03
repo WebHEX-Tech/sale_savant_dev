@@ -14,6 +14,7 @@ import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Header } from "components";
 import { Link, useNavigate } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const AddLossSchema = Yup.object().shape({
   dateTime: Yup.date().required("Required"),
@@ -39,7 +40,7 @@ const AddLoss = () => {
     const fetchMenuInventory = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3001/menumanagement/menuInventory"
+          `${baseUrl}menumanagement/menuInventory`
         );
         if (response.ok) {
           const data = await response.json();
@@ -93,7 +94,7 @@ const AddLoss = () => {
   const handleSubmit = async (values) => {
     try {
       const response = await fetch(
-        "http://localhost:3001/menumanagement/addLoss",
+        `${baseUrl}menumanagement/addLoss`,
         {
           method: "POST",
           headers: {

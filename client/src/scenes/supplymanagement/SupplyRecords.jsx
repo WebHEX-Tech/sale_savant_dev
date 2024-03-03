@@ -25,6 +25,7 @@ import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const SupplyRecords = () => {
   const theme = useTheme();
@@ -71,7 +72,7 @@ const SupplyRecords = () => {
   const fetchSupplyRecord = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/supply-management/get-supplyRecord"
+        `${baseUrl}supply-management/get-supplyRecord`
       );
       if (response.ok) {
         const data = await response.json();
@@ -125,7 +126,7 @@ const SupplyRecords = () => {
   const handleConfirmEdit = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3001/supply-management/edit-totalPaid/${selectedItemId}`,
+        `${baseUrl}supply-management/edit-totalPaid/${selectedItemId}`,
         {
           method: "PUT",
           headers: {
@@ -155,7 +156,7 @@ const SupplyRecords = () => {
   const handleConfirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3001/supply-management/delete-supplyRecord/${selectedItemId}`,
+        `${baseUrl}supply-management/delete-supplyRecord/${selectedItemId}`,
         {
           method: "DELETE",
         }

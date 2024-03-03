@@ -32,7 +32,6 @@ import { Add, Remove } from "@mui/icons-material";
 import ClearIcon from "@mui/icons-material/Clear";
 import { OrderCard as ItemCard, FlexBetween, Receipt } from "components";
 import React, { useEffect, useState } from "react";
-import { useGetMenuQuery } from "state/api";
 import { getOrderNo, getOrderType } from "../TakeOrder";
 import { useNavigate } from "react-router-dom";
 
@@ -124,14 +123,6 @@ const OrderMenu = (props) => {
 
     return () => clearTimeout(timer);
   }, []);
-
-  const { data } = useGetMenuQuery();
-
-  useEffect(() => {
-    if (data) {
-      setMenuData(data);
-    }
-  }, [data]);
 
   // Promo Dialog
   const handleAddSelectedPromo = (promo) => {

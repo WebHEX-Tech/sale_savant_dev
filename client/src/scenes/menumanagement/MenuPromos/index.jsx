@@ -19,6 +19,7 @@ import { Link } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { Search } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
+import { baseUrl } from "state/api";
 
 const MenuPromos = () => {
   const theme = useTheme();
@@ -30,7 +31,7 @@ const MenuPromos = () => {
   const fetchMenuPromos = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/menumanagement/menuPromo"
+        `${baseUrl}menumanagement/menuPromo`
       );
       if (response.ok) {
         const data = await response.json();
@@ -64,7 +65,7 @@ const MenuPromos = () => {
   const handleConfirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3001/menumanagement/menuPromo/${selectedItemId}`,
+        `${baseUrl}menumanagement/menuPromo/${selectedItemId}`,
         {
           method: "DELETE",
         }

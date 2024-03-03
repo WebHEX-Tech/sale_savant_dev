@@ -22,6 +22,7 @@ import { Add, Remove } from "@mui/icons-material";
 import ClearIcon from "@mui/icons-material/Clear";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const Receipt = ({
   OrderType,
@@ -42,7 +43,7 @@ const Receipt = ({
   useEffect(() => {
     const fetchTableData = async () => {
       try {
-        const response = await fetch("http://localhost:3001/cashier/get-table");
+        const response = await fetch(`${baseUrl}cashier/get-table`);
         if (response.ok) {
           const data = await response.json();
           setTables(data);
@@ -180,7 +181,7 @@ const Receipt = ({
       });
 
       const response = await fetch(
-        "http://localhost:3001/cashier/update-table-status",
+        `${baseUrl}cashier/update-table-status`,
         {
           method: "PUT",
           headers: {
@@ -284,7 +285,7 @@ const Receipt = ({
 
     try {
       const response = await fetch(
-        "http://localhost:3001/cashier/create-receipt",
+        `${baseUrl}cashier/create-receipt`,
         {
           method: "POST",
           headers: {
@@ -406,7 +407,7 @@ const Receipt = ({
                       component="img"
                       sx={{ width: 60, height: 80 }}
                       alt={dish.menuName}
-                      src={`http://localhost:3001/assets/${dish.img}`}
+                      src={`${baseUrl}assets/${dish.img}`}
                       loading="lazy"
                     />
                     <div

@@ -21,6 +21,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const Supplier = () => {
   const theme = useTheme();
@@ -38,7 +39,7 @@ const Supplier = () => {
   const fetchSupplier = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/supply-management/get-supplier"
+        `${baseUrl}supply-management/get-supplier`
       );
       if (response.ok) {
         const data = await response.json();
@@ -100,7 +101,7 @@ const Supplier = () => {
   const handleConfirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3001/supply-management/delete-supplier/${selectedItemId}`,
+        `${baseUrl}supply-management/delete-supplier/${selectedItemId}`,
         {
           method: "DELETE",
         }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Card as ItemCard, FlexBetween, Header } from "components";
-import { useGetMenuQuery } from "state/api";
 import {
   Box,
   Button,
@@ -18,6 +17,7 @@ import {
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { Link } from "react-router-dom";
 import { useTheme } from "@emotion/react";
+import { baseUrl } from "state/api";
 
 const MenuManagement = () => {
   const theme = useTheme();
@@ -29,7 +29,7 @@ const MenuManagement = () => {
     const fetchMenuData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3001/menumanagement/menu"
+          `${baseUrl}menumanagement/menu`
         );
         if (response.ok) {
           const data = await response.json();
@@ -52,14 +52,6 @@ const MenuManagement = () => {
 
     return () => clearTimeout(timer);
   }, []);
-
-  const { data } = useGetMenuQuery();
-
-  useEffect(() => {
-    if (data) {
-      setMenuData(data);
-    }
-  }, [data]);
 
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
@@ -202,7 +194,7 @@ const MenuManagement = () => {
             }}
           >
             {[...Array(15).keys()].map((index) => (
-              <Card sx={{ width: 280, background: theme.palette.primary[400] }}>
+              <Card key={index} sx={{ width: 280, background: theme.palette.primary[400] }}>
                 <Skeleton
                   sx={{ height: 180 }}
                   animation="wave"

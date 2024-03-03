@@ -11,6 +11,7 @@ import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Header } from "components";
 import { Link, useNavigate } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const AddSupplyDeliverSchema = Yup.object().shape({
   deliverDate: Yup.date().required("Required"),
@@ -43,7 +44,7 @@ const AddSupplyRecord = () => {
   const fetchSupplier = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/supply-management/get-supplier"
+        `${baseUrl}supply-management/get-supplier`
       );
       if (response.ok) {
         const data = await response.json();
@@ -61,7 +62,7 @@ const AddSupplyRecord = () => {
   const handleSubmit = async (values) => {
     try {
       const response = await fetch(
-        "http://localhost:3001/supply-management/add-supplyDelivery",
+        `${baseUrl}supply-management/add-supplyDelivery`,
         {
           method: "POST",
           headers: {

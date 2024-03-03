@@ -16,6 +16,7 @@ import { Header } from "components";
 import { Form, Formik, Field } from "formik";
 import * as Yup from "yup";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const ChangePasswordSchema = Yup.object().shape({
   password: Yup.string().required("Required"),
@@ -36,7 +37,7 @@ const ChangePassword = () => {
     const fetchInventoryData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/auth/getAccount/${id}`
+          `${baseUrl}auth/getAccount/${id}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -77,7 +78,7 @@ const ChangePassword = () => {
   const handleSubmit = async (values) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/auth/updatePassword/${id}`,
+        `${baseUrl}auth/updatePassword/${id}`,
         {
           method: "PUT",
           headers: {

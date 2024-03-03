@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { baseUrl } from "state/api";
 
 const Void = () => {
   const theme = useTheme();
@@ -17,7 +18,7 @@ const Void = () => {
   useEffect(() => {
     const fetchVoidPin = async () => {
       try {
-        const response = await fetch("http://localhost:3001/auth/getVoid");
+        const response = await fetch(`${baseUrl}auth/getVoid`);
         if (response.ok) {
           const data = await response.json();
           console.log(data);

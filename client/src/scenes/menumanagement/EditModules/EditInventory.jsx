@@ -12,6 +12,7 @@ import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Header } from "components";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const EditInventorySchema = Yup.object().shape({
   dateTime: Yup.date().required("Required"),
@@ -35,7 +36,7 @@ const EditInventory = () => {
     const fetchInventoryData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/menumanagement/getInventory/${id}`
+          `${baseUrl}menumanagement/getInventory/${id}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -78,7 +79,7 @@ const EditInventory = () => {
   const handleSubmit = async (values) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/menumanagement/editInventory/${id}`,
+        `${baseUrl}menumanagement/editInventory/${id}`,
         {
           method: "PUT",
           headers: {

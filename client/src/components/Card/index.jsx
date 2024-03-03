@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { FlexBetween } from "components";
 import { useNavigate } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
   const theme = useTheme();
@@ -27,14 +28,14 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
 
   useEffect(() => {
     const imageElement = new Image();
-    imageElement.src = `http://localhost:3001/assets/${img}`;
+    imageElement.src = `${baseUrl}assets/${img}`;
     imageElement.onload = () => setImageLoading(false);
     imageElement.onerror = () => setImageLoading(false);
   }, [img]);
 
   const fetchMenuData = async () => {
     try {
-      const response = await fetch("http://localhost:3001/menumanagement/menu");
+      const response = await fetch(`${baseUrl}menumanagement/menu`);
       if (response.ok) {
         const data = await response.json();
         setMenuData(data);
@@ -51,7 +52,7 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
   }, []);
 
   const handleConfirmRemove = () => {
-    fetch(`http://localhost:3001/menumanagement/menu/${menuId}`, {
+    fetch(`${baseUrl}menumanagement/menu/${menuId}`, {
       method: "DELETE",
     })
       .then((response) => response.json())
@@ -119,7 +120,7 @@ const CustomCardComponent = ({ img, menuName, price, salesTarget, menuId }) => {
           component="img"
           sx={{ height: 180 }}
           alt={menuName}
-          src={`http://localhost:3001/assets/${img}`}
+          src={`${baseUrl}assets/${img}`}
           loading="lazy"
         />
       )}

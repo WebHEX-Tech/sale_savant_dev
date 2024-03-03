@@ -10,6 +10,7 @@ import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Header } from "components";
 import { Link, useNavigate } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const AddSupplierSchema = Yup.object().shape({
   supplierName: Yup.string().required("Required"),
@@ -34,7 +35,7 @@ const AddSupplier = () => {
   const handleSubmit = async (values) => {
     try {
       const response = await fetch(
-        "http://localhost:3001/supply-management/add-supplier",
+        `${baseUrl}supply-management/add-supplier`,
         {
           method: "POST",
           headers: {

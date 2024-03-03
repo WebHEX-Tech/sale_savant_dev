@@ -12,6 +12,7 @@ import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Header } from "components";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const EditMenuSchema = Yup.object().shape({
   menuItem: Yup.string().required("Required"),
@@ -32,7 +33,7 @@ const EditMenu = () => {
     const fetchMenuData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/menumanagement/getMenu/${id}`
+          `${baseUrl}menumanagement/getMenu/${id}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -73,7 +74,7 @@ const EditMenu = () => {
   const handleSubmit = async (values) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/menumanagement/editMenu/${id}`,
+        `${baseUrl}menumanagement/editMenu/${id}`,
         {
           method: "PUT",
           headers: {
@@ -110,7 +111,7 @@ const EditMenu = () => {
             <Form>
               <Box sx={{ margin: "0.5em 2em", width: "60%" }}>
                 <img
-                  src={`http://localhost:3001/assets/${initialValues.picturePath}`}
+                  src={`${baseUrl}assets/${initialValues.picturePath}`}
                   alt="Preview"
                   style={{
                     maxWidth: "100%",

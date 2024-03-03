@@ -13,6 +13,7 @@ import * as image from "assets/index";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLogin } from "state";
+import { baseUrl } from "state/api";
 
 const loginSchema = yup.object().shape({
   userNumber: yup.string().required("required"),
@@ -30,7 +31,7 @@ const Login = () => {
 
   const handleFormSubmit = async (values) => {
     try {
-      const response = await fetch("http://localhost:3001/auth/login", {
+      const response = await fetch(`${baseUrl}auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

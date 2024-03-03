@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { FlexBetween } from "components";
 import { Add, Remove } from "@mui/icons-material";
+import { baseUrl } from "state/api";
 
 const OrderCard = ({
   img,
@@ -52,14 +53,14 @@ const OrderCard = ({
 
   useEffect(() => {
     const imageElement = new Image();
-    imageElement.src = `http://localhost:3001/assets/${img}`;
+    imageElement.src = `${baseUrl}assets/${img}`;
     imageElement.onload = () => setImageLoading(false);
     imageElement.onerror = () => setImageLoading(false);
   }, [img]);
 
   const fetchMenuData = async () => {
     try {
-      const response = await fetch("http://localhost:3001/menumanagement/menu");
+      const response = await fetch(`${baseUrl}menumanagement/menu`);
       if (response.ok) {
         const data = await response.json();
         setMenuData(data);
@@ -152,7 +153,7 @@ const OrderCard = ({
             component="img"
             sx={{ height: 210 }}
             alt={menuName}
-            src={`http://localhost:3001/assets/${img}`}
+            src={`${baseUrl}assets/${img}`}
             loading="lazy"
           />
         )}
@@ -181,7 +182,7 @@ const OrderCard = ({
               component="img"
               sx={{ width: 270, height: 180 }}
               alt={menuName}
-              src={`http://localhost:3001/assets/${img}`}
+              src={`${baseUrl}assets/${img}`}
               loading="lazy"
             />
             <div

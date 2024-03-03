@@ -15,6 +15,7 @@ import { FlexBetween } from "components";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AddTableDialog from "./AddModule/AddTable";
+import { baseUrl } from "state/api";
 
 const ModifyTable = () => {
   const theme = useTheme();
@@ -30,7 +31,7 @@ const ModifyTable = () => {
 
   const fetchTableData = async () => {
     try {
-      const response = await fetch("http://localhost:3001/cashier/get-table");
+      const response = await fetch(`${baseUrl}cashier/get-table`);
       if (response.ok) {
         const data = await response.json();
         setTables(data);
@@ -48,7 +49,7 @@ const ModifyTable = () => {
 
   const handleSubmit = async (values, actions) => {
     try {
-      const response = await fetch("http://localhost:3001/cashier/add-table", {
+      const response = await fetch(`${baseUrl}cashier/add-table`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +81,7 @@ const ModifyTable = () => {
   const handleDeleteTable = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3001/cashier/delete-table/${selectedTable._id}`,
+        `${baseUrl}cashier/delete-table/${selectedTable._id}`,
         {
           method: "DELETE",
         }

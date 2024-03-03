@@ -12,6 +12,7 @@ import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Header } from "components";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const EditLossSchema = Yup.object().shape({
     dateTime: Yup.date().required("Required"),
@@ -36,7 +37,7 @@ const EditMenuLoss = () => {
     const fetchLossData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/menumanagement/getLoss/${id}`
+          `${baseUrl}menumanagement/getLoss/${id}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -81,7 +82,7 @@ const EditMenuLoss = () => {
   const handleSubmit = async (values) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/menumanagement/editLoss/${id}`,
+        `${baseUrl}menumanagement/editLoss/${id}`,
         {
           method: "PUT",
           headers: {

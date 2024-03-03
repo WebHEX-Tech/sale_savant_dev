@@ -13,6 +13,7 @@ import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Header } from "components";
 import { Link, useNavigate } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const AddInventorySchema = Yup.object().shape({
   dateTime: Yup.date().required("Required"),
@@ -43,7 +44,7 @@ const AddInventory = () => {
     const fetchMenuItems = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3001/menumanagement/menu"
+          `${baseUrl}menumanagement/menu`
         );
         if (response.ok) {
           const data = await response.json();
@@ -93,7 +94,7 @@ const AddInventory = () => {
   const handleSubmit = async (values) => {
     try {
       const response = await fetch(
-        "http://localhost:3001/menumanagement/addinventory",
+        `${baseUrl}menumanagement/addinventory`,
         {
           method: "POST",
           headers: {

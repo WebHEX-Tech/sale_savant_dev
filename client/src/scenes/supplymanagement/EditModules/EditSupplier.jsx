@@ -4,6 +4,7 @@ import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Header } from "components";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const EditSupplierSchema = Yup.object().shape({
   supplierName: Yup.string().required("Required"),
@@ -23,7 +24,7 @@ const EditSupplier = () => {
     const fetchSupplierData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/supply-management/get-supplier/${id}`
+          `${baseUrl}supply-management/get-supplier/${id}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -60,7 +61,7 @@ const EditSupplier = () => {
   const handleSubmit = async (values) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/supply-management/edit-supplier/${id}`,
+        `${baseUrl}supply-management/edit-supplier/${id}`,
         {
           method: "PUT",
           headers: {

@@ -20,6 +20,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { Search } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
+import { baseUrl } from "state/api";
 
 const MenuInventory = () => {
   const theme = useTheme();
@@ -33,7 +34,7 @@ const MenuInventory = () => {
   const fetchMenuInventory = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/menumanagement/menuInventory"
+        `${baseUrl}menumanagement/menuInventory`
       );
       if (response.ok) {
         const data = await response.json();
@@ -75,7 +76,7 @@ const MenuInventory = () => {
   const handleCleanInventory = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/menumanagement/cleanInventory",
+        `${baseUrl}menumanagement/cleanInventory`,
         {
           method: "DELETE",
         }
@@ -97,7 +98,7 @@ const MenuInventory = () => {
   const handleConfirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3001/menumanagement/menuInventory/${selectedItemId}`,
+        `${baseUrl}menumanagement/menuInventory/${selectedItemId}`,
         {
           method: "DELETE",
         }

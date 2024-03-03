@@ -14,6 +14,7 @@ import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { Header } from "components";
 import { Link, useNavigate } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const AddPromoSchema = Yup.object().shape({
   promoName: Yup.string().required("Promo Name is required"),
@@ -53,7 +54,7 @@ const AddPromo = () => {
     const fetchMenu = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3001/menumanagement/menu"
+          `${baseUrl}menumanagement/menu`
         );
         if (response.ok) {
           const data = await response.json();
@@ -95,7 +96,7 @@ const AddPromo = () => {
     const updatedValues = { ...values, promoStatus };
     try {
       const response = await fetch(
-        "http://localhost:3001/menumanagement/addPromo",
+        `${baseUrl}menumanagement/addPromo`,
         {
           method: "POST",
           headers: {

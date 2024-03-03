@@ -19,6 +19,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
 import { Search } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
+import { baseUrl } from "state/api";
 
 const ManagerAcc = () => {
   const theme = useTheme();
@@ -31,7 +32,7 @@ const ManagerAcc = () => {
 
   const fetchAccounts = async () => {
     try {
-      const response = await fetch("http://localhost:3001/auth/getAccount");
+      const response = await fetch(`${baseUrl}auth/getAccount`);
       if (response.ok) {
         const data = await response.json();
         const accountWithId = data.map((item, index) => ({
@@ -67,7 +68,7 @@ const ManagerAcc = () => {
   const handleConfirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3001/auth/deleteAccount/${selectedItemId}`,
+        `${baseUrl}auth/deleteAccount/${selectedItemId}`,
         {
           method: "DELETE",
         }

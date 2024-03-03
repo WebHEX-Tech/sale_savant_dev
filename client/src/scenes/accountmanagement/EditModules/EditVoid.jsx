@@ -16,6 +16,7 @@ import { Header } from "components";
 import { Form, Formik, Field } from "formik";
 import * as Yup from "yup";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const EditVoidSchema = Yup.object().shape({
   currentVoidPin: Yup.string().required("Required"),
@@ -37,7 +38,7 @@ const EditVoid = () => {
     const fetchVoidPin = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/auth/getVoid/${id}`
+          `${baseUrl}auth/getVoid/${id}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -70,7 +71,7 @@ const EditVoid = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/auth/updateVoid/${id}`,
+        `${baseUrl}auth/updateVoid/${id}`,
         {
           method: "PUT",
           headers: {

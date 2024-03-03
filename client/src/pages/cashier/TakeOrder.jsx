@@ -18,6 +18,7 @@ import TableRestaurantIcon from "@mui/icons-material/TableRestaurant";
 import * as image from "assets/index.js";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { baseUrl } from "state/api";
 const getOrderType = () => {
   return localStorage.getItem("orderType");
 };
@@ -45,7 +46,7 @@ const TakeOrder = () => {
     const fetchReceiptData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3001/cashier/get-receipt"
+          `${baseUrl}cashier/get-receipt`
         );
         if (response.ok) {
           const data = await response.json();
