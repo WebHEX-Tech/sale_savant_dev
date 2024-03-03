@@ -103,7 +103,22 @@ const MenuLoss = () => {
 
   const columns = [
     { field: "id", headerName: "ID", width: 80 },
-    { field: "dateTime", headerName: "Date & Time", width: 160 },
+    {
+      field: "dateTime",
+      headerName: "Date & Time",
+      width: 160,
+      valueFormatter: (params) => {
+        const date = new Date(params.value);
+        const options = {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        };
+        return date.toLocaleDateString("en-US", options);
+      },
+    },
     { field: "menuItem", headerName: "Menu Item", width: 200 },
     { field: "category", headerName: "Category", width: 150 },
     {
@@ -225,7 +240,7 @@ const MenuLoss = () => {
       <Box
         m="1.5rem 2.5rem"
         height="67vh"
-        width="70vw"
+        width="81vw"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",

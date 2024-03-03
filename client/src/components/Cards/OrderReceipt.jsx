@@ -185,7 +185,7 @@ const OrderReceipt = ({ tableNo, orderNo, orderType, items, totalAmount }) => {
             }}
           >
             <Button variant="contained" size="small">
-              Discount
+              Refund
             </Button>
             <Button
               variant="contained"

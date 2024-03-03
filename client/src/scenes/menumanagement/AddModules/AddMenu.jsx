@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  InputAdornment,
   InputLabel,
   MenuItem,
   TextField,
@@ -137,7 +138,7 @@ const AddMenu = () => {
                   ))}
                 </Field>
 
-                <InputLabel htmlFor="price">Menu Price (in Peso)</InputLabel>
+                <InputLabel htmlFor="price">Menu Price</InputLabel>
                 <Field
                   name="price"
                   type="number"
@@ -146,6 +147,13 @@ const AddMenu = () => {
                   value={values.price}
                   as={TextField}
                   fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        Php
+                      </InputAdornment>
+                    ),
+                  }}
                   sx={{
                     background: theme.palette.primary[700],
                     marginBottom: "1em",

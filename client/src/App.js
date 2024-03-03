@@ -39,6 +39,14 @@ function App() {
               <Route path={`/edit inventory/:id`} element={<scenes.EditInventory />} />
               <Route path={`/edit loss/:id`} element={<scenes.EditMenuLoss/>} />
 
+              {/* Supply and Purchase Management */}
+              <Route path="/supply and purchase management/supply-records" element={<scenes.SupplyRecords />} />
+              <Route path="/supply and purchase management/supplier-management" element={<scenes.SupplierManagement />} />
+              {/* Modules */}
+              <Route path="/add supply-record" element={<scenes.AddSupplyRecord />} />
+              <Route path="/add supplier" element={<scenes.AddSupplier />} />
+              <Route path={`/edit supplier/:id`} element={<scenes.EditSupplier />} />
+
               {/* Account Management Routes */}
               <Route path="/account management" element={<scenes.AccountManagement/>} />
               <Route path="/void" element={<scenes.Void/>}/>

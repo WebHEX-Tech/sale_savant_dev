@@ -55,11 +55,11 @@ const navItems = [
     icon: <MenuBookOutlined />,
   },
   {
-    text: "Sales and Purchase Management",
+    text: "Supply and Purchase Management",
     icon: <ManageHistoryOutlined />,
     children: [
       { text: "Supply Deliveries Recording", path: "supply-records" },
-      { text: "Supplier Management", path: "supplier-mngmt" },
+      { text: "Supplier Management", path: "supplier-management" },
     ],
   },
   {

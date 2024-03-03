@@ -14,6 +14,13 @@ export {default as EditMenu} from './menumanagement/EditModules/EditMenu.jsx'
 export {default as EditInventory} from './menumanagement/EditModules/EditInventory.jsx'
 export {default as EditMenuLoss} from './menumanagement/EditModules/EditLoss.jsx'
 
+// exports for Supply and Purchase Management
+export {default as SupplyRecords} from './supplymanagement/SupplyRecords.jsx'
+export {default as SupplierManagement} from './supplymanagement/Supplier.jsx'
+export {default as AddSupplyRecord} from './supplymanagement/AddModules/AddSupplyRecord.jsx'
+export {default as AddSupplier} from './supplymanagement/AddModules/AddSupplier.jsx'
+export {default as EditSupplier} from './supplymanagement/EditModules/EditSupplier.jsx'
+
 // exports for Account Management
 export {default as AccountManagement} from './accountmanagement/index.jsx'
 export {default as Void} from './accountmanagement/void/index.jsx'

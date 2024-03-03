@@ -265,13 +265,15 @@ const Receipt = ({
       promoUsed: selectedPromos.map((promo) => ({
         promoName: promo.promoName,
         promoUsage: addedDishes.reduce((acc, dish) => {
-          if (promo.applicability === "All Menu" ||
-              promo.applicability.includes(dish.menuName) ||
-              promo.applicability.includes(dish.category)) {
+          if (
+            promo.applicability === "All Menu" ||
+            promo.applicability.includes(dish.menuName) ||
+            promo.applicability.includes(dish.category)
+          ) {
             return acc + dish.quantity;
           }
           return acc;
-        }, 0)
+        }, 0),
       })),
       orderType: OrderType,
       tableNo: selectedTables.join(", "),
@@ -419,7 +421,9 @@ const Receipt = ({
                       <Typography variant="body1" fontWeight={600}>
                         {dish.menuName}
                       </Typography>
-                      <Typography variant="body1">{`Php ${dish.price.toFixed(2) }`}</Typography>
+                      <Typography variant="body1">{`Php ${dish.price.toFixed(
+                        2
+                      )}`}</Typography>
                     </div>
                   </div>
 
@@ -510,7 +514,7 @@ const Receipt = ({
               flexDirection: "column",
               gap: "0.2em",
               padding: "0 0.5em",
-              marginBottom:"1em"
+              marginBottom: "1em",
             }}
           >
             <FlexBetween>
@@ -532,7 +536,7 @@ const Receipt = ({
               </Typography>
             </FlexBetween>
           </div>
-          <Divider margin="1em 0"/>
+          <Divider margin="1em 0" />
 
           <Box
             sx={{
@@ -550,7 +554,7 @@ const Receipt = ({
               size="small"
               onClick={handleOpenPromoDialog}
             >
-              Apply Promo
+              Apply Promo / Discount
             </Button>
             <Button
               variant="contained"
@@ -649,11 +653,11 @@ const Receipt = ({
         sx={{ "& .MuiPaper-root": { background: theme.palette.grey[300] } }}
         fullWidth
       >
-        <DialogTitle sx={{ color: "#000" }}>Apply Promo</DialogTitle>
+        <DialogTitle sx={{ color: "#000" }}>Apply Promo/Discount</DialogTitle>
         <DialogContent>
           <FormControl>
-            <Box marginBottom="1em">
-              <Typography> Applicable Promo/s</Typography>
+            <Box marginBottom="2em">
+              <Typography color="#000"> Applicable Promo/Discount</Typography>
               {menuPromo.map(
                 (promo) =>
                   (addedDishes.some(
@@ -702,8 +706,7 @@ const Receipt = ({
               )}
             </Box>
             <Box>
-              <Typography> Selected Promo/s</Typography>
-              {/* Selected Promos */}
+              <Typography color="#000"> Selected Promo/Discount</Typography>
               {selectedPromos.map((selectedPromo) => (
                 <Chip
                   key={selectedPromo.id}

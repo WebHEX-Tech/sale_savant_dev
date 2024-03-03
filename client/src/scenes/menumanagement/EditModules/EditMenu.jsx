@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
+  InputAdornment,
   InputLabel,
   MenuItem,
   TextField,
@@ -156,7 +157,7 @@ const EditMenu = () => {
                   ))}
                 </Field>
 
-                <InputLabel htmlFor="price">Menu Price (in Peso)</InputLabel>
+                <InputLabel htmlFor="price">Menu Price</InputLabel>
                 <Field
                   name="price"
                   type="number"
@@ -165,6 +166,13 @@ const EditMenu = () => {
                   value={values.price}
                   as={TextField}
                   fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        Php
+                      </InputAdornment>
+                    ),
+                  }}
                   sx={{
                     background: theme.palette.primary[700],
                     marginBottom: "1em",

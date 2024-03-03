@@ -335,7 +335,6 @@ const OrderMenu = (props) => {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
   const handleSubmitOrder = async () => {
-
     const orderDetails = {
       items: addedDishes.map((dish) => ({
         menuItemId: dish._id,
@@ -347,13 +346,15 @@ const OrderMenu = (props) => {
       promoUsed: selectedPromos.map((promo) => ({
         promoName: promo.promoName,
         promoUsage: addedDishes.reduce((acc, dish) => {
-          if (promo.applicability === "All Menu" ||
-              promo.applicability.includes(dish.menuName) ||
-              promo.applicability.includes(dish.category)) {
+          if (
+            promo.applicability === "All Menu" ||
+            promo.applicability.includes(dish.menuName) ||
+            promo.applicability.includes(dish.category)
+          ) {
             return acc + dish.quantity;
           }
           return acc;
-        }, 0)
+        }, 0),
       })),
       orderType: OrderType,
       tableNo: selectedTables.join(", "),
@@ -554,7 +555,9 @@ const OrderMenu = (props) => {
                             <Typography variant="body1" fontWeight={600}>
                               {dish.menuName}
                             </Typography>
-                            <Typography variant="body1">{`Php ${dish.price.toFixed(2)}`}</Typography>
+                            <Typography variant="body1">{`Php ${dish.price.toFixed(
+                              2
+                            )}`}</Typography>
                           </div>
                         </div>
 
@@ -694,7 +697,7 @@ const OrderMenu = (props) => {
                     size="small"
                     onClick={handleOpenPromoDialog}
                   >
-                    Apply Promo
+                    Apply Promo / Discount
                   </Button>
                   <Button
                     variant="contained"
@@ -788,7 +791,7 @@ const OrderMenu = (props) => {
               >
                 {/* Sorting Category Select */}
                 <Box>
-                  <FormControl>
+                  <FormControl color="secondary">
                     <InputLabel
                       id="category-label"
                       sx={{ color: theme.palette.primary[200] }}
@@ -1000,11 +1003,11 @@ const OrderMenu = (props) => {
         sx={{ "& .MuiPaper-root": { background: theme.palette.grey[300] } }}
         fullWidth
       >
-        <DialogTitle sx={{ color: "#000" }}>Apply Promo</DialogTitle>
+        <DialogTitle sx={{ color: "#000" }}>Apply Promo/Discount</DialogTitle>
         <DialogContent>
           <FormControl>
-            <Box marginBottom="1em">
-              <Typography color="#000"> Applicable Promo/s</Typography>
+            <Box marginBottom="2em">
+              <Typography color="#000"> Applicable Promo/Discount</Typography>
               {menuPromo.map(
                 (promo) =>
                   (addedDishes.some(
@@ -1053,7 +1056,7 @@ const OrderMenu = (props) => {
               )}
             </Box>
             <Box>
-              <Typography color="#000"> Selected Promo/s</Typography>
+              <Typography color="#000"> Selected Promo/Discount</Typography>
               {selectedPromos.map((selectedPromo) => (
                 <Chip
                   key={selectedPromo.id}

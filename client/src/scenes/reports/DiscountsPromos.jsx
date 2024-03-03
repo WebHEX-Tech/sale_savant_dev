@@ -51,8 +51,6 @@ const DiscountsPromos = () => {
     setSearchTerm(e.target.value);
   };
 
-  /* aj */
-
   const columns = [
     { field: "_id", headerName: "Name", width: 250 },
     { field: "userName", headerName: "ID No.", width: 200 },
@@ -105,10 +103,6 @@ const DiscountsPromos = () => {
           height="47vh"
           width="100%"
           sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: theme.palette.secondary[700],
             "& .MuiDataGrid-root": {
               border: "none",
             },
@@ -116,16 +110,20 @@ const DiscountsPromos = () => {
               borderBottom: "none",
             },
             "& .MuiDataGrid-columnHeaders": {
-              color: "black",
+              backgroundColor: theme.palette.secondary[700],
+              color: theme.palette.secondary[100],
+              borderColor: theme.palette.secondary[100],
             },
             "& .MuiDataGrid-virtualScroller": {
-              color: "black",
+              backgroundColor: theme.palette.secondary[700],
             },
             "& .MuiDataGrid-footerContainer": {
-              color: "black",
+              backgroundColor: theme.palette.secondary[700],
+              color: theme.palette.secondary[100],
+              borderColor: theme.palette.secondary[100],
             },
             "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-              color: `${theme.palette.grey[200]} !important`,
+              color: `${theme.palette.secondary[200]} !important`,
             },
           }}
         >
@@ -144,8 +142,6 @@ const DiscountsPromos = () => {
           />
         </Box>
       </Box>
-
-      {/* aj */}
     </>
   );
 };

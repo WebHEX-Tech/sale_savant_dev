@@ -189,7 +189,7 @@ const MenuPromos = () => {
   return (
     <>
       <Box>
-        <Header title={"Menu Promos"} link={"/menu management"} />
+        <Header title={"Promos & Discounts"} link={"/menu management"} />
       </Box>
 
       <Box>
@@ -213,7 +213,7 @@ const MenuPromos = () => {
               >
                 <AddCircleIcon sx={{ color: "#35D03B", fontSize: "3em" }} />
                 <Typography sx={{ fontSize: "1.5em" }}>
-                  Add Menu Promo
+                  Add Promo/Discount
                 </Typography>
               </Container>
             </Link>
@@ -244,7 +244,7 @@ const MenuPromos = () => {
       <Box
         m="1.5rem 2.5rem"
         height="65vh"
-        width="75vw"
+        width="81vw"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",

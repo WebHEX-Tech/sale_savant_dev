@@ -120,7 +120,7 @@ const AddPromo = () => {
     <>
       <Box>
         <Box>
-          <Header title={"Add Promo"} disp={"none"} />
+          <Header title={"Add Promo/Discount"} disp={"none"} />
         </Box>
 
         <Formik
@@ -138,7 +138,7 @@ const AddPromo = () => {
           }) => (
             <Form>
               <Box sx={{ margin: "0 2em", width: "60%" }}>
-                <InputLabel htmlFor="promoName">Promo Name</InputLabel>
+                <InputLabel htmlFor="promoName">Promo/Discount Name</InputLabel>
                 <Field
                   name="promoName"
                   onBlur={handleBlur}
@@ -156,7 +156,7 @@ const AddPromo = () => {
                   helperText={touched.promoName && errors.promoName}
                 />
                 <InputLabel htmlFor="applicability">
-                  Promo Applicability
+                  Promo/Discount Applicability
                 </InputLabel>
                 <Field
                   name="applicability"
@@ -216,7 +216,7 @@ const AddPromo = () => {
                     )),
                   ])}
                 </Field>
-                <InputLabel htmlFor="promoType">Promo Type</InputLabel>
+                <InputLabel htmlFor="promoType">Promo/Discount Type</InputLabel>
                 <TextField
                   name="promoType"
                   onBlur={handleBlur}
@@ -272,7 +272,7 @@ const AddPromo = () => {
                       }
                       helperText={touched.validDate && errors.validDate}
                     />
-                    <InputLabel htmlFor="promoValue">Promo Value</InputLabel>
+                    <InputLabel htmlFor="promoValue">Promo/Discount Value</InputLabel>
                     {values.promoType !== "Percentage" ? (
                       <TextField
                         name="promoValue"
@@ -320,7 +320,7 @@ const AddPromo = () => {
 
                   <Box width="100%">
                     <InputLabel htmlFor="promoDesc">
-                      Promo Description
+                      Description
                     </InputLabel>
                     <Field
                       name="promoDesc"

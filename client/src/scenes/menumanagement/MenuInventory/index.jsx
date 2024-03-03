@@ -83,14 +83,14 @@ const MenuInventory = () => {
 
       if (response.ok) {
         console.log("Inventory cleaned successfully");
-        fetchMenuInventory(); 
+        fetchMenuInventory();
       } else {
         console.error("Failed to clean inventory:", response.statusText);
       }
     } catch (error) {
       console.error("An error occurred during clean inventory:", error);
     } finally {
-      handleCloseCleanDialog(); 
+      handleCloseCleanDialog();
     }
   };
 
@@ -134,7 +134,22 @@ const MenuInventory = () => {
 
   const columns = [
     { field: "menuId", headerName: "Menu ID", width: 80 },
-    { field: "dateTime", headerName: "Date & Time", width: 160 },
+    {
+      field: "dateTime",
+      headerName: "Date & Time",
+      width: 160,
+      valueFormatter: (params) => {
+        const date = new Date(params.value);
+        const options = {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        };
+        return date.toLocaleDateString("en-US", options);
+      },
+    },
     { field: "menuItem", headerName: "Menu Item", width: 200 },
     { field: "category", headerName: "Category", width: 150 },
     { field: "description", headerName: "Description", width: 250 },
@@ -238,7 +253,12 @@ const MenuInventory = () => {
           </FlexBetween>
 
           <FlexBetween>
-            <Button variant="contained" color="error" size="small" onClick={handleOpenCleanDialog}>
+            <Button
+              variant="contained"
+              color="error"
+              size="small"
+              onClick={handleOpenCleanDialog}
+            >
               Clean Inventory
             </Button>
             <Container>
@@ -324,14 +344,21 @@ const MenuInventory = () => {
       <Dialog open={cleanDialogOpen} onClose={handleCloseCleanDialog}>
         <DialogTitle color="error">Confirm Clean Inventory</DialogTitle>
         <DialogContent>
-          Are you sure you want to clean the inventory? <span style={{color:"#E11800"}}>This action cannot be
-          undone.</span>
+          Are you sure you want to clean the inventory?{" "}
+          <span style={{ color: "#E11800" }}>
+            This action cannot be undone.
+          </span>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseCleanDialog} sx={{ color: "#000" }}>
             Cancel
           </Button>
-          <Button onClick={handleCleanInventory} variant="contained" color="success" sx={{ color: "#fff" }}>
+          <Button
+            onClick={handleCleanInventory}
+            variant="contained"
+            color="success"
+            sx={{ color: "#fff" }}
+          >
             Confirm
           </Button>
         </DialogActions>

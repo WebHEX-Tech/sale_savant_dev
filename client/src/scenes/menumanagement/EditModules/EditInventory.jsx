@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
+  InputAdornment,
   InputLabel,
   MenuItem,
   TextField,
@@ -170,7 +171,7 @@ const EditInventory = () => {
                 <Box display="flex" gap="1.5em">
                   <Field
                     name="price"
-                    label="Price (in Peso)"
+                    label="Price"
                     type="number"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -178,6 +179,13 @@ const EditInventory = () => {
                     as={TextField}
                     fullWidth
                     margin="normal"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          Php
+                        </InputAdornment>
+                      ),
+                    }}
                     sx={{ background: theme.palette.primary[700] }}
                     error={Boolean(touched.price) && Boolean(errors.price)}
                     helperText={touched.price && errors.price}

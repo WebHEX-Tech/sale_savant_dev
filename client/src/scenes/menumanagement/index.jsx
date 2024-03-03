@@ -115,7 +115,7 @@ const MenuManagement = () => {
             </Link>
 
             {/* Sorting Category Select */}
-            <FormControl>
+            <FormControl color="secondary">
               <InputLabel
                 id="category-label"
                 sx={{ color: theme.palette.primary[200] }}
@@ -185,7 +185,7 @@ const MenuManagement = () => {
                   fontSize: "1.2em",
                 }}
               >
-                Promos
+                Promos & Discounts
               </Button>
             </Link>
           </Box>
@@ -241,6 +241,7 @@ const MenuManagement = () => {
         <Box
           sx={{
             display: "flex",
+            justifyContent:{xs:"center", sm:"center", md:"normal", lg:"normal", xl:"normal"},
             flexWrap: "wrap",
             gap: "1em",
             margin: "1.5em",

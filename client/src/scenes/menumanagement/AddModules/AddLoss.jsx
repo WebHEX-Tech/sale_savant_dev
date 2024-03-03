@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  InputAdornment,
   InputLabel,
   ListSubheader,
   MenuItem,
@@ -252,7 +253,7 @@ const AddLoss = () => {
                   />
                   <Field
                     name="totalPrice"
-                    label="Total Price (in Php)"
+                    label="Total Price (No. of Sold)"
                     type="number"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -260,6 +261,13 @@ const AddLoss = () => {
                     as={TextField}
                     fullWidth
                     margin="normal"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          Php
+                        </InputAdornment>
+                      ),
+                    }}
                     sx={{ background: theme.palette.primary[700] }}
                     error={
                       Boolean(touched.totalPrice) && Boolean(errors.totalPrice)
@@ -287,7 +295,7 @@ const AddLoss = () => {
                   />
                   <Field
                     name="lossPrice"
-                    label="Loss Price (in Php)"
+                    label="Loss Price"
                     type="number"
                     onBlur={handleBlur}
                     onChange={handleChange}
@@ -295,6 +303,13 @@ const AddLoss = () => {
                     as={TextField}
                     fullWidth
                     margin="normal"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          Php
+                        </InputAdornment>
+                      ),
+                    }}
                     sx={{ background: theme.palette.primary[700] }}
                     error={
                       Boolean(touched.lossPrice) && Boolean(errors.lossPrice)

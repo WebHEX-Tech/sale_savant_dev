@@ -63,14 +63,14 @@ const CheckoutList = () => {
     speed: 500,
     slidesToShow: 3,
     swipeToSlide: true,
-    initialSlide: 1,
+    initialSlide: 0,
     responsive: [
       {
         breakpoint: 1380,
         settings: {
           slidesToShow: 2,
           slidesToScroll: 2,
-          initialSlide: 1,
+          initialSlide: 0,
         },
       },
       {
@@ -78,7 +78,7 @@ const CheckoutList = () => {
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
-          initialSlide: 1,
+          initialSlide: 0,
         },
       },
     ],

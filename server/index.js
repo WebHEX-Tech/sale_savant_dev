@@ -44,6 +44,7 @@ app.post("/menumanagement/addmenu", upload.single("picture"), AddMenu)
 // Admin Routes
 app.use("/home", routes.adminRoutes);
 app.use("/menumanagement", routes.managementRoutes);
+app.use("/supply-management", routes.supplierRoutes)
 
 // Cashier Routes
 app.use("/cashier", routes.cashierRoutes)
