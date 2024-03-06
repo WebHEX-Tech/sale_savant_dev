@@ -26,6 +26,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { baseUrl } from "state/api";
+import * as XLSX from "xlsx";
 
 const SupplyRecords = () => {
   const theme = useTheme();
@@ -37,6 +38,41 @@ const SupplyRecords = () => {
   const [categories, setCategories] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const handleExportToExcel = () => {
+    const exportData = supplyRecord.map((record) => ({
+      "Delivery Date": new Date(record.deliveryDate).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }),
+      "Supplier Name": record.supplier[0].supplierName,
+      "Contact Person": record.supplier[0].contactPerson,
+      "Contact #": record.supplier[0].contactNo,
+      "Category": record.supplier[0].category,
+      "Item Name": record.itemName,
+      "Quantity": record.quantity,
+      "Total Cost (Php)": record.totalCost,
+      "Status": getStatusText(record.totalPaid, record.totalCost),
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Supply Records");
+
+    XLSX.writeFile(wb, "Supply_Records.xlsx");
+  };
+
+  const getStatusText = (totalPaid, totalCost) => {
+    if (totalPaid === 0) {
+      return "Unpaid";
+    } else if (totalPaid !== 0 && totalPaid < totalCost) {
+      return "Partially Paid";
+    } else if (totalPaid === totalCost) {
+      return "Paid";
+    }
+  };
 
   const handleSearchInputChange = (event) => {
     setSearchInput(event.target.value);
@@ -323,6 +359,7 @@ const SupplyRecords = () => {
           <Button
             startIcon={<DescriptionIcon color="success" />}
             variant="contained"
+            onClick={handleExportToExcel}
           >
             Export to Excel
           </Button>
@@ -388,7 +425,6 @@ const SupplyRecords = () => {
 
         <Box
           height="60vh"
-          width="81vw"
           sx={{
             "& .MuiDataGrid-root": {
               border: "none",

@@ -77,7 +77,7 @@ const Login = () => {
           component="div"
           sx={{
             background: "#D4F8FC",
-            boxShadow: "0 0 20px 0px rgba(0, 0, 0, 0.35)",
+            boxShadow: "10px 0px 18px -15px rgba(0,0,0,0.89)",
             width: "100%",
             maxWidth: "45%",
             height: "100vh",

@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Button,
   Dialog,
@@ -22,6 +23,7 @@ const ModifyTable = () => {
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState(false);
   const [tables, setTables] = useState([]);
+  const [receipt, setReceipt] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -45,6 +47,24 @@ const ModifyTable = () => {
 
   useEffect(() => {
     fetchTableData();
+  }, []);
+
+  useEffect(() => {
+    const fetchReceiptData = async () => {
+      try {
+        const response = await fetch(`${baseUrl}cashier/get-receipt`);
+        if (response.ok) {
+          const data = await response.json();
+          setReceipt(data);
+        } else {
+          console.error("Failed to fetch receipt data:", response.statusText);
+        }
+      } catch (error) {
+        console.error("An error occurred during the fetch:", error);
+      }
+    };
+
+    fetchReceiptData();
   }, []);
 
   const handleSubmit = async (values, actions) => {
@@ -116,12 +136,18 @@ const ModifyTable = () => {
           >
             Take Order
           </Button>
-          <Button
-            variant="contained"
-            onClick={() => handleButtonClick("/checkout-list")}
+          <Badge
+            color="secondary"
+            badgeContent={receipt.length}
+            invisible={receipt.length === 0}
           >
-            Checkout
-          </Button>
+            <Button
+              variant="contained"
+              onClick={() => handleButtonClick("/checkout-list")}
+            >
+              Checkout
+            </Button>
+          </Badge>
           <Button variant="contained">Refunds</Button>
         </div>
 
@@ -129,7 +155,11 @@ const ModifyTable = () => {
           sx={{
             display: "flex",
             gap: "1em",
-            flexDirection: { xs: "column-reverse", sm: "column-reverse", md: "row" },
+            flexDirection: {
+              xs: "column-reverse",
+              sm: "column-reverse",
+              md: "row",
+            },
           }}
         >
           <Box
@@ -166,13 +196,13 @@ const ModifyTable = () => {
             </div>
           </Box>
 
-            <Button
-              variant="contained"
-              color="success"
-              onClick={() => setOpenDialog(true)}
-            >
-              Add Table
-            </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => setOpenDialog(true)}
+          >
+            Add Table
+          </Button>
         </Box>
       </FlexBetween>
 
@@ -219,7 +249,12 @@ const ModifyTable = () => {
                 fontSize: "1em",
               }}
             >
-              <ClearIcon sx={{ fontSize: "1em", color: table.status === "Occupied" ? "#88F3FF" : "#C50000",}} />
+              <ClearIcon
+                sx={{
+                  fontSize: "1em",
+                  color: table.status === "Occupied" ? "#88F3FF" : "#C50000",
+                }}
+              />
             </IconButton>
             <div>
               <Typography variant="h5">Table</Typography>

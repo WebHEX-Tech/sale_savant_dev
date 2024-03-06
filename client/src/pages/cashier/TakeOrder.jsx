@@ -45,9 +45,7 @@ const TakeOrder = () => {
   useEffect(() => {
     const fetchReceiptData = async () => {
       try {
-        const response = await fetch(
-          `${baseUrl}cashier/get-receipt`
-        );
+        const response = await fetch(`${baseUrl}cashier/get-receipt`);
         if (response.ok) {
           const data = await response.json();
           setReceipt(data);
@@ -66,7 +64,9 @@ const TakeOrder = () => {
     navigate(link);
   };
 
-  const orderNo = Math.floor(100 + Math.random() * 900);
+  const orderNo = Math.floor(1000 + Math.random() * 9000)
+    .toString()
+    .padStart(4, "0");
 
   const handleOrderTypeSelect = (type, number) => {
     localStorage.setItem("orderType", type);

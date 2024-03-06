@@ -34,7 +34,9 @@ const OrderCard = ({
   const [imageLoading, setImageLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [menuPromo, setMenuPromo] = useState([]);
 
+  const currentDate = new Date();
   const total = quantity * price;
 
   const handleAddDish = () => {
@@ -50,6 +52,37 @@ const OrderCard = ({
     onAddDish(dish);
     setIsModalOpen(false);
   };
+
+  useEffect(() => {
+    const fetchMenuPromos = async () => {
+      try {
+        const response = await fetch(
+          `${baseUrl}menumanagement/menuPromo`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          const menuPromoWithId = data.map((item, index) => ({
+            ...item,
+            id: index + 1,
+          }));
+          setMenuPromo(menuPromoWithId);
+        } else {
+          console.error("Failed to fetch menu promo:", response.statusText);
+        }
+      } catch (error) {
+        console.error("An error occurred during the fetch:", error);
+      }
+    };
+
+    fetchMenuPromos();
+  }, []);
+
+  const specificPromo = menuPromo.find((promo) => {
+    return (
+      (promo.applicability === category || promo.applicability === menuName) &&
+      new Date(promo.validDate) >= currentDate
+    );
+  });
 
   useEffect(() => {
     const imageElement = new Image();
@@ -107,7 +140,7 @@ const OrderCard = ({
           background: theme.palette.primary[400],
           color: theme.palette.grey[900],
           cursor: isAvailable ? "pointer" : "not-allowed",
-          borderRadius:"15px",
+          borderRadius: "15px",
         }}
         onClick={handleCardClick}
       >
@@ -158,14 +191,45 @@ const OrderCard = ({
           />
         )}
         <CardContent>
-          <FlexBetween>
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "1em" }}
-            >
-              <Typography variant="h5">{menuName}</Typography>
-              <Typography variant="subtitle1">{`Php ${price}`}</Typography>
-            </div>
-          </FlexBetween>
+          <div style={{ display: "flex", marginBottom: "1em" }}>
+            <Typography variant="h5">{menuName}</Typography>
+          </div>
+          {specificPromo && ( 
+            <FlexBetween>
+              <div>
+                <Typography variant="subtitle1">{`Php ${price}`}</Typography>
+              </div>
+              <div>
+                {specificPromo.promoType === "Fixed" ? (
+                  <>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        background: "#5EFF6E",
+                        padding: "0.5em",
+                        borderRadius: "5px",
+                      }}
+                    >
+                      Promo: Php {specificPromo.promoValue} only
+                    </Typography>
+                  </>
+                ) : (
+                  <>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        background: "#5EFF6E",
+                        padding: "0.5em",
+                        borderRadius: "5px",
+                      }}
+                    >
+                      Promo: -{specificPromo.promoValue}%
+                    </Typography>
+                  </>
+                )}
+              </div>
+            </FlexBetween>
+          )}
         </CardContent>
       </Card>
 
@@ -199,8 +263,18 @@ const OrderCard = ({
               <Typography variant="subtitle1">{`Php ${price}`}</Typography>
 
               <FlexBetween>
-                <div style={{ border: "1px solid black", padding:"0.2em 0.8em", borderRadius:"8px", whiteSpace:"nowrap"}}>
-                  Available: <span style={{fontWeight:"700", color:"#218951"}}>{salesTarget}</span>
+                <div
+                  style={{
+                    border: "1px solid black",
+                    padding: "0.2em 0.8em",
+                    borderRadius: "8px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Available:{" "}
+                  <span style={{ fontWeight: "700", color: "#218951" }}>
+                    {salesTarget}
+                  </span>
                 </div>
 
                 <div

@@ -3,6 +3,7 @@ import Menu from "../models/Menu.js";
 import Table from "../models/Table.js";
 import MenuInventory from "../models/MenuInventory.js";
 import MenuPromo from "../models/MenuPromo.js";
+import OrderSales from "../models/OrderSales.js";
 
 // Add
 export const createReceipt = async (req, res) => {
@@ -12,6 +13,8 @@ export const createReceipt = async (req, res) => {
       orderType,
       tableNo,
       orderNo,
+      subTotal,
+      amountDiscounted,
       totalAmount,
       status,
       promoUsed,
@@ -67,6 +70,8 @@ export const createReceipt = async (req, res) => {
       orderType,
       tableNo,
       orderNo,
+      subTotal,
+      amountDiscounted,
       totalAmount,
       status,
       promoUsed,
@@ -75,6 +80,42 @@ export const createReceipt = async (req, res) => {
     res.status(201).json(savedReceipt);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+export const AddOrderSale = async (req, res) => {
+  try {
+    const {
+      orderNo,
+      paymentType,
+      paymentCode,
+      orderType,
+      noItems,
+      promoUsed,
+      subTotal,
+      amountDiscounted,
+      totalAmount,
+      amountPaid,
+    } = req.body;
+
+    const newOrderSale = new OrderSales({
+      orderNo,
+      paymentType,
+      paymentCode,
+      orderType,
+      noItems,
+      promoUsed,
+      subTotal,
+      amountDiscounted,
+      totalAmount,
+      amountPaid,
+    });
+
+    const savedOrderSale = await newOrderSale.save();
+
+    res.status(201).json(savedOrderSale);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 export const AddTable = async (req, res) => {
@@ -113,6 +154,17 @@ export const getTable = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+export const getOrderSale = async (req, res) => {
+  try {
+    const orderSale = await OrderSales.find();
+    if (!orderSale) {
+      return res.status(404).json({ message: "Order Sale not found" });
+    }
+    res.status(200).json(orderSale);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
 
 // Update
 export const updateTableStatus = async (req, res) => {
@@ -129,6 +181,26 @@ export const updateTableStatus = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const updateReceiptStatus = async (req, res) => {
+  try {
+    const { id } = req.params; 
+    const { status } = req.body; 
+
+    const updatedReceipt = await Receipt.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedReceipt) {
+      return res.status(404).json({ message: 'Receipt not found' });
+    }
+
+    res.status(200).json(updatedReceipt);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -150,6 +222,26 @@ export const deleteTable = async (req, res) => {
       .json({ message: `Table ${table.tableNo} deleted successfully` });
   } catch (error) {
     console.error("Error deleting table:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+export const deleteReceipt = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const receipt = await Receipt.findById(id);
+
+    if (!receipt) {
+      return res.status(404).json({ error: "Receipt not found" });
+    }
+
+    await Receipt.findByIdAndDelete(id);
+
+    res
+      .status(200)
+      .json({ message: `Receipt ${receipt.id} deleted successfully` });
+  } catch (error) {
+    console.error("Error deleting receipt:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

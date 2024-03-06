@@ -47,6 +47,12 @@ function App() {
               <Route path="/add supplier" element={<scenes.AddSupplier />} />
               <Route path={`/edit supplier/:id`} element={<scenes.EditSupplier />} />
 
+              {/* Sales Management */}
+              <Route path="/sales management" element={<scenes.SalesManagement />} />
+              <Route path="/sales management/order-sales" element={<scenes.OrderSales />} />
+              <Route path="/sales management/expenses" element={<scenes.Expenses />} />
+              {/* Modules */}
+
               {/* Account Management Routes */}
               <Route path="/account management" element={<scenes.AccountManagement/>} />
               <Route path="/void" element={<scenes.Void/>}/>
@@ -74,6 +80,7 @@ function App() {
 
               {/* Checkout Order */}
               <Route path="/checkout-list" element={<pages.CheckoutList />} />
+              <Route path={`/checkout-order/:id`} element={<pages.ReceiptSummary />} />
 
             </Route>
             

@@ -23,41 +23,42 @@ app.use(morgan("common"));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
-app.use("/assets", express.static(path.join(__dirname, 'public/assets'))); 
+app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 // File Storage
 const storage = multer.diskStorage({
-    destination: function (req, file, cb){
-        cb(null, "public/assets");
-    },
-    filename: function (req, file, cb){
-        cb(null, file.originalname);
-    },
+  destination: function (req, file, cb) {
+    cb(null, "public/assets");
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
 });
-const upload = multer({storage});
+const upload = multer({ storage });
 
 app.use("/auth", routes.authRoutes);
 
 // Routes with File
-app.post("/menumanagement/addmenu", upload.single("picture"), AddMenu)
+app.post("/menumanagement/addmenu", upload.single("picture"), AddMenu);
 
 // Admin Routes
 app.use("/home", routes.adminRoutes);
 app.use("/menumanagement", routes.managementRoutes);
-app.use("/supply-management", routes.supplierRoutes)
+app.use("/supply-management", routes.supplierRoutes);
+app.use("/sales-management", routes.salesRoutes);
 
 // Cashier Routes
-app.use("/cashier", routes.cashierRoutes)
+app.use("/cashier", routes.cashierRoutes);
 
 // Database
 const PORT = process.env.PORT || 3001;
 
-mongoose.connect(process.env.MONGO_URL, {
-    useNewUrlParser: true, 
-    useUnifiedTopology: true, 
-})
-.then(() => {
+mongoose
+  .connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
     app.listen(PORT, () => console.log(`\nServer Port: ${PORT}`));
-})
-.catch((error) => console.error(`MongoDB connection error: ${error}`));
-
+  })
+  .catch((error) => console.error(`MongoDB connection error: ${error}`));

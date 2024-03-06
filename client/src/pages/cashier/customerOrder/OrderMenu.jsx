@@ -30,10 +30,12 @@ import {
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { Add, Remove } from "@mui/icons-material";
 import ClearIcon from "@mui/icons-material/Clear";
+import CircleIcon from "@mui/icons-material/Circle";
 import { OrderCard as ItemCard, FlexBetween, Receipt } from "components";
 import React, { useEffect, useState } from "react";
 import { getOrderNo, getOrderType } from "../TakeOrder";
 import { useNavigate } from "react-router-dom";
+import { baseUrl } from "state/api";
 
 const OrderMenu = (props) => {
   const theme = useTheme();
@@ -49,7 +51,9 @@ const OrderMenu = (props) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTables, setSelectedTables] = useState([]);
   const [isPromoDialogOpen, setIsPromoDialogOpen] = useState(false);
+  const [savedPromos, setSavedPromos] = useState(false);
   const [selectedPromos, setSelectedPromos] = useState([]);
+  const [discountedAmount, setDiscountedAmount] = useState([]);
   const { window } = props;
   const OrderType = getOrderType();
   const OrderNo = getOrderNo();
@@ -58,7 +62,7 @@ const OrderMenu = (props) => {
     const fetchMenuData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3001/menumanagement/menu"
+          `${baseUrl}menumanagement/menu`
         );
         if (response.ok) {
           const data = await response.json();
@@ -74,34 +78,34 @@ const OrderMenu = (props) => {
     fetchMenuData();
   }, []);
 
-  const fetchMenuPromos = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:3001/menumanagement/menuPromo"
-      );
-      if (response.ok) {
-        const data = await response.json();
-        const menuPromoWithId = data.map((item, index) => ({
-          ...item,
-          id: index + 1,
-        }));
-        setMenuPromo(menuPromoWithId);
-      } else {
-        console.error("Failed to fetch menu promo:", response.statusText);
-      }
-    } catch (error) {
-      console.error("An error occurred during the fetch:", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchMenuPromos = async () => {
+      try {
+        const response = await fetch(
+          `${baseUrl}menumanagement/menuPromo`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          const menuPromoWithId = data.map((item, index) => ({
+            ...item,
+            id: index + 1,
+          }));
+          setMenuPromo(menuPromoWithId);
+        } else {
+          console.error("Failed to fetch menu promo:", response.statusText);
+        }
+      } catch (error) {
+        console.error("An error occurred during the fetch:", error);
+      }
+    };
+
     fetchMenuPromos();
   }, []);
 
   useEffect(() => {
     const fetchTableData = async () => {
       try {
-        const response = await fetch("http://localhost:3001/cashier/get-table");
+        const response = await fetch(`${baseUrl}cashier/get-table`);
         if (response.ok) {
           const data = await response.json();
           setTables(data);
@@ -143,6 +147,10 @@ const OrderMenu = (props) => {
     setIsPromoDialogOpen(true);
   };
 
+  const handleSavePromo = () => {
+    setSavedPromos(true);
+  };
+
   const handleClosePromoDialog = () => {
     setIsPromoDialogOpen(false);
   };
@@ -157,56 +165,55 @@ const OrderMenu = (props) => {
       return {
         ...dish,
         total: originalPrice * dish.quantity,
-        price: originalPrice,
       };
     });
+    setDiscountedAmount([]);
     setAddedDishes(updatedDishes);
   };
 
   const handleCancelPromoDialog = () => {
+    setSavedPromos(false);
     setSelectedPromos([]);
     resetOriginalPrices();
     setIsPromoDialogOpen(false);
   };
 
   const handleApplyPromo = () => {
+    handleSavePromo();
     handleClosePromoDialog();
+    let totalDiscountedPrice = 0;
+
     selectedPromos.forEach((promo) => {
       if (promo.promoType === "Percentage") {
-        const updatedDishes = addedDishes.map((dish) => {
-          if (
+        const isApplicable = addedDishes.some(
+          (dish) =>
             promo.applicability === "All Menu" ||
             promo.applicability.includes(dish.menuName) ||
             promo.applicability.includes(dish.category)
-          ) {
-            const discountedPrice =
-              dish.price - (dish.price * (promo.promoValue / 100)) / 100;
-            return {
-              ...dish,
-              total: discountedPrice * dish.quantity,
-              price: discountedPrice,
-            };
-          }
-          return dish;
-        });
-        setAddedDishes(updatedDishes);
+        );
+
+        if (isApplicable) {
+          const discountedPrice =
+            calculateTotalAmount().subTotal * (promo.promoValue / 100);
+
+          totalDiscountedPrice += discountedPrice;
+        }
+        setDiscountedAmount([totalDiscountedPrice]);
       } else if (promo.promoType === "Fixed") {
-        const updatedDishes = addedDishes.map((dish) => {
+        addedDishes.map((dish) => {
           if (
             promo.applicability === "All Menu" ||
             promo.applicability.includes(dish.menuName) ||
             promo.applicability.includes(dish.category)
           ) {
             const discountedPrice = promo.promoValue;
-            return {
-              ...dish,
-              total: discountedPrice * dish.quantity,
-              price: discountedPrice,
-            };
+            const discountAmount =
+              (dish.price - discountedPrice) * dish.quantity;
+            totalDiscountedPrice += discountAmount;
           }
           return dish;
         });
-        setAddedDishes(updatedDishes);
+        setDiscountedAmount([totalDiscountedPrice]);
       }
     });
   };
@@ -252,7 +259,7 @@ const OrderMenu = (props) => {
       });
 
       const response = await fetch(
-        "http://localhost:3001/cashier/update-table-status",
+        `${baseUrl}cashier/update-table-status`,
         {
           method: "PUT",
           headers: {
@@ -351,12 +358,15 @@ const OrderMenu = (props) => {
       tableNo: selectedTables.join(", "),
       orderNo: OrderNo,
       status: "Unpaid",
-      totalAmount: calculateTotalAmount().subTotal.toFixed(2),
+      subTotal: calculateTotalAmount().subTotal.toFixed(2),
+      amountDiscounted: calculateTotalAmount().amountDiscounted.toFixed(2),
+      totalAmount: calculateTotalAmount().total.toFixed(2),
     };
+    console.log(orderDetails);
 
     try {
       const response = await fetch(
-        "http://localhost:3001/cashier/create-receipt",
+        `${baseUrl}cashier/create-receipt`,
         {
           method: "POST",
           headers: {
@@ -382,8 +392,10 @@ const OrderMenu = (props) => {
   const calculateTotalAmount = () => {
     if (addedDishes.length === 0) {
       return {
+        total: 0,
         vatable: 0,
         vat: 0,
+        amountDiscounted: 0,
         subTotal: 0,
       };
     }
@@ -393,12 +405,18 @@ const OrderMenu = (props) => {
         acc.total += dish.price * dish.quantity;
         return acc;
       },
-      { total: 0, vatable: 0, vat: 0, subTotal: 0 }
+      { total: 0, vatable: 0, vat: 0, amountDiscounted: 0, subTotal: 0 }
     );
 
     totalAmount.vatable = totalAmount.total / 1.12;
     totalAmount.vat = totalAmount.total - totalAmount.vatable;
+    totalAmount.amountDiscounted = discountedAmount.reduce(
+      (acc, num) => acc + num,
+      0
+    );
     totalAmount.subTotal = totalAmount.vatable + totalAmount.vat;
+    totalAmount.total =
+      totalAmount.vatable + totalAmount.vat - totalAmount.amountDiscounted;
 
     return totalAmount;
   };
@@ -531,7 +549,7 @@ const OrderMenu = (props) => {
                             component="img"
                             sx={{ width: 60, height: 80 }}
                             alt={dish.menuName}
-                            src={`http://localhost:3001/assets/${dish.img}`}
+                            src={`${baseUrl}assets/${dish.img}`}
                             loading="lazy"
                           />
                           <div
@@ -645,24 +663,35 @@ const OrderMenu = (props) => {
                     flexDirection: "column",
                     gap: "0.2em",
                     padding: "0 0.5em",
+                    marginBottom: "0.5em",
                   }}
                 >
                   <FlexBetween>
-                    <Typography sx={{ fontWeight: "200" }}>VATable</Typography>
                     <Typography sx={{ fontWeight: "200" }}>
-                      {calculateTotalAmount().vatable.toFixed(2)}
+                      Includes VAT
+                    </Typography>
+                    <Typography sx={{ fontWeight: "200" }}>
+                      ---------
                     </Typography>
                   </FlexBetween>
                   <FlexBetween>
-                    <Typography sx={{ fontWeight: "200" }}>VAT</Typography>
+                    <Typography sx={{ fontWeight: "200" }}>Subtotal</Typography>
                     <Typography sx={{ fontWeight: "200" }}>
-                      {calculateTotalAmount().vat.toFixed(2)}
-                    </Typography>
-                  </FlexBetween>
-                  <FlexBetween>
-                    <Typography sx={{ fontWeight: "600" }}>Subtotal</Typography>
-                    <Typography sx={{ fontWeight: "600" }}>
                       {calculateTotalAmount().subTotal.toFixed(2)}
+                    </Typography>
+                  </FlexBetween>
+                  <FlexBetween>
+                    <Typography sx={{ fontWeight: "200" }}>
+                      Amount Discounted
+                    </Typography>
+                    <Typography sx={{ fontWeight: "200" }}>
+                      {calculateTotalAmount().amountDiscounted.toFixed(2)}
+                    </Typography>
+                  </FlexBetween>
+                  <FlexBetween>
+                    <Typography sx={{ fontWeight: "600" }}>Total</Typography>
+                    <Typography sx={{ fontWeight: "600" }}>
+                      {calculateTotalAmount().total.toFixed(2)}
                     </Typography>
                   </FlexBetween>
                 </div>
@@ -679,16 +708,16 @@ const OrderMenu = (props) => {
                   <Button
                     variant="contained"
                     size="small"
-                    onClick={handleOpenDialog}
+                    onClick={handleOpenPromoDialog}
                   >
-                    Select Table
+                    Apply Promo / Discount
                   </Button>
                   <Button
                     variant="contained"
                     size="small"
-                    onClick={handleOpenPromoDialog}
+                    onClick={handleOpenDialog}
                   >
-                    Apply Promo / Discount
+                    Select Table
                   </Button>
                   <Button
                     variant="contained"
@@ -990,11 +1019,38 @@ const OrderMenu = (props) => {
 
       <Dialog
         open={isPromoDialogOpen}
-        onClose={handleClosePromoDialog}
-        sx={{ "& .MuiPaper-root": { background: theme.palette.grey[300] } }}
+        sx={{ "& .MuiPaper-root": { background: theme.palette.grey[400] } }}
         fullWidth
       >
-        <DialogTitle sx={{ color: "#000" }}>Apply Promo/Discount</DialogTitle>
+        <DialogTitle sx={{ color: "#000" }}>
+          <FlexBetween>
+            <div>Apply Promo/Discount</div>
+            <div style={{ display: "flex", gap: "1em" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.2em",
+                }}
+              >
+                <CircleIcon sx={{ color: "#BFF9FF" }} />
+                <Typography> Discount</Typography>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.2em",
+                }}
+              >
+                <CircleIcon sx={{ color: "#93DD9A" }} />
+                <Typography> Promo</Typography>
+              </div>
+            </div>
+          </FlexBetween>
+        </DialogTitle>
         <DialogContent>
           <FormControl>
             <Box marginBottom="2em">
@@ -1010,7 +1066,7 @@ const OrderMenu = (props) => {
                     <Chip
                       key={promo.id}
                       label={
-                        <Typography variant="caption">
+                        <Typography variant="caption" sx={{ color: "#000" }}>
                           {promo.promoType === "Fixed" ? (
                             <>
                               Starts at Php {promo.promoValue} <br /> Promo:{" "}
@@ -1018,7 +1074,8 @@ const OrderMenu = (props) => {
                             </>
                           ) : (
                             <>
-                              {promo.promoValue}% off Promo: {promo.promoName}
+                              {promo.promoValue}% off Discount:{" "}
+                              {promo.promoName}
                             </>
                           )}
                         </Typography>
@@ -1036,6 +1093,12 @@ const OrderMenu = (props) => {
                         margin: "0.5em",
                         padding: "1.5em 0.2em",
                         border: "1px #9D9D9D solid",
+                        background:
+                          promo.promoStatus === "Expired"
+                            ? "#F5786A"
+                            : promo.promoType === "Percentage"
+                            ? "#BFF9FF"
+                            : "#93DD9A",
                         cursor:
                           promo.promoStatus === "Expired"
                             ? "not-allowed"
@@ -1073,6 +1136,7 @@ const OrderMenu = (props) => {
             variant="contained"
             color="success"
             onClick={handleApplyPromo}
+            disabled={savedPromos === true}
           >
             Apply
           </Button>

@@ -245,7 +245,6 @@ const Supplier = () => {
 
         <Box
           height="67vh"
-          width="81vw"
           sx={{
             "& .MuiDataGrid-root": {
               border: "none",

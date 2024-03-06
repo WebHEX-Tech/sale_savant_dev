@@ -20,6 +20,7 @@ import {
 import { FlexBetween } from "components";
 import { Add, Remove } from "@mui/icons-material";
 import ClearIcon from "@mui/icons-material/Clear";
+import CircleIcon from "@mui/icons-material/Circle";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { baseUrl } from "state/api";
@@ -38,7 +39,9 @@ const Receipt = ({
   const [selectedTables, setSelectedTables] = useState([]);
   const [tables, setTables] = useState([]);
   const [isPromoDialogOpen, setIsPromoDialogOpen] = useState(false);
+  const [savedPromos, setSavedPromos] = useState(false);
   const [selectedPromos, setSelectedPromos] = useState([]);
+  const [discountedAmount, setDiscountedAmount] = useState([]);
 
   useEffect(() => {
     const fetchTableData = async () => {
@@ -77,6 +80,10 @@ const Receipt = ({
     setIsPromoDialogOpen(true);
   };
 
+  const handleSavePromo = () => {
+    setSavedPromos(true);
+  };
+
   const handleClosePromoDialog = () => {
     setIsPromoDialogOpen(false);
   };
@@ -91,56 +98,55 @@ const Receipt = ({
       return {
         ...dish,
         total: originalPrice * dish.quantity,
-        price: originalPrice,
       };
     });
+    setDiscountedAmount([]);
     setAddedDishes(updatedDishes);
   };
 
   const handleCancelPromoDialog = () => {
+    setSavedPromos(false);
     setSelectedPromos([]);
     resetOriginalPrices();
     setIsPromoDialogOpen(false);
   };
 
   const handleApplyPromo = () => {
+    handleSavePromo();
     handleClosePromoDialog();
+    let totalDiscountedPrice = 0;
+
     selectedPromos.forEach((promo) => {
       if (promo.promoType === "Percentage") {
-        const updatedDishes = addedDishes.map((dish) => {
-          if (
+        const isApplicable = addedDishes.some(
+          (dish) =>
             promo.applicability === "All Menu" ||
             promo.applicability.includes(dish.menuName) ||
             promo.applicability.includes(dish.category)
-          ) {
-            const discountedPrice =
-              dish.price - (dish.price * (promo.promoValue / 100)) / 100;
-            return {
-              ...dish,
-              total: discountedPrice * dish.quantity,
-              price: discountedPrice,
-            };
-          }
-          return dish;
-        });
-        setAddedDishes(updatedDishes);
+        );
+
+        if (isApplicable) {
+          const discountedPrice =
+            calculateTotalAmount().subTotal * (promo.promoValue / 100);
+
+          totalDiscountedPrice += discountedPrice;
+        }
+        setDiscountedAmount([totalDiscountedPrice]);
       } else if (promo.promoType === "Fixed") {
-        const updatedDishes = addedDishes.map((dish) => {
+        addedDishes.map((dish) => {
           if (
             promo.applicability === "All Menu" ||
             promo.applicability.includes(dish.menuName) ||
             promo.applicability.includes(dish.category)
           ) {
             const discountedPrice = promo.promoValue;
-            return {
-              ...dish,
-              total: discountedPrice * dish.quantity,
-              price: discountedPrice,
-            };
+            const discountAmount =
+              (dish.price - discountedPrice) * dish.quantity;
+            totalDiscountedPrice += discountAmount;
           }
           return dish;
         });
-        setAddedDishes(updatedDishes);
+        setDiscountedAmount([totalDiscountedPrice]);
       }
     });
   };
@@ -180,16 +186,13 @@ const Receipt = ({
         return table;
       });
 
-      const response = await fetch(
-        `${baseUrl}cashier/update-table-status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedTables),
-        }
-      );
+      const response = await fetch(`${baseUrl}cashier/update-table-status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedTables),
+      });
 
       if (response.ok) {
         console.log("Table status updated successfully");
@@ -230,30 +233,6 @@ const Receipt = ({
     setAddedDishes(updatedDishes);
   };
 
-  const calculateTotalAmount = () => {
-    if (addedDishes.length === 0) {
-      return {
-        vatable: 0,
-        vat: 0,
-        subTotal: 0,
-      };
-    }
-
-    const totalAmount = addedDishes.reduce(
-      (acc, dish) => {
-        acc.total += dish.price * dish.quantity;
-        return acc;
-      },
-      { total: 0, vatable: 0, vat: 0, subTotal: 0 }
-    );
-
-    totalAmount.vatable = totalAmount.total / 1.12;
-    totalAmount.vat = totalAmount.total - totalAmount.vatable;
-    totalAmount.subTotal = totalAmount.vatable + totalAmount.vat;
-
-    return totalAmount;
-  };
-
   const handleSubmitOrder = async () => {
     const orderDetails = {
       items: addedDishes.map((dish) => ({
@@ -280,8 +259,11 @@ const Receipt = ({
       tableNo: selectedTables.join(", "),
       orderNo: OrderNo,
       status: "Unpaid",
-      totalAmount: calculateTotalAmount().subTotal.toFixed(2),
+      subTotal: calculateTotalAmount().subTotal.toFixed(2),
+      amountDiscounted: calculateTotalAmount().amountDiscounted.toFixed(2),
+      totalAmount: calculateTotalAmount().total.toFixed(2),
     };
+    console.log(orderDetails);
 
     try {
       const response = await fetch(
@@ -297,6 +279,8 @@ const Receipt = ({
 
       if (response.ok) {
         console.log("Order submitted successfully");
+
+        handleConfirmTables();
         navigate(`/order-placed/${OrderNo}`);
       } else {
         console.error("Failed to create receipt:", response.statusText);
@@ -304,6 +288,38 @@ const Receipt = ({
     } catch (error) {
       console.error("An error occurred during receipt creation:", error);
     }
+  };
+
+  const calculateTotalAmount = () => {
+    if (addedDishes.length === 0) {
+      return {
+        total: 0,
+        vatable: 0,
+        vat: 0,
+        amountDiscounted: 0,
+        subTotal: 0,
+      };
+    }
+
+    const totalAmount = addedDishes.reduce(
+      (acc, dish) => {
+        acc.total += dish.price * dish.quantity;
+        return acc;
+      },
+      { total: 0, vatable: 0, vat: 0, amountDiscounted: 0, subTotal: 0 }
+    );
+
+    totalAmount.vatable = totalAmount.total / 1.12;
+    totalAmount.vat = totalAmount.total - totalAmount.vatable;
+    totalAmount.amountDiscounted = discountedAmount.reduce(
+      (acc, num) => acc + num,
+      0
+    );
+    totalAmount.subTotal = totalAmount.vatable + totalAmount.vat;
+    totalAmount.total =
+      totalAmount.vatable + totalAmount.vat - totalAmount.amountDiscounted;
+
+    return totalAmount;
   };
 
   return (
@@ -515,25 +531,31 @@ const Receipt = ({
               flexDirection: "column",
               gap: "0.2em",
               padding: "0 0.5em",
-              marginBottom: "1em",
+              marginBottom: "0.5em",
             }}
           >
             <FlexBetween>
-              <Typography sx={{ fontWeight: "200" }}>VATable</Typography>
-              <Typography sx={{ fontWeight: "200" }}>
-                {calculateTotalAmount().vatable.toFixed(2)}
-              </Typography>
+              <Typography sx={{ fontWeight: "200" }}>Includes VAT</Typography>
+              <Typography sx={{ fontWeight: "200" }}>---------</Typography>
             </FlexBetween>
             <FlexBetween>
-              <Typography sx={{ fontWeight: "200" }}>VAT</Typography>
+              <Typography sx={{ fontWeight: "200" }}>Subtotal</Typography>
               <Typography sx={{ fontWeight: "200" }}>
-                {calculateTotalAmount().vat.toFixed(2)}
-              </Typography>
-            </FlexBetween>
-            <FlexBetween>
-              <Typography sx={{ fontWeight: "600" }}>Subtotal</Typography>
-              <Typography sx={{ fontWeight: "600" }}>
                 {calculateTotalAmount().subTotal.toFixed(2)}
+              </Typography>
+            </FlexBetween>
+            <FlexBetween>
+              <Typography sx={{ fontWeight: "200" }}>
+                Amount Discounted
+              </Typography>
+              <Typography sx={{ fontWeight: "200" }}>
+                {calculateTotalAmount().amountDiscounted.toFixed(2)}
+              </Typography>
+            </FlexBetween>
+            <FlexBetween>
+              <Typography sx={{ fontWeight: "600" }}>Total</Typography>
+              <Typography sx={{ fontWeight: "600" }}>
+                {calculateTotalAmount().total.toFixed(2)}
               </Typography>
             </FlexBetween>
           </div>
@@ -547,15 +569,15 @@ const Receipt = ({
               margin: "1em",
             }}
           >
-            <Button variant="contained" size="small" onClick={handleOpenDialog}>
-              Select Table
-            </Button>
             <Button
               variant="contained"
               size="small"
               onClick={handleOpenPromoDialog}
             >
               Apply Promo / Discount
+            </Button>
+            <Button variant="contained" size="small" onClick={handleOpenDialog}>
+              Select Table
             </Button>
             <Button
               variant="contained"
@@ -650,11 +672,38 @@ const Receipt = ({
 
       <Dialog
         open={isPromoDialogOpen}
-        onClose={handleClosePromoDialog}
-        sx={{ "& .MuiPaper-root": { background: theme.palette.grey[300] } }}
+        sx={{ "& .MuiPaper-root": { background: theme.palette.grey[400] } }}
         fullWidth
       >
-        <DialogTitle sx={{ color: "#000" }}>Apply Promo/Discount</DialogTitle>
+        <DialogTitle sx={{ color: "#000" }}>
+          <FlexBetween>
+            <div>Apply Promo/Discount</div>
+            <div style={{ display: "flex", gap: "1em" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.2em",
+                }}
+              >
+                <CircleIcon sx={{ color: "#BFF9FF" }} />
+                <Typography> Discount</Typography>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.2em",
+                }}
+              >
+                <CircleIcon sx={{ color: "#93DD9A" }} />
+                <Typography> Promo</Typography>
+              </div>
+            </div>
+          </FlexBetween>
+        </DialogTitle>
         <DialogContent>
           <FormControl>
             <Box marginBottom="2em">
@@ -670,7 +719,7 @@ const Receipt = ({
                     <Chip
                       key={promo.id}
                       label={
-                        <Typography variant="caption">
+                        <Typography variant="caption" sx={{ color: "#000" }}>
                           {promo.promoType === "Fixed" ? (
                             <>
                               Starts at Php {promo.promoValue} <br /> Promo:{" "}
@@ -678,7 +727,8 @@ const Receipt = ({
                             </>
                           ) : (
                             <>
-                              {promo.promoValue}% off Promo: {promo.promoName}
+                              {promo.promoValue}% off Discount:{" "}
+                              {promo.promoName}
                             </>
                           )}
                         </Typography>
@@ -696,6 +746,12 @@ const Receipt = ({
                         margin: "0.5em",
                         padding: "1.5em 0.2em",
                         border: "1px #9D9D9D solid",
+                        background:
+                          promo.promoStatus === "Expired"
+                            ? "#F5786A"
+                            : promo.promoType === "Percentage"
+                            ? "#BFF9FF"
+                            : "#93DD9A",
                         cursor:
                           promo.promoStatus === "Expired"
                             ? "not-allowed"
@@ -733,6 +789,7 @@ const Receipt = ({
             variant="contained"
             color="success"
             onClick={handleApplyPromo}
+            disabled={savedPromos === true}
           >
             Apply
           </Button>

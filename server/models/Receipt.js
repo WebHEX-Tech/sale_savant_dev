@@ -32,10 +32,10 @@ const ReceiptSchema = new mongoose.Schema(
         promoName: {
           type: String,
         },
-        promoUsage :{
+        promoUsage: {
           type: Number,
-        }
-      }
+        },
+      },
     ],
     tableNo: {
       type: String,
@@ -47,6 +47,14 @@ const ReceiptSchema = new mongoose.Schema(
     },
     orderType: {
       type: String,
+      required: true,
+    },
+    subTotal: {
+      type: Number,
+      required: true,
+    },
+    amountDiscounted: {
+      type: Number,
       required: true,
     },
     totalAmount: {

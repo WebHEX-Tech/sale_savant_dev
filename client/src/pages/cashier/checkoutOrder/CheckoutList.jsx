@@ -27,25 +27,25 @@ const CheckoutList = () => {
   const sliderRef = useRef(null);
   const [receipt, setReceipt] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [selectedTable, setSelectedTable] = useState(null);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchReceiptData = async () => {
-      try {
-        const response = await fetch(
-          `${baseUrl}cashier/get-receipt`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setReceipt(data);
-        } else {
-          console.error("Failed to fetch receipt data:", response.statusText);
-        }
-      } catch (error) {
-        console.error("An error occurred during the fetch:", error);
+  const fetchReceiptData = async () => {
+    try {
+      const response = await fetch(`${baseUrl}cashier/get-receipt`);
+      if (response.ok) {
+        const data = await response.json();
+        setReceipt(data);
+      } else {
+        console.error("Failed to fetch receipt data:", response.statusText);
       }
-    };
+    } catch (error) {
+      console.error("An error occurred during the fetch:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchReceiptData();
   }, []);
 
@@ -98,11 +98,16 @@ const CheckoutList = () => {
           <>
             {selectedOrder ? (
               <OrderReceipt
+                orderId={selectedOrder._id}
                 tableNo={selectedOrder.tableNo}
                 orderNo={selectedOrder.orderNo}
                 orderType={selectedOrder.orderType}
+                subtotal={selectedOrder.subTotal}
+                amountDiscounted={selectedOrder.amountDiscounted}
                 totalAmount={selectedOrder.totalAmount}
                 items={selectedOrder.items}
+                promos={selectedOrder.promoUsed}
+                status={selectedOrder.status}
               />
             ) : (
               <Box
@@ -143,16 +148,21 @@ const CheckoutList = () => {
               >
                 <ChevronLeftIcon />
               </IconButton>
-                {selectedOrder && (
-                  <OrderReceipt
-                    tableNo={selectedOrder.tableNo}
-                    orderNo={selectedOrder.orderNo}
-                    orderType={selectedOrder.orderType}
-                    totalAmount={selectedOrder.totalAmount}
-                    items={selectedOrder.items}
-                  />
-                )}
-              </Drawer>
+              {selectedOrder && (
+                <OrderReceipt
+                  orderId={selectedOrder._id}
+                  tableNo={selectedOrder.tableNo}
+                  orderNo={selectedOrder.orderNo}
+                  orderType={selectedOrder.orderType}
+                  subtotal={selectedOrder.subTotal}
+                  amountDiscounted={selectedOrder.amountDiscounted}
+                  totalAmount={selectedOrder.totalAmount}
+                  items={selectedOrder.items}
+                  promos={selectedOrder.promoUsed}
+                  status={selectedOrder.status}
+                />
+              )}
+            </Drawer>
           </>
         )}
 
@@ -269,8 +279,11 @@ const CheckoutList = () => {
                     orderType={item.orderType}
                     totalAmount={item.totalAmount}
                     status={item.status}
+                    selectedId={selectedOrderId}
+                    selectedTable={selectedTable}
                     onClick={() => {
-                      console.log("TableOrder clicked:", item);
+                      setSelectedOrderId(item._id);
+                      setSelectedTable(item.tableNo);
                       setSelectedOrder(item);
                       if (!isDesktop) {
                         toggleReceiptDrawer(true);

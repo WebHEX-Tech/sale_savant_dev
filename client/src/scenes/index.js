@@ -21,6 +21,11 @@ export {default as AddSupplyRecord} from './supplymanagement/AddModules/AddSuppl
 export {default as AddSupplier} from './supplymanagement/AddModules/AddSupplier.jsx'
 export {default as EditSupplier} from './supplymanagement/EditModules/EditSupplier.jsx'
 
+// exports for Sales Management
+export {default as SalesManagement} from './salesmanagement/index.jsx'
+export {default as OrderSales} from './salesmanagement/OrderSales/index.jsx'
+export {default as Expenses} from './salesmanagement/Expenses/index.jsx'
+
 // exports for Account Management
 export {default as AccountManagement} from './accountmanagement/index.jsx'
 export {default as Void} from './accountmanagement/void/index.jsx'

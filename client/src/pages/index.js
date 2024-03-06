@@ -9,3 +9,4 @@ export {default as ModifyTable} from './cashier/customerOrder/ModifyTable.jsx'
 
 // Checkout
 export {default as CheckoutList} from './cashier/checkoutOrder/CheckoutList.jsx'
+export {default as ReceiptSummary} from './cashier/checkoutOrder/ReceiptSummary.jsx'
