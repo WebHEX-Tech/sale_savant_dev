@@ -8,3 +8,6 @@ export {default as OrderCard} from './Card/OrderCard.jsx'
 export {default as Receipt} from './Cards/Receipt.jsx'
 export {default as TableOrder} from './Cards/TableOrder.jsx'
 export {default as OrderReceipt} from './Cards/OrderReceipt.jsx'
+export {default as StatBox} from './Card/StatBox.jsx'
+
+export {default as LineSalesChart} from './Charts/LineSalesChart.jsx'

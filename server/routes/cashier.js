@@ -1,5 +1,5 @@
 import express from "express";
-import { createReceipt, AddTable, getOrderReceipt, getTable, updateTableStatus, deleteTable, deleteReceipt, AddOrderSale, getOrderSale, updateReceiptStatus } from "../controllers/cashierReceipt.js";
+import { createReceipt, AddTable, getOrderReceipt, getTable, updateTableStatus, deleteTable, deleteReceipt, AddOrderSale, getOrderSale, updateReceiptStatus, getOrderSaleNo } from "../controllers/cashierReceipt.js";
 
 const router = express.Router();
 
@@ -11,7 +11,8 @@ router.post("/add-orderSale", AddOrderSale)
 // Read
 router.get("/get-receipt", getOrderReceipt)
 router.get("/get-table", getTable)
-router.get("/get-receipt/:id", getOrderSale)
+router.get("/get-receipt", getOrderSale)
+router.get("/get-receipt/:id", getOrderSaleNo)
 
 // Update
 router.put("/update-table-status", updateTableStatus)

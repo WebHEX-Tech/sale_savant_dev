@@ -210,7 +210,7 @@ const ModifyTable = () => {
         display="flex"
         flexWrap="wrap"
         sx={{
-          background: theme.palette.secondary[800],
+          background: theme.palette.secondary[700],
           margin: "1.5em 0",
           padding: "1em",
           borderRadius: "5px",
@@ -226,8 +226,8 @@ const ModifyTable = () => {
             alignItems="center"
             gap="0.5em"
             sx={{
-              background: table.status === "Occupied" ? "#FF5A5A" : "#1BD7EC",
-              color: "#000",
+              background: theme.palette.grey[700],
+              color: "#fff",
               padding: "1em",
               borderRadius: "8px",
               margin: "0.5em",
@@ -252,10 +252,20 @@ const ModifyTable = () => {
               <ClearIcon
                 sx={{
                   fontSize: "1em",
-                  color: table.status === "Occupied" ? "#88F3FF" : "#C50000",
+                  color: "#fff",
                 }}
               />
             </IconButton>
+            <CircleIcon
+              sx={{
+                position: "absolute",
+                top: "0.5%",
+                left: "0.5%",
+                padding: "0.2em",
+                color: table.status === "Occupied" ? "#FF5A5A" : "#1BD7EC",
+                fontSize: "3em",
+              }}
+            />
             <div>
               <Typography variant="h5">Table</Typography>
               <Typography variant="h2">{table.tableNo}</Typography>

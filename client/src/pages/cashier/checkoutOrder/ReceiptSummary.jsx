@@ -34,7 +34,7 @@ const ReceiptSummary = () => {
 
   const handleClickButton = (link) => {
     navigate(link);
-  }
+  };
 
   return (
     <>
@@ -69,10 +69,10 @@ const ReceiptSummary = () => {
               fontWeight: "600",
               textAlign: "center",
               color: "#B03021",
-              padding:"0 1em"
+              padding: "0 1em",
             }}
           >
-            Order No. {orderSale.length > 0 && orderSale[0].orderNo}
+            Order No. {orderSale.orderNo}
           </Typography>
           <Typography
             variant="h2"
@@ -80,7 +80,8 @@ const ReceiptSummary = () => {
               fontWeight: "600",
               color: "#B03021",
             }}
-          >Paid!
+          >
+            Paid!
           </Typography>
         </Box>
         <Box
@@ -90,8 +91,8 @@ const ReceiptSummary = () => {
             alignItems: "center",
             justifyContent: "center",
             "@media (max-width:1024px)": {
-                width: "100%",
-              },
+              width: "100%",
+            },
           }}
           width="55%"
           padding="2em"
@@ -105,15 +106,33 @@ const ReceiptSummary = () => {
                 padding: "1em",
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <FlexBetween>
                 <Typography>
-                  Order No.{" "}
-                  <span>{orderSale.length > 0 && orderSale[0].orderNo}</span>
+                  Order No. <span>{orderSale.orderNo}</span>
                 </Typography>
-                <Typography sx={{ color: "#1CDE75", marginTop: "0.5em" }}>
-                  {orderSale.length > 0 && orderSale[0].orderType}
+                <Typography sx={{ color: "#1CDE75" }}>
+                  {orderSale.orderType}
                 </Typography>
-              </div>
+              </FlexBetween>
+
+              <Divider sx={{ background: "#fff" }} />
+
+              <FlexBetween paddingTop="1em">
+                <Typography sx={{ fontWeight: "200" }}>
+                  Payment Method
+                </Typography>
+                <Typography sx={{ fontWeight: "200" }}>
+                  {orderSale.paymentType}
+                </Typography>
+              </FlexBetween>
+              <FlexBetween paddingTop="1em">
+                <Typography sx={{ fontWeight: "200" }}>
+                  Transaction Code
+                </Typography>
+                <Typography sx={{ fontWeight: "200" }}>
+                  {orderSale.paymentCode}
+                </Typography>
+              </FlexBetween>
             </Box>
             <Divider sx={{ background: "#fff" }} />
             <Box
@@ -145,19 +164,19 @@ const ReceiptSummary = () => {
                 <FlexBetween>
                   <Typography sx={{ fontWeight: "200" }}>Subtotal</Typography>
                   <Typography sx={{ fontWeight: "200" }}>
-                    {orderSale.length > 0 && orderSale[0].subTotal}
+                    {orderSale.subTotal}
                   </Typography>
                 </FlexBetween>
                 <FlexBetween>
                   <Typography sx={{ fontWeight: "200" }}>Discount</Typography>
                   <Typography sx={{ fontWeight: "200", color: "#FF97A1" }}>
-                    -{orderSale.length > 0 && orderSale[0].amountDiscounted}
+                    -{orderSale.amountDiscounted}
                   </Typography>
                 </FlexBetween>
                 <FlexBetween>
                   <Typography sx={{ fontWeight: "600" }}>Total</Typography>
                   <Typography sx={{ fontWeight: "600" }}>
-                    Php {orderSale.length > 0 && orderSale[0].totalAmount}
+                    Php {orderSale.totalAmount}
                   </Typography>
                 </FlexBetween>
                 <Divider sx={{ background: "#fff" }} />
@@ -166,15 +185,13 @@ const ReceiptSummary = () => {
                     Amount Paid
                   </Typography>
                   <Typography sx={{ fontWeight: "200" }}>
-                    Php {orderSale.length > 0 && orderSale[0].amountPaid}
+                    Php {orderSale.amountPaid}
                   </Typography>
                 </FlexBetween>
                 <FlexBetween>
                   <Typography sx={{ fontWeight: "600" }}>Change</Typography>
                   <Typography sx={{ fontWeight: "600" }}>
-                    Php{" "}
-                    {(orderSale.length > 0 && orderSale[0].amountPaid) -
-                      (orderSale.length > 0 && orderSale[0].totalAmount)}
+                    Php {orderSale.amountPaid - orderSale.totalAmount}
                   </Typography>
                 </FlexBetween>
               </div>
@@ -188,7 +205,10 @@ const ReceiptSummary = () => {
                   margin: "1em",
                 }}
               >
-                <Button variant="contained" onClick={() => handleClickButton("/take-order")}>
+                <Button
+                  variant="contained"
+                  onClick={() => handleClickButton("/take-order")}
+                >
                   New Order
                 </Button>
                 <Button

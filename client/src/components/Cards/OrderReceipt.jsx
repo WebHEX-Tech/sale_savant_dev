@@ -14,6 +14,8 @@ import {
   MenuItem,
   DialogActions,
   InputLabel,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { FlexBetween } from "components";
 import React, { useState } from "react";
@@ -36,6 +38,7 @@ const OrderReceipt = ({
   const [transactionCode, setTransactionCode] = useState("N/A");
   const [selectedPaymentType, setSelectedPaymentType] = useState("");
   const [amountPaid, setAmountPaid] = useState(null);
+  const [alertOpen, setAlertOpen] = useState(false);
   const theme = useTheme();
   const navigate = useNavigate();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
@@ -90,7 +93,10 @@ const OrderReceipt = ({
       });
 
       if (response.ok) {
+        const responseData = await response.json();
+        const { _id } = responseData;
         console.log("Payment confirmed successfully");
+        navigate(`/checkout-order/${_id}`);
       } else {
         console.error("Failed to confirm payment:", response.statusText);
       }
@@ -108,9 +114,12 @@ const OrderReceipt = ({
   };
 
   const handleConfirmPayment = () => {
+    if (amountPaid < totalAmount) {
+      setAlertOpen(true);
+      return;
+    }
     addOrderSale();
     changeReceiptStatus("Paid");
-    navigate(`/checkout-order/${orderNo}`);
     setDialogOpen(false);
   };
 
@@ -422,6 +431,17 @@ const OrderReceipt = ({
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={6000}
+        onClose={() => setAlertOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={() => setAlertOpen(false)} severity="error">
+          Insufficient balance!
+        </Alert>
+      </Snackbar>
     </>
   );
 };

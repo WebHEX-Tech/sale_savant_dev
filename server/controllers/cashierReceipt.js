@@ -165,6 +165,23 @@ export const getOrderSale = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+export const getOrderSaleNo = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const orderSales = await OrderSales.findById(id);
+
+    if (!orderSales || orderSales.length === 0) {
+      return res.status(404).json({ message: `Order sales for order ${id} not found` });
+    }
+
+    res.status(200).json(orderSales);
+  } catch (error) {
+    console.error('Error retrieving order sales:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
 
 // Update
 export const updateTableStatus = async (req, res) => {

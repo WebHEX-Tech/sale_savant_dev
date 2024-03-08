@@ -56,9 +56,7 @@ const OrderCard = ({
   useEffect(() => {
     const fetchMenuPromos = async () => {
       try {
-        const response = await fetch(
-          `${baseUrl}menumanagement/menuPromo`
-        );
+        const response = await fetch(`${baseUrl}menumanagement/menuPromo`);
         if (response.ok) {
           const data = await response.json();
           const menuPromoWithId = data.map((item, index) => ({
@@ -194,11 +192,11 @@ const OrderCard = ({
           <div style={{ display: "flex", marginBottom: "1em" }}>
             <Typography variant="h5">{menuName}</Typography>
           </div>
-          {specificPromo && ( 
-            <FlexBetween>
-              <div>
-                <Typography variant="subtitle1">{`Php ${price}`}</Typography>
-              </div>
+          <FlexBetween>
+            <div>
+              <Typography variant="subtitle1">{`Php ${price}`}</Typography>
+            </div>
+            {specificPromo && (
               <div>
                 {specificPromo.promoType === "Fixed" ? (
                   <>
@@ -228,8 +226,8 @@ const OrderCard = ({
                   </>
                 )}
               </div>
-            </FlexBetween>
-          )}
+            )}
+          </FlexBetween>
         </CardContent>
       </Card>
 

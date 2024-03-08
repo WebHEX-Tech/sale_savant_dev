@@ -16,6 +16,8 @@ import CircleIcon from "@mui/icons-material/Circle";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { Player } from "@lordicon/react";
+import * as assets from "../../../assets/index.js";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -30,6 +32,11 @@ const CheckoutList = () => {
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [selectedTable, setSelectedTable] = useState(null);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
+  const playerRef = useRef(null);
+
+  useEffect(() => {
+    playerRef.current?.playFromBeginning();
+  }, []);
 
   const fetchReceiptData = async () => {
     try {
@@ -238,11 +245,14 @@ const CheckoutList = () => {
             </Box>
           </FlexBetween>
 
-          <Box display="flex" justifyContent="center">
+          <Box display="flex" justifyContent="center" position="relative">
             <Box
               height="70vh"
               sx={{
-                background: `rgba(90, 90, 90, 0.2) url(${SaleSavantLogo})`,
+                background:
+                  receipt.length !== 0
+                    ? `rgba(90, 90, 90, 0.2) url(${SaleSavantLogo})`
+                    : "rgba(90, 90, 90, 0.2)",
                 backgroundSize: "300px auto",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
@@ -269,7 +279,41 @@ const CheckoutList = () => {
                   Next <NavigateNextIcon />
                 </Button>
               </FlexBetween>
-
+              {receipt.length === 0 && (
+                <>
+                  <Typography
+                    variant="h2"
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      textAlign: "center",
+                      width: "100%",
+                      maxWidth: "fit-content",
+                      margin: "0 auto",
+                      zIndex: 1,
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <Player
+                      ref={playerRef}
+                      size={96}
+                      icon={assets.CartAni}
+                      onComplete={() =>
+                        setTimeout(
+                          () => playerRef.current?.playFromBeginning(),
+                          3000
+                        )
+                      }
+                    />
+                    No orders for now
+                  </Typography>
+                </>
+              )}
               <Slider ref={sliderRef} {...settings}>
                 {receipt.map((item, index) => (
                   <TableOrder

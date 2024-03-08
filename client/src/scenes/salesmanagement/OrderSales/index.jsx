@@ -1,5 +1,17 @@
 import { Search } from "@mui/icons-material";
-import { Box, Button, InputBase, Toolbar, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  InputBase,
+  Toolbar,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { FlexBetween, Header } from "components";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -10,41 +22,131 @@ const OrderSales = () => {
   const theme = useTheme();
   const [orderSales, setOrderSale] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
 
-  console.log(orderSales);
-
-  useEffect(() => {
-    const fetchReceiptData = async () => {
-      try {
-        const response = await fetch(
-          `${baseUrl}sales-management/get-orderSales`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          const orderSalesWithId = data.map((item, index) => ({
-            ...item,
-            id: index + 1,
-          }));
-          setOrderSale(orderSalesWithId);
-        } else {
-          console.error(
-            "Failed to fetch order sales data:",
-            response.statusText
-          );
-        }
-      } catch (error) {
-        console.error("An error occurred during the fetch:", error);
+  const fetchReceiptData = async () => {
+    try {
+      const response = await fetch(`${baseUrl}sales-management/get-orderSales`);
+      if (response.ok) {
+        const data = await response.json();
+        const orderSalesWithId = data.map((item, index) => ({
+          ...item,
+          id: index + 1,
+        }));
+        setOrderSale(orderSalesWithId);
+      } else {
+        console.error("Failed to fetch order sales data:", response.statusText);
       }
-    };
-
+    } catch (error) {
+      console.error("An error occurred during the fetch:", error);
+    }
+  };
+  useEffect(() => {
     fetchReceiptData();
   }, []);
 
+  const handleReset = () => {
+    setResetDialogOpen(true);
+  };
+
+  const handleCancelReset = () => {
+    setResetDialogOpen(false);
+  };
+
   const handleDelete = (_id) => {
+    setDeleteDialogOpen(true);
     setSelectedItemId(_id);
   };
 
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setSelectedItemId(null);
+  };
+
+  const handleConfirmReset = async () => {
+    try {
+      const response = await fetch(
+        `${baseUrl}sales-management/delete-AllSale`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        console.log(`All sales deleted successfully`);
+        fetchReceiptData();
+      } else {
+        console.error("Failed to delete order sales:", response.statusText);
+      }
+    } catch (error) {
+      console.error("An error occurred during the delete:", error);
+    } finally {
+      setDeleteDialogOpen(false);
+      setSelectedItemId(null);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const response = await fetch(
+        `${baseUrl}sales-management/delete-orderSale/${selectedItemId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        console.log(
+          `Order sale with ID ${selectedItemId} deleted successfully`
+        );
+        fetchReceiptData();
+      } else {
+        console.error("Failed to delete order sale:", response.statusText);
+      }
+    } catch (error) {
+      console.error("An error occurred during the delete:", error);
+    } finally {
+      setDeleteDialogOpen(false);
+      setSelectedItemId(null);
+    }
+  };
+
+  const sortedOrderSales = orderSales.slice().sort((a, b) => {
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  const today = new Date().toLocaleDateString();
+  const yesterday = new Date(Date.now() - 864e5).toLocaleDateString(); 
+
+  const todayData = sortedOrderSales.filter(
+    (item) => new Date(item.createdAt).toLocaleDateString() === today
+  );
+  const yesterdayData = sortedOrderSales.filter(
+    (item) => new Date(item.createdAt).toLocaleDateString() === yesterday
+  );
+  const previousData = sortedOrderSales.filter(
+    (item) =>
+      new Date(item.createdAt).toLocaleDateString() !== today &&
+      new Date(item.createdAt).toLocaleDateString() !== yesterday
+  );
+
   const columns = [
+    {
+      field: "createdAt",
+      headerName: "Date",
+      width: 100,
+      renderCell: (params) => {
+        const date = new Date(params.row.createdAt);
+        const formattedDate = `${(date.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}/${date
+          .getDate()
+          .toString()
+          .padStart(2, "0")}/${date.getFullYear()}`;
+        return <div>{formattedDate}</div>;
+      },
+    },
     { field: "orderNo", headerName: "Order No.", width: 100 },
     { field: "paymentType", headerName: "Payment Method", width: 140 },
     { field: "paymentCode", headerName: "Payment Code", width: 180 },
@@ -70,7 +172,7 @@ const OrderSales = () => {
     {
       field: "action",
       headerName: "Action",
-      width: 150,
+      width: 100,
       renderCell: (params) => (
         <div style={{ display: "flex", gap: "1em" }}>
           <DeleteForeverIcon
@@ -96,9 +198,15 @@ const OrderSales = () => {
             justifyContent: "space-between",
             padding: "0 !important",
             marginBottom: "1em",
+            gap: "1em",
           }}
         >
-          <Button variant="contained" color="error" size="medium">
+          <Button
+            variant="contained"
+            color="error"
+            size="medium"
+            onClick={handleReset}
+          >
             Reset Order Sales
           </Button>
 
@@ -115,8 +223,11 @@ const OrderSales = () => {
           </FlexBetween>
         </Toolbar>
 
+        <Typography variant="h3" marginBottom="0.5em">
+          {today}, Today
+        </Typography>
         <Box
-          height="67vh"
+          height="39vh"
           sx={{
             "& .MuiDataGrid-root": {
               border: "none",
@@ -143,20 +254,144 @@ const OrderSales = () => {
           }}
         >
           <DataGrid
-            rows={orderSales}
+            rows={todayData}
             columns={columns}
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 10,
+                  pageSize: 5,
                 },
               },
             }}
-            pageSizeOptions={[10]}
+            pageSizeOptions={[5]}
+            disableRowSelectionOnClick
+          />
+        </Box>
+        <Divider sx={{ background: theme.palette.primary[400], margin: "1em 0" }} />
+        <Typography variant="h3" marginBottom="0.5em">
+          {yesterday}, Yesterday
+        </Typography>
+        <Box
+          height="28vh"
+          sx={{
+            "& .MuiDataGrid-root": {
+              border: "none",
+            },
+            "& .MuiDataGrid-cell": {
+              borderBottom: "none",
+            },
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: theme.palette.secondary[700],
+              color: theme.palette.secondary[100],
+              borderColor: theme.palette.secondary[100],
+            },
+            "& .MuiDataGrid-virtualScroller": {
+              backgroundColor: theme.palette.secondary[700],
+            },
+            "& .MuiDataGrid-footerContainer": {
+              backgroundColor: theme.palette.secondary[700],
+              color: theme.palette.secondary[100],
+              borderColor: theme.palette.secondary[100],
+            },
+            "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+              color: `${theme.palette.secondary[200]} !important`,
+            },
+          }}
+        >
+          <DataGrid
+            rows={yesterdayData}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 3,
+                },
+              },
+            }}
+            pageSizeOptions={[3]}
+            disableRowSelectionOnClick
+          />
+        </Box>
+        <Divider sx={{ background: theme.palette.primary[400], margin: "1em 0" }} />
+        <Typography variant="h3" marginBottom="0.5em">
+          Previous
+        </Typography>
+        <Box
+          height="28vh"
+          sx={{
+            "& .MuiDataGrid-root": {
+              border: "none",
+            },
+            "& .MuiDataGrid-cell": {
+              borderBottom: "none",
+            },
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: theme.palette.secondary[700],
+              color: theme.palette.secondary[100],
+              borderColor: theme.palette.secondary[100],
+            },
+            "& .MuiDataGrid-virtualScroller": {
+              backgroundColor: theme.palette.secondary[700],
+            },
+            "& .MuiDataGrid-footerContainer": {
+              backgroundColor: theme.palette.secondary[700],
+              color: theme.palette.secondary[100],
+              borderColor: theme.palette.secondary[100],
+            },
+            "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+              color: `${theme.palette.secondary[200]} !important`,
+            },
+          }}
+        >
+          <DataGrid
+            rows={previousData}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 3,
+                },
+              },
+            }}
+            pageSizeOptions={[3]}
             disableRowSelectionOnClick
           />
         </Box>
       </Box>
+
+      <Dialog open={deleteDialogOpen} onClose={handleCancelDelete}>
+        <DialogTitle>Delete Confirmation</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this record?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} sx={{ color: "#000" }}>
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} sx={{ color: "#26B02B" }}>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={resetDialogOpen} onClose={handleCancelReset}>
+        <DialogTitle>Delete Confirmation</DialogTitle>
+        <DialogContent>
+          Are you sure you want to reset today's sale?
+          <span style={{ color: "#DC3545" }}>
+            {" "}
+            (This action cannot be undone)
+          </span>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelReset} sx={{ color: "#000" }}>
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmReset} sx={{ color: "#26B02B" }}>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
