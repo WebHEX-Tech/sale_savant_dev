@@ -1,0 +1,1 @@
+export { default as SaleSavantLogo } from './img/SaleSavant_logo.svg';
