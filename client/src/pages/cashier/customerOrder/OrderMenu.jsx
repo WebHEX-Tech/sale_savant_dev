@@ -59,6 +59,12 @@ const OrderMenu = (props) => {
   const OrderNo = getOrderNo();
 
   useEffect(() => {
+    if (OrderType === "Take-out") {
+      setSelectedTables(["Take-out"]);
+    }
+  }, [OrderType]);
+
+  useEffect(() => {
     const fetchMenuData = async () => {
       try {
         const response = await fetch(
@@ -716,6 +722,7 @@ const OrderMenu = (props) => {
                     variant="contained"
                     size="small"
                     onClick={handleOpenDialog}
+                    disabled={OrderType === "Take-out"}
                   >
                     Select Table
                   </Button>
@@ -971,19 +978,6 @@ const OrderMenu = (props) => {
           </FlexBetween>
         </DialogTitle>
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={selectedTables.includes("Take-out")}
-                onChange={() => handleCheckboxChange("Take-out")}
-                color="secondary"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 25 } }}
-              />
-            }
-            sx={{ marginTop: "1em", "& .MuiTypography-root": { fontSize: 18 } }}
-            label="Take-out"
-          />
-          <Divider sx={{ margin: "1em 0" }} />
           <div>
             {tables.map((table, index) => (
               <FormControlLabel

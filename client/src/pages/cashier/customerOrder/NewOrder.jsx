@@ -16,14 +16,21 @@ import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantity
 import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
 import TableRestaurantIcon from "@mui/icons-material/TableRestaurant";
 import * as image from "assets/index.js";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { baseUrl } from "state/api";
+import { Player } from "@lordicon/react";
+import * as assets from "../../../assets/index.js";
 
 const NewOrder = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [receipt, setReceipt] = useState([]);
+  const playerRef = useRef(null);
+
+  useEffect(() => {
+    playerRef.current?.playFromBeginning();
+  }, []);
 
   const actions = [
     {
@@ -38,9 +45,7 @@ const NewOrder = () => {
   useEffect(() => {
     const fetchReceiptData = async () => {
       try {
-        const response = await fetch(
-          `${baseUrl}cashier/get-receipt`
-        );
+        const response = await fetch(`${baseUrl}cashier/get-receipt`);
         if (response.ok) {
           const data = await response.json();
           setReceipt(data);
@@ -144,7 +149,18 @@ const NewOrder = () => {
             New Order
           </Button>
         </CardActions>
-        
+
+        <div style={{ position: "absolute", top: 20, left: 25 }}>
+          <Player
+            ref={playerRef}
+            size={150}
+            icon={assets.Confetti}
+            onComplete={() =>
+              setTimeout(() => playerRef.current?.playFromBeginning(), 3000)
+            }
+          />
+        </div>
+
         <Badge
           sx={{ position: "absolute", top: 16, right: 16 }}
           color="secondary"

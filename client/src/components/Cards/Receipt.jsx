@@ -44,6 +44,12 @@ const Receipt = ({
   const [discountedAmount, setDiscountedAmount] = useState([]);
 
   useEffect(() => {
+    if (OrderType === "Take-out") {
+      setSelectedTables(["Take-out"]);
+    }
+  }, [OrderType]);
+
+  useEffect(() => {
     const fetchTableData = async () => {
       try {
         const response = await fetch(`${baseUrl}cashier/get-table`);
@@ -576,7 +582,7 @@ const Receipt = ({
             >
               Apply Promo / Discount
             </Button>
-            <Button variant="contained" size="small" onClick={handleOpenDialog}>
+            <Button variant="contained" size="small" onClick={handleOpenDialog} disabled={OrderType === "Take-out"}>
               Select Table
             </Button>
             <Button
@@ -624,19 +630,6 @@ const Receipt = ({
           </FlexBetween>
         </DialogTitle>
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={selectedTables.includes("Take-out")}
-                onChange={() => handleCheckboxChange("Take-out")}
-                color="secondary"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 25 } }}
-              />
-            }
-            sx={{ marginTop: "1em", "& .MuiTypography-root": { fontSize: 18 } }}
-            label="Take-out"
-          />
-          <Divider sx={{ margin: "1em 0" }} />
           <div>
             {tables.map((table, index) => (
               <FormControlLabel

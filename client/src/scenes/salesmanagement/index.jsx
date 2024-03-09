@@ -56,6 +56,12 @@ const SalesManagement = () => {
     };
 
     fetchTotalSaleStat();
+
+    const intervalId = setInterval(() => {
+      fetchTotalSaleStat();
+    }, 60000); 
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleCashDialogOpen = () => {
@@ -148,19 +154,20 @@ const SalesManagement = () => {
         </FlexBetween>
       </Toolbar>
 
-      {/* Make this Box Grid and responsive, chart should be responsive */}
       <Box padding="1em 2em">
         <FlexBetween
           marginBottom="1em"
-          gap="0.5em"
+          gap="2em"
           sx={{
-            flexDirection: { xs: "column", sm: "column", md: "row", lg: "row" },
+            width:"100%",
+            justifyContent:"normal",
+            flexDirection: { xs: "column", sm: "row", md: "row", lg: "row" },
           }}
         >
           <Box
             borderRadius="10px"
             height="250px"
-            width={{xs:"90vw", sm:"90vw", md:"60%", lg:"60%", }}
+            width={{xs:"90vw", sm:"60%", md:"60%", lg:"60%", }}
             sx={{ background: theme.palette.secondary[700] }}
           >
             <LineSalesChart />
@@ -170,16 +177,16 @@ const SalesManagement = () => {
             value={`Php ${totalSale.totalSaleAmount}`}
             increase={totalSale.incomePercentage}
             date={totalSale.totalSaleDate}
-            width={{ xs: "100%", sm: "100%", md: "30vw", lg: "30vw" }}
+            width={{ xs: "100%", sm: "40%", md: "40%", lg: "40%", xl:"40%" }}
             bg={theme.palette.primary[700]}
           />
         </FlexBetween>
 
         <FlexBetween
           marginBottom="1em"
-          gap="1em"
+          gap="2em"
           sx={{
-            flexDirection: { xs: "column", sm: "column", md: "row", lg: "row" },
+            flexDirection: { xs: "column", sm: "row", md: "row", lg: "row" },
           }}
         >
           <Box display="flex" gap="1em">

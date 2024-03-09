@@ -3,7 +3,7 @@ import { ResponsiveLine } from "@nivo/line";
 import React from "react";
 
 const LineSalesChart = () => {
-    const theme = useTheme();
+  const theme = useTheme();
   const data = [
     {
       id: "Total Sales",
@@ -22,6 +22,12 @@ const LineSalesChart = () => {
       data={data}
       margin={{ top: 60, right: 30, bottom: 50, left: 70 }}
       theme={{
+        grid: {
+          line: {
+            stroke: theme.palette.secondary[800],
+            strokeWidth: 1,
+          },
+        },
         axis: {
           domain: {
             line: {
@@ -30,22 +36,22 @@ const LineSalesChart = () => {
           },
           legend: {
             text: {
-              fill: theme.palette.secondary[200],
+              fill: theme.palette.secondary[100],
             },
           },
           ticks: {
             line: {
-              stroke: theme.palette.secondary[200],
+              stroke: theme.palette.secondary[100],
               strokeWidth: 1,
             },
             text: {
-              fill: theme.palette.secondary[200],
+              fill: theme.palette.secondary[100],
             },
           },
         },
         legends: {
           text: {
-            fill: theme.palette.secondary[200],
+            fill: theme.palette.secondary[100],
           },
         },
         tooltip: {
@@ -86,15 +92,15 @@ const LineSalesChart = () => {
         legendOffset: -45,
         legendPosition: "middle",
       }}
-      colors={{ scheme: "set1" }}
-      lineWidth={3}
+      colors={{ scheme: "category10" }}
+      lineWidth={2}
       pointSize={10}
-      pointColor={{ from: 'color', modifiers: [] }}
+      pointColor={{ from: "color", modifiers: [] }}
       pointBorderWidth={2}
       pointBorderColor={{ from: "serieColor" }}
       enableGridX={false}
+      enablePointLabel={true}
       enableCrosshair={true}
-      crosshairType="x"
       useMesh={true}
       legends={[
         {

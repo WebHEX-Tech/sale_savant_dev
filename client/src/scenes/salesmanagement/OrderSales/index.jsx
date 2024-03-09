@@ -117,7 +117,7 @@ const OrderSales = () => {
   });
 
   const today = new Date().toLocaleDateString();
-  const yesterday = new Date(Date.now() - 864e5).toLocaleDateString(); 
+  const yesterday = new Date(Date.now() - 864e5).toLocaleDateString();
 
   const todayData = sortedOrderSales.filter(
     (item) => new Date(item.createdAt).toLocaleDateString() === today
@@ -125,11 +125,30 @@ const OrderSales = () => {
   const yesterdayData = sortedOrderSales.filter(
     (item) => new Date(item.createdAt).toLocaleDateString() === yesterday
   );
-  const previousData = sortedOrderSales.filter(
-    (item) =>
-      new Date(item.createdAt).toLocaleDateString() !== today &&
-      new Date(item.createdAt).toLocaleDateString() !== yesterday
-  );
+
+  const shortColumns = [
+    {
+      field: "createdAt",
+      headerName: "Date",
+      width: 80,
+      renderCell: (params) => {
+        const date = new Date(params.row.createdAt);
+        const formattedDate = `${(date.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}/${date
+          .getDate()
+          .toString()
+          .padStart(2, "0")}/${date.getFullYear()}`;
+        return <div>{formattedDate}</div>;
+      },
+    },
+    { field: "orderNo", headerName: "Order No.", width: 80 },
+    { field: "paymentType", headerName: "Payment Method", width: 120 },
+    { field: "paymentCode", headerName: "Payment Code", width: 100 },
+    { field: "orderType", headerName: "Order Type", width: 80 },
+    { field: "noItems", headerName: "No. of Items/Dishes", width: 140 },
+    { field: "totalAmount", headerName: "Total Amount (Php)", width: 140 },
+  ];
 
   const columns = [
     {
@@ -223,56 +242,109 @@ const OrderSales = () => {
           </FlexBetween>
         </Toolbar>
 
-        <Typography variant="h3" marginBottom="0.5em">
-          {today}, Today
-        </Typography>
-        <Box
-          height="39vh"
-          sx={{
-            "& .MuiDataGrid-root": {
-              border: "none",
-            },
-            "& .MuiDataGrid-cell": {
-              borderBottom: "none",
-            },
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: theme.palette.secondary[700],
-              color: theme.palette.secondary[100],
-              borderColor: theme.palette.secondary[100],
-            },
-            "& .MuiDataGrid-virtualScroller": {
-              backgroundColor: theme.palette.secondary[700],
-            },
-            "& .MuiDataGrid-footerContainer": {
-              backgroundColor: theme.palette.secondary[700],
-              color: theme.palette.secondary[100],
-              borderColor: theme.palette.secondary[100],
-            },
-            "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-              color: `${theme.palette.secondary[200]} !important`,
-            },
-          }}
-        >
-          <DataGrid
-            rows={todayData}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 5,
+        <Box display="flex" justifyContent="space-between" gap="1em" width="100%">
+          <Box width="100%">
+            <Typography variant="h3" marginBottom="0.5em">
+              {today}, Today
+            </Typography>
+            <Box
+              height="28vh"
+              sx={{
+                "& .MuiDataGrid-root": {
+                  border: "none",
                 },
-              },
-            }}
-            pageSizeOptions={[5]}
-            disableRowSelectionOnClick
-          />
+                "& .MuiDataGrid-cell": {
+                  borderBottom: "none",
+                },
+                "& .MuiDataGrid-columnHeaders": {
+                  backgroundColor: theme.palette.secondary[700],
+                  color: theme.palette.secondary[100],
+                  borderColor: theme.palette.secondary[100],
+                },
+                "& .MuiDataGrid-virtualScroller": {
+                  backgroundColor: theme.palette.secondary[700],
+                },
+                "& .MuiDataGrid-footerContainer": {
+                  backgroundColor: theme.palette.secondary[700],
+                  color: theme.palette.secondary[100],
+                  borderColor: theme.palette.secondary[100],
+                },
+                "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+                  color: `${theme.palette.secondary[200]} !important`,
+                },
+              }}
+            >
+              <DataGrid
+                rows={todayData}
+                columns={shortColumns}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 3,
+                    },
+                  },
+                }}
+                pageSizeOptions={[3]}
+                disableRowSelectionOnClick
+              />
+            </Box>
+          </Box>
+          <Box width="100%">
+            <Typography variant="h3" marginBottom="0.5em">
+              {yesterday}, Yesterday
+            </Typography>
+            <Box
+              height="28vh"
+              sx={{
+                "& .MuiDataGrid-root": {
+                  border: "none",
+                },
+                "& .MuiDataGrid-cell": {
+                  borderBottom: "none",
+                },
+                "& .MuiDataGrid-columnHeaders": {
+                  backgroundColor: theme.palette.secondary[700],
+                  color: theme.palette.secondary[100],
+                  borderColor: theme.palette.secondary[100],
+                },
+                "& .MuiDataGrid-virtualScroller": {
+                  backgroundColor: theme.palette.secondary[700],
+                },
+                "& .MuiDataGrid-footerContainer": {
+                  backgroundColor: theme.palette.secondary[700],
+                  color: theme.palette.secondary[100],
+                  borderColor: theme.palette.secondary[100],
+                },
+                "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+                  color: `${theme.palette.secondary[200]} !important`,
+                },
+              }}
+            >
+              <DataGrid
+                rows={yesterdayData}
+                columns={shortColumns}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 3,
+                    },
+                  },
+                }}
+                pageSizeOptions={[3]}
+                disableRowSelectionOnClick
+              />
+            </Box>
+          </Box>
         </Box>
-        <Divider sx={{ background: theme.palette.primary[400], margin: "1em 0" }} />
+        <Divider
+          sx={{ background: theme.palette.primary[400], margin: "1em 0" }}
+        />
+
         <Typography variant="h3" marginBottom="0.5em">
-          {yesterday}, Yesterday
+          All
         </Typography>
         <Box
-          height="28vh"
+          height="50vh"
           sx={{
             "& .MuiDataGrid-root": {
               border: "none",
@@ -299,61 +371,16 @@ const OrderSales = () => {
           }}
         >
           <DataGrid
-            rows={yesterdayData}
+            rows={orderSales}
             columns={columns}
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 3,
+                  pageSize: 7,
                 },
               },
             }}
-            pageSizeOptions={[3]}
-            disableRowSelectionOnClick
-          />
-        </Box>
-        <Divider sx={{ background: theme.palette.primary[400], margin: "1em 0" }} />
-        <Typography variant="h3" marginBottom="0.5em">
-          Previous
-        </Typography>
-        <Box
-          height="28vh"
-          sx={{
-            "& .MuiDataGrid-root": {
-              border: "none",
-            },
-            "& .MuiDataGrid-cell": {
-              borderBottom: "none",
-            },
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: theme.palette.secondary[700],
-              color: theme.palette.secondary[100],
-              borderColor: theme.palette.secondary[100],
-            },
-            "& .MuiDataGrid-virtualScroller": {
-              backgroundColor: theme.palette.secondary[700],
-            },
-            "& .MuiDataGrid-footerContainer": {
-              backgroundColor: theme.palette.secondary[700],
-              color: theme.palette.secondary[100],
-              borderColor: theme.palette.secondary[100],
-            },
-            "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-              color: `${theme.palette.secondary[200]} !important`,
-            },
-          }}
-        >
-          <DataGrid
-            rows={previousData}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 3,
-                },
-              },
-            }}
-            pageSizeOptions={[3]}
+            pageSizeOptions={[7]}
             disableRowSelectionOnClick
           />
         </Box>

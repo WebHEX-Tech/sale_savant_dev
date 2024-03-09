@@ -40,7 +40,7 @@ export const getTotalSaleStats = async (req, res) => {
     );
 
     let incomePercentage =
-      previousDayTotalSaleAmount !== 0
+      totalSaleAmount !== 0
         ? ((totalSaleAmount - previousDayTotalSaleAmount) /
             previousDayTotalSaleAmount) *
           100

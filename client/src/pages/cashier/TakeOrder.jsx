@@ -164,7 +164,7 @@ const TakeOrder = () => {
             variant="contained"
             onClick={() => {
               handleOrderClick("/order-ticket");
-              handleOrderTypeSelect("Take-Out", orderNo);
+              handleOrderTypeSelect("Take-out", orderNo);
             }}
           >
             Take-Out

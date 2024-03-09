@@ -13,7 +13,7 @@ const StatBox = ({ title, value, increase, description, date, width, bg }) => {
       flexDirection="column"
       justifyContent="space-between"
       width={width}
-      sx={{ background: [bg], padding: "1em", borderRadius: "5px", height:"25vh" }}
+      sx={{ background: [bg], padding: "1em", borderRadius: "5px", height: {xs:"15vh", sm:"15vh", md:"20vh", lg:"20vh", xl:"25vh"} }}
     >
       <FlexBetween>
         <Typography
@@ -27,7 +27,7 @@ const StatBox = ({ title, value, increase, description, date, width, bg }) => {
       <Typography
         variant="h2"
         fontWeight="600"
-        sx={{ textAlign: "center", padding: "1em 0" }}
+        sx={{ textAlign: "center", padding: "0.5em 0" }}
       >
         {value}
       </Typography>
@@ -56,7 +56,7 @@ const StatBox = ({ title, value, increase, description, date, width, bg }) => {
               <Typography
                 variant="h5"
                 fontStyle="italic"
-                sx={{ color: "#fff" }}
+                sx={{ color: "#000" }}
               >
                 {increase}%
               </Typography>

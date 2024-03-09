@@ -42,7 +42,6 @@ const OrderReceipt = ({
   const theme = useTheme();
   const navigate = useNavigate();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-  console.log(promos);
 
   const changeReceiptStatus = async (newStatus) => {
     try {

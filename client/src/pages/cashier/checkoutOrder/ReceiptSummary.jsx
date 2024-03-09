@@ -1,15 +1,22 @@
 import { Box, Button, Divider, Typography, useTheme } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as image from "assets/index";
 import { useNavigate, useParams } from "react-router-dom";
 import { baseUrl } from "state/api";
 import { FlexBetween } from "components";
+import { Player } from "@lordicon/react";
+import * as assets from "../../../assets/index.js";
 
 const ReceiptSummary = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { id } = useParams();
   const [orderSale, setOrderSale] = useState({});
+  const playerRef = useRef(null);
+
+  useEffect(() => {
+    playerRef.current?.playFromBeginning();
+  }, []);
 
   useEffect(() => {
     const fetchOrderSaleData = async () => {
@@ -84,11 +91,13 @@ const ReceiptSummary = () => {
             Paid!
           </Typography>
         </Box>
+
         <Box
           sx={{
             background: "#fff",
             display: "flex",
             alignItems: "center",
+            flexDirection:"column",
             justifyContent: "center",
             "@media (max-width:1024px)": {
               width: "100%",
@@ -97,6 +106,14 @@ const ReceiptSummary = () => {
           width="55%"
           padding="2em"
         >
+          <Player
+            ref={playerRef}
+            size={150}
+            icon={assets.Coins}
+            onComplete={() =>
+              setTimeout(() => playerRef.current?.playFromBeginning(), 4000)
+            }
+          />
           <Box width="100%">
             <Box
               sx={{
