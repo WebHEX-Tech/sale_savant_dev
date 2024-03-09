@@ -64,8 +64,10 @@ function App() {
               <Route path={`/edit void/:id`} element={<scenes.EditVoid />} />
 
               {/* Reports Routes */}
-              <Route path="/reports/rep-sales" element={<scenes.RepSales />} />
-              <Route path="/reports/discount" element={<scenes.DiscountsPromos/>} />
+              <Route path="/reports/sales-report" element={<scenes.RepSales />} />
+              <Route path="/reports/purchase-history" element={<scenes.CustomPurchHistory />} />
+              <Route path="/reports/promos-report" element={<scenes.DiscountsPromos/>} />
+              <Route path="/reports/deliveries-report" element={<scenes.SalesDeliveries/>} />
             </Route>
 
             {/* Cashier Routes */}

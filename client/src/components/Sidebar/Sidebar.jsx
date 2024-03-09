@@ -40,10 +40,10 @@ const navItems = [
     text: "Reports",
     icon: <ReceiptLongOutlined />,
     children: [
-      { text: "Sales", path: "rep-sales" },
-      { text: "Customer Purchase History", path: "cp-history" },
-      { text: "Discount and Promos", path: "discount" },
-      { text: "Supplier Deliveries", path: "rep-deliveries" },
+      { text: "Sales", path: "sales-report" },
+      { text: "Customer Purchase History", path: "purchase-history" },
+      { text: "Discount and Promos", path: "promos-report" },
+      { text: "Supplier Deliveries", path: "deliveries-report" },
     ],
   },
   {

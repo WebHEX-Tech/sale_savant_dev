@@ -5,6 +5,7 @@ import {
   Container,
   InputBase,
   Toolbar,
+  Divider,
   Button,
 } from "@mui/material";
 import { useTheme } from "@emotion/react";
@@ -12,62 +13,39 @@ import { Search } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import DescriptionIcon from '@mui/icons-material/Description';
 
-const DiscountsPromos = () => {
+const SalesDeliveries = () => {
   const theme = useTheme();
-  const [account, setAccount] = useState([]);
   const [filteredAccount, setFilteredAccount] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-
-  const fetchAccounts = async () => {
-    try {
-      const response = await fetch("");
-      if (response.ok) {
-        const data = await response.json();
-        const accountWithId = data.map((item, index) => ({
-          ...item,
-          id: index + 1,
-        }));
-        setAccount(accountWithId);
-      } else {
-        console.error("Failed to fetch account:", response.statusText);
-      }
-    } catch (error) {
-      console.error("An error occurred during the fetch:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAccounts();
-  }, []);
-
-  useEffect(() => {
-    const filtered = account.filter(
-      (acc) =>
-        acc.role === "Manager" &&
-        acc.userName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredAccount(filtered);
-  }, [account, searchTerm]);
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
-
-  /* aj */
-
+  
   const columns = [
-    { field: "_id", headerName: "Name", width: 250 },
-    { field: "userName", headerName: "ID No.", width: 200 },
-    { field: "role", headerName: "Discount Applied", width: 300 },
-    { field: "createdAt", headerName: "Discount %", width: 200 },
-    { field: "userNumber", headerName: "Amount Discounted", width: 200 },
+    { field: "deliveryDate", headerName: "Delivery Date", width: 150 },
+    { field: "supplierName", headerName: "Supplier", width: 150 },
+    { field: "contactPerson", headerName: "Contact Person", width: 180 },
+    {
+      field: "divider",
+      headerName: "",
+      width: 20,
+      sortable: false,
+      renderCell: () => (
+        <Divider orientation="vertical" sx={{ marginLeft: "2em" }} />
+      ),
+    },
+    { field: "contactNo", headerName: "Contact Number", width: 160 },
+    { field: "totalCost", headerName: "Total Cost (php)", width: 160 },
+    { field: "received", headerName: "Received By", width: 150 },
+    { field: "quantity", headerName: "Quantity", width: 150 },
+    { field: "itemsDelivered", headerName: "Items Delivered", width: 180 },
   ];
 
   return (
     <>
-    
       <Box>
-        <Header title={"Discount and Promos"} disp={"none"} />
+          <Header title={"Supplier Deliveries"} disp={"none"} />
       </Box>
 
       <Box display="flex" flexDirection="column" width="100%" maxWidth="70vw">
@@ -81,6 +59,24 @@ const DiscountsPromos = () => {
                 },
               }}
             >
+              <Container>
+                <FlexBetween
+                  backgroundColor={theme.palette.secondary[700]}
+                  borderRadius="9px"
+                  gap="3rem"
+                  minWidth="300px"
+                  width="100%"
+                  p="0.1rem 1.5rem"
+                >
+                  <InputBase
+                    placeholder="Search Name..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                  />
+                  <Search />
+                </FlexBetween>
+              </Container>
+              
               <Button variant="contained" startIcon={<DescriptionIcon color="success"/>} sx={{ fontSize: "1em" }}>
                 Export to Excel
               </Button>
@@ -133,9 +129,8 @@ const DiscountsPromos = () => {
         </Box>
       </Box>
 
-      {/* aj */}
     </>
   );
 };
 
-export default DiscountsPromos;
+export default SalesDeliveries;

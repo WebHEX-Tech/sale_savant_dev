@@ -37,6 +37,8 @@ export {default as ChangePassword} from './accountmanagement/EditModules/ChangeP
 export {default as EditVoid} from './accountmanagement/EditModules/EditVoid.jsx'
 
 // export for Reports
-export {default as DiscountsPromos} from './reports/DiscountsPromos.jsx'
 export {default as RepSales} from './reports/index.jsx'
+export {default as CustomPurchHistory} from './reports/CustomPurchHistory.jsx'
+export {default as DiscountsPromos} from './reports/DiscountsPromos.jsx'
+export {default as SalesDeliveries} from './reports/SalesDeliveries.jsx'
 

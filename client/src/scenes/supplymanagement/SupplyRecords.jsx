@@ -214,6 +214,18 @@ const SupplyRecords = () => {
     }
   };
 
+  const getStatus = (totalPaid, totalCost) => {
+    if (totalPaid === 0) {
+        return { text: "- Unpaid -", color: "#B03021", font: "#fff" };
+    } else if (totalPaid !== 0 && totalPaid < totalCost) {
+        return { text: "Partially Paid", color: "#E8F4B5", font: "#000" };
+    } else if (totalPaid === totalCost) {
+        return { text: "-- Paid --", color: "#00DB16", font: "#000" };
+    } else {
+        return { text: "Unknown", color: "#000", font: "#fff" }; // Handle other cases
+    }
+};
+
   const columns = [
     {
       field: "deliveryDate",
@@ -280,14 +292,7 @@ const SupplyRecords = () => {
       valueGetter: (params) => {
         const totalPaid = params.row.totalPaid;
         const totalCost = params.row.totalCost;
-
-        if (totalPaid === 0) {
-          return { text: "- Unpaid -", color: "#B03021", font: "#fff" };
-        } else if (totalPaid !== 0 && totalPaid < totalCost) {
-          return { text: "Partially Paid", color: "#E8F4B5", font: "#000" };
-        } else if (totalPaid === totalCost) {
-          return { text: "-- Paid --", color: "#00DB16", font: "#000" };
-        }
+        return getStatus(totalPaid, totalCost);
       },
       renderCell: (params) => {
         const status = params.value;
