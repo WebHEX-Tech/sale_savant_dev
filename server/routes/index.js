@@ -1,6 +1,0 @@
-export {default as adminRoutes} from './admin.js'
-export {default as managementRoutes} from './management.js'
-export {default as authRoutes} from './auth.js'
-export {default as cashierRoutes} from './cashier.js'
-export {default as supplierRoutes} from './supplierManagement.js'
-export {default as salesRoutes} from './salesmanagements.js'
