@@ -36,7 +36,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-app.use("/auth", routes.authRoutes);
+app.use("auth", routes.authRoutes);
 
 // Routes with File
 app.post("/menumanagement/addmenu", upload.single("picture"), AddMenu);
